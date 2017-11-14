@@ -1,0 +1,9 @@
+<section>
+  <h3>Posts</h3>
+
+  <ul>
+    {{#each group.posts as |post|}}
+      <li>Title: {{post.title}} | Author: {{post.author.name}}</li>
+    {{/each}}
+  </ul>
+</section>

@@ -7,6 +7,14 @@ const Router = EmberRouter.extend({
 });
 
 Router.map(function() {
+  this.route('query');
+  this.route('find-all');
+  this.route('find-record');
+  this.route('create-record');
+  this.route('update-record', { path: '/update-record/:title' });
+  this.route('delete-record');
+  this.route('reset-data');
+  this.route('mirage');
 });
 
 export default Router;

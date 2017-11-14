@@ -1,0 +1,15 @@
+.test-table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.test-table td, .test-table th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+.test-table tr:nth-child(even) {
+  background-color: #dddddd;
+}
