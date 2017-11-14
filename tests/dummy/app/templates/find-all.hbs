@@ -1,0 +1,16 @@
+<section>
+  <h1>Groups</h1>
+
+  {{#each model as |group|}}
+    {{#if group.isLoaded}}
+      <article>
+        <h2>{{group.name}}</h2>
+
+        {{group-posts group=group}}
+        {{group-members group=group}}
+      </article>
+    {{/if}}
+  {{/each}}
+</section>
+
+{{outlet}}

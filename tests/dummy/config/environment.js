@@ -11,6 +11,7 @@ module.exports = function(environment) {
       FEATURES: {
         // Here you can enable experimental features on an ember canary build
         // e.g. 'with-controller': true
+        'ds-improved-ajax': true,
       },
       EXTEND_PROTOTYPES: {
         // Prevent Ember Data from overriding Date.parse.
@@ -21,7 +22,16 @@ module.exports = function(environment) {
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
-    }
+    },
+
+    firebase: {
+      apiKey: 'AIzaSyCmI9nP62JwpZbgGYbnJtLu7gyJDXdZkk8',
+      authDomain: 'rmmmp-playground.firebaseapp.com',
+      databaseURL: 'https://rmmmp-playground.firebaseio.com',
+      projectId: 'rmmmp-playground',
+      storageBucket: 'rmmmp-playground.appspot.com',
+      messagingSenderId: '183868689812',
+    },
   };
 
   if (environment === 'development') {
@@ -30,6 +40,8 @@ module.exports = function(environment) {
     // ENV.APP.LOG_TRANSITIONS = true;
     // ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
     // ENV.APP.LOG_VIEW_LOOKUPS = true;
+
+    ENV['ember-cli-mirage'] = { enabled: false };
   }
 
   if (environment === 'test') {

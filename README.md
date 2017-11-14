@@ -1,25 +1,37 @@
 # ember-cloud-firestore-adapter
 
-This README outlines the details of collaborating on this Ember addon.
-
 ## Installation
+
+Install the addon by running this command:
+
+```bash
+ember install ember-cloud-firestore-adapter
+```
+
+## Guides
+
+Checkout the guides [here](https://github.com/rmmmp/ember-cloud-firestore-adapter/guides).
+
+## Developing
+
+### Installation
 
 * `git clone <repository-url>` this repository
 * `cd ember-cloud-firestore-adapter`
 * `npm install`
 
-## Running
+### Running
 
 * `ember serve`
 * Visit your app at [http://localhost:4200](http://localhost:4200).
 
-## Running Tests
+### Running Tests
 
 * `npm test` (Runs `ember try:each` to test your addon against multiple Ember versions)
 * `ember test`
 * `ember test --server`
 
-## Building
+### Building
 
 * `ember build`
 

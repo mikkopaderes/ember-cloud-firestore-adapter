@@ -1,7 +1,7 @@
 {
   "name": "ember-cloud-firestore-adapter",
   "version": "0.0.0",
-  "description": "The default blueprint for ember-cli addons.",
+  "description": "Unofficial Ember Data Adapter and Serializer for Cloud Firestore",
   "keywords": [
     "ember-addon"
   ],
@@ -11,13 +11,14 @@
     "doc": "doc",
     "test": "tests"
   },
-  "repository": "",
+  "repository": "https://github.com/rmmmp/ember-cloud-firestore-adapter",
   "scripts": {
     "build": "ember build",
     "start": "ember server",
     "test": "ember try:each"
   },
   "dependencies": {
+    "broccoli-funnel": "^2.0.1",
     "ember-cli-babel": "^6.6.0"
   },
   "devDependencies": {
@@ -29,15 +30,21 @@
     "ember-cli-htmlbars": "^2.0.1",
     "ember-cli-htmlbars-inline-precompile": "^1.0.0",
     "ember-cli-inject-live-reload": "^1.4.1",
-    "ember-cli-qunit": "^4.0.0",
+    "ember-cli-mirage": "^0.4.0",
+    "ember-cli-qunit": "^4.1.0-beta.2",
     "ember-cli-shims": "^1.1.0",
     "ember-cli-sri": "^2.1.0",
     "ember-cli-uglify": "^2.0.0",
+    "ember-data": "^2.16.3",
     "ember-disable-prototype-extensions": "^1.1.2",
     "ember-export-application-global": "^2.0.0",
+    "ember-firebase-service": "^4.0.0",
     "ember-load-initializers": "^1.0.0",
+    "ember-native-dom-helpers": "^0.5.5",
     "ember-resolver": "^4.0.0",
+    "ember-sinon": "^1.0.1",
     "ember-source": "~2.16.0",
+    "eslint-config-rmmmp": "0.0.1",
     "loader.js": "^4.2.3"
   },
   "engines": {
