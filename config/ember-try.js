@@ -70,6 +70,39 @@ module.exports = {
       npm: {
         devDependencies: {}
       }
+    },
+    {
+      name: 'ember-data-release',
+      npm: {
+        devDependencies: {
+          'ember-data': 'emberjs/data#release'
+        },
+        resolutions: {
+          'ember-data': 'release'
+        }
+      }
+    },
+    {
+      name: 'ember-data-beta',
+      npm: {
+        devDependencies: {
+          'ember-data': 'emberjs/data#beta'
+        },
+        resolutions: {
+          'ember-data': 'beta'
+        }
+      }
+    },
+    {
+      name: 'ember-data-canary',
+      npm: {
+        devDependencies: {
+          'ember-data': 'emberjs/data#master'
+        },
+        resolutions: {
+          'ember-data': 'canary'
+        }
+      }
     }
   ]
 };
