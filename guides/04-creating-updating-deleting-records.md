@@ -107,7 +107,7 @@ The payload to your server will look like this.
 
 > Notes:
 >
-> - Make sure to customize your endpoint and host path in your Adapter to fit your needs as explained [here](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/02-configuration.md)
+> - Make sure to customize your endpoint and host path in your Adapter to fit your needs as explained [here](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/02-configuration.md)
 > - Once `adapterOptions.onServer` is set to true, all other `adapterOptions` settings will be ignored.
 
 ## Updating and Deleting Records
@@ -116,4 +116,4 @@ There's nothing special about updating and deleting records. They're similar wit
 
 ---
 
-[Next: Transforms »](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/05-transforms.md)
+[Next: Transforms »](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/05-transforms.md)

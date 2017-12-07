@@ -42,10 +42,10 @@ export default CloudFirestoreAdapter.extend({
 
 ### Host and API
 
-The Adapter provides a seamless way to use your server's API instead of Cloud Firestore to create, update, and delete records. More of it will be explained [here](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/04-creating-updating-deleting-records.md).
+The Adapter provides a seamless way to use your server's API instead of Cloud Firestore to create, update, and delete records. More of it will be explained [here](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/04-creating-updating-deleting-records.md).
 
 Using the setup above, a `store.createRecord('city', { ... })` with the intention of using your server API will fire a `POST` request to `https://your-website.com/api/cities`.
 
 ---
 
-[Next: Finding Records »](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/03-finding-records.md)
+[Next: Finding Records »](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/03-finding-records.md)

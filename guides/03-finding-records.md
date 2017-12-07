@@ -182,4 +182,4 @@ this.get('store').query('post', {
 
 ---
 
-[Next: Creating, Updating, and Deleting Records »](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/03-creating-updating-deleting-records.md)
+[Next: Creating, Updating, and Deleting Records »](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/03-creating-updating-deleting-records.md)

@@ -1,6 +1,6 @@
 # Testing
 
-At the moment, Cloud Firestore doesn't provide any solution to mock data for testing. For now, we use [Mirage](https://github.com/samselikoff/ember-cli-mirage) for our automated tests and a [`mirage-helper.js`](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/addon/utils/mirage-helpers.js) utility is available that should emulate Cloud Firestore's unique querying in some ways.
+At the moment, Cloud Firestore doesn't provide any solution to mock data for testing. For now, we use [Mirage](https://github.com/samselikoff/ember-cli-mirage) for our automated tests and a [`mirage-helper.js`](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/addon/utils/mirage-helpers.js) utility is available that should emulate Cloud Firestore's unique querying in some ways.
 
 > Notes:
 >

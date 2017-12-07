@@ -66,4 +66,4 @@ this.get('store').findRecord('group', 'group_a').then((group) => {
 
 ---
 
-[Next: Testing »](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/07-testing.md)
+[Next: Testing »](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/07-testing.md)
