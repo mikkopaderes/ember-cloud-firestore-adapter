@@ -1,5 +1,7 @@
 # ember-cloud-firestore-adapter
 
+Unofficial Ember Data Adapter and Serializer for Cloud Firestore
+
 ## Installation
 
 Install the addon by running this command:
