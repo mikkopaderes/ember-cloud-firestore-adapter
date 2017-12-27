@@ -6,6 +6,6 @@ export default Model.extend({
   title: attr('string'),
   createdOn: attr('timestamp'),
   author: belongsTo('user'),
-  comment: hasMany('comment'),
+  comments: hasMany('comment'),
   group: belongsTo('group'),
 });
