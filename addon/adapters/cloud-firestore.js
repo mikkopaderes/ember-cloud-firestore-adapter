@@ -1,7 +1,5 @@
 import { Promise } from 'rsvp';
 import { camelize } from '@ember/string';
-import { computed } from '@ember/object';
-import { getOwner } from '@ember/application';
 import { inject } from '@ember/service';
 import { pluralize } from 'ember-inflector';
 import { run } from '@ember/runloop';
@@ -38,26 +36,7 @@ export default RESTAdapter.extend({
   /**
    * @override
    */
-  headers: computed('session.currentUser', {
-    get() {
-      const headers = { 'Content-Type': 'application/json' };
-
-      if (this.get('session') && this.get('session.isAuthenticated')) {
-        const token = this.get('session.currentUser').getIdToken();
-
-        headers.Authorization = `Bearer ${token}`;
-      }
-
-      return headers;
-    },
-  }),
-
-  /**
-   * @type {Ember.Service}
-   */
-  session: computed(function() {
-    return getOwner(this).lookup('service:session');
-  }),
+  headers: { 'Content-Type': 'application/json' },
 
   /**
    * @override

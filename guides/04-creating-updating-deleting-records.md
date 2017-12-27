@@ -107,12 +107,12 @@ The payload to your server will look like this.
 
 > Notes:
 >
-> - Make sure to customize your endpoint and host path in your Adapter to fit your needs as explained [here](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/02-configuration.md)
+> - Under the hood, this will use the `DS.RESTAdapter`. This means that any configurations available to that class are also available in Cloud Firestore Adapter.
 > - Once `adapterOptions.onServer` is set to true, all other `adapterOptions` settings will be ignored.
 
 ## Updating and Deleting Records
 
-There's nothing special about updating and deleting records. They're similar with the conventional [Ember Data API](https://guides.emberjs.com/v2.17.0/models/creating-updating-and-deleting-records/) except that they also support batched writes and seamless support to triggering your server's API as shown above.
+There's nothing special about updating and deleting records. They're similar with the conventional [Ember Data API](https://guides.emberjs.com/v2.17.0/models/creating-updating-and-deleting-records/) except that they also support batched writes and using your server's API as shown above.
 
 ---
 
