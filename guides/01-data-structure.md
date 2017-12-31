@@ -93,7 +93,7 @@ It'll be stored in Cloud Firestore like this
 
 > Notes:
 >
-> - Notice that we don't have a `posts` subcollection in `groups/group_a` and `users/user_a`. This is because in one-to-many relationships, only the `belongsTo` side gets persisted. *Due to this, loading `hasMany` when it's a **one-to-many** relationship won't work as the Adapter isn't intelligent enough to query from the `belongsTo` side on its own. Support for this will come soon. Consider using [synchronous `hasMany`](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/06-patterns.md) instead.*
+> - Notice that we don't have a `posts` subcollection in `groups/group_a` and `users/user_a`. This is because in one-to-many relationships, only the `belongsTo` side gets persisted.
 > - Relationships are saved as `Reference` [data type](https://firebase.google.com/docs/firestore/manage-data/data-types#data_types) instead of its ID of type string.
 > - `cloudFirestoreReference` is a **reserved** attribute to indicate that a document is a reference to another document.
 
