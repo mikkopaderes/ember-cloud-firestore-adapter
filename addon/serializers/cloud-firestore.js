@@ -53,8 +53,19 @@ export default JSONSerializer.extend({
           links[name] = path;
         }
       } else {
-        const path = buildPathFromRef(resourceHash.cloudFirestoreReference);
-        const hasManyPath = `${path}/${name}`;
+        const cardinality = modelClass.determineRelationshipType(
+          descriptor,
+          this.get('store'),
+        );
+        let hasManyPath;
+
+        if (cardinality === 'manyToOne') {
+          hasManyPath = pluralize(descriptor.type);
+        } else {
+          const path = buildPathFromRef(resourceHash.cloudFirestoreReference);
+
+          hasManyPath = `${path}/${name}`;
+        }
 
         links[name] = hasManyPath;
       }

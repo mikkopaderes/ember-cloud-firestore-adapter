@@ -4,6 +4,6 @@ import attr from 'ember-data/attr';
 
 export default Model.extend({
   name: attr('string'),
-  groups: hasMany('group', { async: false }),
-  posts: hasMany('post', { async: false }),
+  groups: hasMany('group'),
+  posts: hasMany('post'),
 });

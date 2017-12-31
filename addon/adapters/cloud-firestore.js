@@ -221,7 +221,21 @@ export default RESTAdapter.extend({
   findHasMany(store, snapshot, url, relationship) {
     return new Promise((resolve, reject) => {
       const db = this.get('firebase').firestore();
-      const collectionRef = buildRefFromPath(db, url);
+      const cardinality = snapshot.type.determineRelationshipType(
+        relationship,
+        store,
+      );
+      let collectionRef;
+
+      if (cardinality === 'manyToOne') {
+        const inverse = snapshot.type.inverseFor(relationship.key, store);
+        const reference = snapshot.record.get('cloudFirestoreReference');
+
+        collectionRef = db.collection(url).where(inverse.name, '==', reference);
+      } else {
+        collectionRef = buildRefFromPath(db, url);
+      }
+
       const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
         const requests = [];
 
@@ -230,15 +244,22 @@ export default RESTAdapter.extend({
             relationship.key,
             store,
           );
-          const reference = docSnapshot.get('cloudFirestoreReference');
-          const pathNodes = buildPathFromRef(reference).split('/');
-          const id = pathNodes.pop();
-          const path = pathNodes.join('/');
-          const request = this.findRecord(store, type, id, {
-            adapterOptions: { path },
-          });
 
-          requests.push(request);
+          if (cardinality === 'manyToOne') {
+            const request = this.findRecord(store, type, docSnapshot.id);
+
+            requests.push(request);
+          } else {
+            const reference = docSnapshot.get('cloudFirestoreReference');
+            const pathNodes = buildPathFromRef(reference).split('/');
+            const id = pathNodes.pop();
+            const path = pathNodes.join('/');
+            const request = this.findRecord(store, type, id, {
+              adapterOptions: { path },
+            });
+
+            requests.push(request);
+          }
         });
 
         Promise.all(requests).then((responses) => {
