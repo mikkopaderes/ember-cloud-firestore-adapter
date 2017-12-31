@@ -101,7 +101,7 @@ The payload to your server will look like this.
   "id": "<client side generated id>",
   "body": "New Post Body",
   "title": "New Post Title",
-  "author": "user_a"
+  "author": "users/user_a"
 }
 ```
 

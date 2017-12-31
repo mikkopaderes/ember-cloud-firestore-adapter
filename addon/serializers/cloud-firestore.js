@@ -179,20 +179,24 @@ export default JSONSerializer.extend({
   serializeBelongsTo(snapshot, json, relationship) {
     this._super(snapshot, json, relationship);
 
-    if (!this.getAdapterOptionAttribute(snapshot, 'onServer')) {
-      if (json[relationship.key]) {
-        const record = this.get('store').peekRecord(
-          relationship.type,
-          json[relationship.key],
-        );
+    if (json[relationship.key]) {
+      const record = this.get('store').peekRecord(
+        relationship.type,
+        json[relationship.key],
+      );
 
-        // Don't include the relationship in the payload if we can't
-        // get its cloud firestore reference.
-        if (record) {
-          json[relationship.key] = record.get('cloudFirestoreReference');
+      // Don't include the relationship in the payload if we can't
+      // get its cloud firestore reference.
+      if (record) {
+        if (this.getAdapterOptionAttribute(snapshot, 'onServer')) {
+          json[relationship.key] = buildPathFromRef(
+            record.get('cloudFirestoreReference'),
+          );
         } else {
-          delete json[relationship.key];
+          json[relationship.key] = record.get('cloudFirestoreReference');
         }
+      } else {
+        delete json[relationship.key];
       }
     }
   },
@@ -203,22 +207,26 @@ export default JSONSerializer.extend({
   serializeHasMany(snapshot, json, relationship) {
     this._super(snapshot, json, relationship);
 
-    if (!this.getAdapterOptionAttribute(snapshot, 'onServer')) {
-      if (json[relationship.key]) {
-        const references = [];
+    if (json[relationship.key]) {
+      const references = [];
 
-        json[relationship.key].forEach((id) => {
-          const record = this.get('store').peekRecord(relationship.type, id);
+      json[relationship.key].forEach((id) => {
+        const record = this.get('store').peekRecord(relationship.type, id);
 
-          if (record) {
+        if (record) {
+          if (this.getAdapterOptionAttribute(snapshot, 'onServer')) {
+            references.push(buildPathFromRef(
+              record.get('cloudFirestoreReference'),
+            ));
+          } else {
             references.push(record.get('cloudFirestoreReference'));
           }
-        });
+        }
+      });
 
-        delete json[relationship.key];
+      delete json[relationship.key];
 
-        json[relationship.key] = references;
-      }
+      json[relationship.key] = references;
     }
   },
 
