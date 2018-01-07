@@ -37,6 +37,12 @@ import CloudFirestoreAdapter from 'ember-cloud-firestore-adapter/adapters/cloud-
 export default CloudFirestoreAdapter.extend();
 ```
 
+### Settings
+
+These are the settings currently available
+
+- `willUnloadRecordOnListenError` - Unloads a record whenever a listener for a document fails (e.g. sudden permission denied). Defaults to `true`.
+
 ---
 
 [Next: Finding Records »](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/03-finding-records.md)
