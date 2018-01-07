@@ -39,6 +39,11 @@ export default RESTAdapter.extend({
   headers: { 'Content-Type': 'application/json' },
 
   /**
+   * @type {boolean}
+   */
+  willUnloadRecordOnListenError: true,
+
+  /**
    * @override
    */
   generateIdForRecord(store, type) {

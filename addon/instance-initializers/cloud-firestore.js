@@ -90,7 +90,13 @@ function reopenStore(appInstance) {
             }
           });
         }, (error) => {
-          this.unloadRecordUsingModelNameAndId(type.modelName, docRef.id);
+          const willUnloadRecordOnListenError = this
+            .adapterFor(type.modelName)
+            .get('willUnloadRecordOnListenError');
+
+          if (willUnloadRecordOnListenError) {
+            this.unloadRecordUsingModelNameAndId(type.modelName, docRef.id);
+          }
         });
       }
     },

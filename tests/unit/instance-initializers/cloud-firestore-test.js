@@ -111,8 +111,8 @@ module('Unit | Instance Initializer | store', function(hooks) {
       assert.ok(unloadRecordStub.calledWithExactly(record));
     });
 
-    test('should unload a record when unable to listen for changes', function(assert) {
-      assert.expect(2);
+    test('should unload a record when unable to listen for changes and model adapter is configured to unload it', function(assert) {
+      assert.expect(3);
 
       // Arrange
       initialize(this.owner);
@@ -126,10 +126,14 @@ module('Unit | Instance Initializer | store', function(hooks) {
         },
       };
       const record = EmberObject.create({ isSaving: false });
+      const adapterForStub = sinon.stub().returns(EmberObject.create({
+        willUnloadRecordOnListenError: true,
+      }));
       const peekRecordStub = sinon.stub().returns(record);
       const unloadRecordStub = sinon.stub();
       const store = this.owner.lookup('service:store');
 
+      store.set('adapterFor', adapterForStub);
       store.set('peekRecord', peekRecordStub);
       store.set('unloadRecord', unloadRecordStub);
 
@@ -137,8 +141,44 @@ module('Unit | Instance Initializer | store', function(hooks) {
       store.listenForDocChanges({ modelName: 'user' }, docRef);
 
       // Assert
+      assert.ok(adapterForStub.calledWithExactly('user'));
       assert.ok(peekRecordStub.calledWithExactly('user', 'ID'));
       assert.ok(unloadRecordStub.calledWithExactly(record));
+    });
+
+    test('should not unload a record when unable to listen for changes and model adapter is configured to not unload it', function(assert) {
+      assert.expect(3);
+
+      // Arrange
+      initialize(this.owner);
+
+      const docRef = {
+        id: 'ID',
+        parent: { id: 'users' },
+
+        onSnapshot(onSuccess, onError) {
+          onError();
+        },
+      };
+      const record = EmberObject.create({ isSaving: false });
+      const adapterForStub = sinon.stub().returns(EmberObject.create({
+        willUnloadRecordOnListenError: false,
+      }));
+      const peekRecordStub = sinon.stub().returns(record);
+      const unloadRecordStub = sinon.stub();
+      const store = this.owner.lookup('service:store');
+
+      store.set('adapterFor', adapterForStub);
+      store.set('peekRecord', peekRecordStub);
+      store.set('unloadRecord', unloadRecordStub);
+
+      // Act
+      store.listenForDocChanges({ modelName: 'user' }, docRef);
+
+      // Assert
+      assert.ok(adapterForStub.calledWithExactly('user'));
+      assert.ok(peekRecordStub.notCalled);
+      assert.ok(unloadRecordStub.notCalled);
     });
   });
 
