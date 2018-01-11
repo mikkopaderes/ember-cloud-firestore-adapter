@@ -208,10 +208,7 @@ export default RESTAdapter.extend({
    * @override
    */
   findBelongsTo(store, snapshot, url, relationship) {
-    const type = relationship.parentType.typeForRelationship(
-      relationship.key,
-      store,
-    );
+    const type = { modelName: relationship.type };
     const urlNodes = url.split('/');
     const id = urlNodes.pop();
 
@@ -245,10 +242,7 @@ export default RESTAdapter.extend({
         const requests = [];
 
         querySnapshot.forEach((docSnapshot) => {
-          const type = relationship.parentType.typeForRelationship(
-            relationship.key,
-            store,
-          );
+          const type = { modelName: relationship.type };
 
           if (cardinality === 'manyToOne') {
             const request = this.findRecord(store, type, docSnapshot.id);
