@@ -950,13 +950,7 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       adapter.set('findRecord', findRecordStub);
 
       // Act
-      await adapter.findBelongsTo({}, {}, 'users/user_b', {
-        parentType: {
-          typeForRelationship() {
-            return { modelName: 'user' };
-          },
-        },
-      });
+      await adapter.findBelongsTo({}, {}, 'users/user_b', { type: 'user' });
 
       // Assert
       assert.ok(
@@ -975,7 +969,7 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
     });
 
     test('should fetch manyToOne cardinality', async function(assert) {
-      assert.expect(8);
+      assert.expect(7);
 
       // Arrange
       const listenForHasManyChangesStub = sinon.stub();
@@ -992,11 +986,7 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
         record: EmberObject.create({ cloudFirestoreReference: 'groups/group_a' }),
       };
       const url = 'url';
-      const typeForRelationshipStub = sinon.stub().returns('post');
-      const relationship = {
-        key: 'posts',
-        parentType: { typeForRelationship: typeForRelationshipStub },
-      };
+      const relationship = { type: 'post' };
       const whereStub = sinon.stub().returns({
         onSnapshot(onSuccess) {
           onSuccess([{ id: 'post_a' }]);
@@ -1030,13 +1020,9 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       assert.ok(inverseForStub.calledWithExactly(relationship.key, store));
       assert.ok(collectionStub.calledWithExactly(url));
       assert.ok(whereStub.calledWithExactly('group', '==', 'groups/group_a'));
-      assert.ok(typeForRelationshipStub.calledWithExactly(
-        relationship.key,
-        store,
-      ));
       assert.ok(findRecordStub.calledWithExactly(
         store,
-        'post',
+        { modelName: 'post' },
         'post_a',
       ));
       assert.ok(listenForHasManyChangesStub.calledWith(
@@ -1048,7 +1034,7 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
     });
 
     test('should fetch non-manyToOne cardinality', async function(assert) {
-      assert.expect(8);
+      assert.expect(7);
 
       // Arrange
       const listenForHasManyChangesStub = sinon.stub();
@@ -1060,11 +1046,7 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
         type: { determineRelationshipType: determineRelationshipTypeStub },
       };
       const url = 'groups/group_a/posts';
-      const typeForRelationshipStub = sinon.stub().returns('post');
-      const relationship = {
-        key: 'posts',
-        parentType: { typeForRelationship: typeForRelationshipStub },
-      };
+      const relationship = { type: 'post' };
       const subCollectionStub = sinon.stub().returns({
         onSnapshot(onSuccess) {
           onSuccess([{
@@ -1111,13 +1093,9 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       assert.ok(rootCollectionStub.calledWithExactly('groups'));
       assert.ok(rootDocStub.calledWithExactly('group_a'));
       assert.ok(subCollectionStub.calledWithExactly('posts'));
-      assert.ok(typeForRelationshipStub.calledWithExactly(
-        relationship.key,
-        store,
-      ));
       assert.ok(findRecordStub.calledWithExactly(
         store,
-        'post',
+        { modelName: 'post' },
         'post_a',
         { adapterOptions: { path: 'posts' } },
       ));
