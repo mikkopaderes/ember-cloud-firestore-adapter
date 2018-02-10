@@ -34,18 +34,14 @@ export default RESTAdapter.extend({
   defaultSerializer: 'cloud-firestore',
 
   /**
+   * @override
+   */
+  headers: { 'Content-Type': 'application/json' },
+
+  /**
    * @type {boolean}
    */
   willUnloadRecordOnListenError: true,
-
-  /**
-   * @override
-   */
-  init(...args) {
-    this._super(...args);
-
-    this.set('headers', { 'Content-Type': 'application/json' });
-  },
 
   /**
    * @override

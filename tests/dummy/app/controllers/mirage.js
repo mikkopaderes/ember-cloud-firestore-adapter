@@ -1,14 +1,7 @@
 import Controller from '@ember/controller';
 
 export default Controller.extend({
-  /**
-   * @override
-   */
-  init(...args) {
-    this._super(...args);
-
-    this.set('users', []);
-  },
+  users: [],
 
   async handleCreateRecordClick() {
     const user = await this.get('store').createRecord('user', {
