@@ -55,9 +55,11 @@ function getRecordsFromPath(schema, collection, path) {
   const model = schema[pathCollection].find(pathId);
   const models = [];
 
-  model[pathField].forEach((id) => {
-    models.push(schema[collection].find(id));
-  });
+  if (model[pathField]) {
+    model[pathField].forEach((id) => {
+      models.push(schema[collection].find(id));
+    });
+  }
 
   return models;
 }

@@ -120,3 +120,18 @@ test('should query with filter, sort (desc), startAt, endAt, and limit', async f
   assert.equal(idElements.length, 1);
   assert.equal(idElements[0].textContent.trim(), 'user_a');
 });
+
+test('should return nothing when querying to a path that does not exist', async function(assert) {
+  assert.expect(1);
+
+  // Arrange
+  await visit('/mirage');
+
+  // Act
+  await click('[data-test-button="query-4"]');
+
+  // Assert
+  const idElements = findAll('[data-test-id]');
+
+  assert.equal(idElements.length, 0);
+});
