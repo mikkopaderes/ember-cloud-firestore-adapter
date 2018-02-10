@@ -1,7 +1,14 @@
 import Controller from '@ember/controller';
 
 export default Controller.extend({
-  users: [],
+  /**
+   * @override
+   */
+  init(...args) {
+    this._super(...args);
+
+    this.set('users', []);
+  },
 
   async handleCreateRecordClick() {
     const user = await this.get('store').createRecord('user', {
@@ -97,6 +104,14 @@ export default Controller.extend({
 
         limit: 1,
       },
+    });
+
+    this.set('users', users);
+  },
+
+  async handleQuery4Click() {
+    const users = await this.get('store').query('user', {
+      path: 'users/user_a/foobar',
     });
 
     this.set('users', users);

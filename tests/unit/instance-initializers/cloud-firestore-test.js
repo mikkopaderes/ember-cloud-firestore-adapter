@@ -46,6 +46,8 @@ module('Unit | Instance Initializer | store', function(hooks) {
       const pushStub = sinon.stub();
       const store = this.owner.lookup('service:store');
 
+      store.init();
+
       store.set('normalize', normalizeStub);
       store.set('push', pushStub);
 
@@ -96,6 +98,8 @@ module('Unit | Instance Initializer | store', function(hooks) {
       const unloadRecordStub = sinon.stub();
       const store = this.owner.lookup('service:store');
 
+      store.init();
+
       store.set('peekRecord', peekRecordStub);
       store.set('unloadRecord', unloadRecordStub);
 
@@ -133,6 +137,8 @@ module('Unit | Instance Initializer | store', function(hooks) {
       const unloadRecordStub = sinon.stub();
       const store = this.owner.lookup('service:store');
 
+      store.init();
+
       store.set('adapterFor', adapterForStub);
       store.set('peekRecord', peekRecordStub);
       store.set('unloadRecord', unloadRecordStub);
@@ -167,6 +173,8 @@ module('Unit | Instance Initializer | store', function(hooks) {
       const peekRecordStub = sinon.stub().returns(record);
       const unloadRecordStub = sinon.stub();
       const store = this.owner.lookup('service:store');
+
+      store.init();
 
       store.set('adapterFor', adapterForStub);
       store.set('peekRecord', peekRecordStub);
@@ -205,6 +213,8 @@ module('Unit | Instance Initializer | store', function(hooks) {
       const findRecordStub = sinon.stub();
       const store = this.owner.lookup('service:store');
 
+      store.init();
+
       store.set('findRecord', findRecordStub);
 
       // Act
@@ -226,6 +236,8 @@ module('Unit | Instance Initializer | store', function(hooks) {
         _internalModel: { id: 'ID', name: 'Name' },
       });
       const store = this.owner.lookup('service:store');
+
+      store.init();
       const queryRef = {
         onSnapshot(onSuccess) {
           store.get('tracker')._query.queryId.recordArray = ArrayProxy.create({
@@ -283,6 +295,8 @@ module('Unit | Instance Initializer | store', function(hooks) {
       const hasManyStub = sinon.stub().returns({ reload: reloadStub });
       const peekRecordStub = sinon.stub().returns({ hasMany: hasManyStub });
       const store = this.owner.lookup('service:store');
+
+      store.init();
 
       store.set('tracker', {
         user: { document: { user_a: { relationship: {} } } },

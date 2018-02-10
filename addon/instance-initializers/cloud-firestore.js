@@ -37,10 +37,13 @@ function reopenStore(appInstance) {
     firebase: inject(),
 
     /**
-     * @type {Object}
-     * @private
+     * @override
      */
-    tracker: {},
+    init(...args) {
+      this._super(...args);
+
+      this.set('tracker', {});
+    },
 
     /**
      * @type {Ember.Service}

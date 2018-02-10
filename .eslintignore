@@ -1,9 +1,14 @@
-# ember generated test files
-tests/dummy/app/app.js
-tests/dummy/app/resolver.js
-tests/dummy/app/router.js
+# ember generated files
+index.js
+testem.js
+config/*.js
+tests/*.js
+tests/dummy/*.js
+tests/dummy/app/*.js
+tests/dummy/config/*.js
 tests/helpers/destroy-app.js
 tests/helpers/module-for-acceptance.js
-tests/helpers/resolver.js
 tests/helpers/start-app.js
-tests/test-helper.js
+
+# mirage files
+tests/dummy/mirage/*
