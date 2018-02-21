@@ -5,8 +5,17 @@ import EmberObject from '@ember/object';
 
 import sinon from 'sinon';
 
+import { mockFirebase } from 'ember-cloud-firestore-adapter/test-support';
+import getFixtureData from '../../helpers/fixture-data';
+
+let db;
+
 module('Unit | Adapter | cloud firestore', function(hooks) {
   setupTest(hooks);
+
+  hooks.beforeEach(function() {
+    db = mockFirebase(this, getFixtureData()).firestore();
+  });
 
   module('generateIdForRecord', function(hooks) {
     test('should generate ID for record', function(assert) {
@@ -25,50 +34,63 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
 
   module('createRecord', function(hooks) {
     hooks.beforeEach(function() {
-      this.store = {};
+      this.store = {
+        listenForDocChanges: sinon.stub(),
+      };
     });
 
     test('should create record and resolve with the created resource', async function(assert) {
       assert.expect(2);
 
       // Arrange
-      const updateRecordStub = sinon.stub().returns(Promise.resolve('foo'));
+      const modelClass = { modelName: 'user' };
+      const snapshot = { id: 'user_100', age: 30, username: 'user_100' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('updateRecord', updateRecordStub);
+      adapter.serialize = sinon.stub().returns([{
+        id: 'user_100',
+        path: 'users',
+        data: {
+          age: 30,
+          username: 'user_100',
+        },
+      }]);
 
       // Act
-      const result = await adapter.createRecord(this.store, {
-        modelName: 'user',
-      }, {
-        id: 'ID',
-      });
+      const result = await adapter.createRecord(
+        this.store,
+        modelClass,
+        snapshot,
+      );
 
       // Assert
-      assert.ok(updateRecordStub.calledWithExactly(this.store, {
-        modelName: 'user',
-      }, {
-        id: 'ID',
-      }));
-      assert.equal(result, 'foo');
+      delete result.cloudFirestoreReference;
+
+      assert.deepEqual(result, {
+        id: 'user_100',
+        age: 30,
+        username: 'user_100',
+      });
+
+      const user100 = await db.collection('users').doc('user_100').get();
+
+      assert.deepEqual(user100.data(), { age: 30, username: 'user_100' });
     });
 
     test('should reject when unable to create record', async function(assert) {
       assert.expect(1);
 
       // Arrange
+      const modelClass = { modelName: 'user' };
+      const snapshot = { id: 'user_a' };
       const updateRecordStub = sinon.stub().returns(Promise.reject('error'));
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('updateRecord', updateRecordStub);
+      adapter.updateRecord = updateRecordStub;
 
       try {
         // Act
-        await adapter.createRecord(this.store, {
-          modelName: 'user',
-        }, {
-          id: 'ID',
-        });
+        await adapter.createRecord(this.store, modelClass, snapshot);
       } catch (error) {
         // Assert
         assert.ok('error');
@@ -84,318 +106,108 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
     });
 
     test('should update record and resolve with the updated resource', async function(assert) {
-      assert.expect(4);
+      assert.expect(2);
 
       // Arrange
-      const setStub = sinon.stub().returns(Promise.resolve());
-      const docStub = sinon.stub().returns({
-        onSnapshot(onSuccess) {
-          onSuccess({
-            id: 'ID',
-            ref: 'ref',
-
-            data() {
-              return { name: 'Name' };
-            },
-          });
-
-          return () => {};
-        },
-      });
-      const collectionStub = sinon.stub().returns({ doc: docStub });
+      const modelClass = { modelName: 'user' };
+      const snapshot = { id: 'user_a', age: 50 };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('firebase', {
-        firestore() {
-          return {
-            collection: collectionStub,
-
-            batch() {
-              return {
-                set: setStub,
-
-                commit() {
-                  return Promise.resolve();
-                },
-              };
-            },
-          };
+      adapter.serialize = sinon.stub().returns([{
+        id: 'user_a',
+        path: 'users',
+        data: {
+          age: 50,
+          username: 'user_a',
         },
-      });
-      adapter.set('serialize', () => {
-        return [{
-          id: 'ID',
-          path: 'users',
-          data: { name: 'Name' },
-        }];
-      });
+      }]);
 
       // Act
-      const result = await adapter.updateRecord(this.store, {
-        modelName: 'user',
-      }, {
-        id: 'ID',
-      });
+      const result = await adapter.updateRecord(
+        this.store,
+        modelClass,
+        snapshot,
+      );
 
       // Assert
-      assert.ok(collectionStub.calledWithExactly('users'));
-      assert.ok(docStub.calledWithExactly('ID'));
-      assert.ok(setStub.calledWithExactly(docStub(), {
-        name: 'Name',
-      }, {
-        merge: true,
-      }));
+      delete result.cloudFirestoreReference;
+
       assert.deepEqual(result, {
-        id: 'ID',
-        name: 'Name',
-        cloudFirestoreReference: 'ref',
+        id: 'user_a',
+        age: 50,
+        username: 'user_a',
       });
+
+      const userA = await db.collection('users').doc('user_a').get();
+
+      assert.deepEqual(userA.data(), { age: 50, username: 'user_a' });
     });
 
-    test('should update record with batched writes that has ID and data and resolve with the updated resource', async function(assert) {
-      assert.expect(6);
+    test('should update record and process additional batched writes', async function(assert) {
+      assert.expect(5);
 
       // Arrange
-      const setStub = sinon.stub();
-      const docStub = sinon.stub().returns({
-        onSnapshot(onSuccess) {
-          onSuccess({
-            id: 'ID',
-            ref: 'ref',
-
-            data() {
-              return { name: 'Name' };
-            },
-          });
-
-          return () => {};
-        },
-      });
-      const collectionStub = sinon.stub().returns({ doc: docStub });
+      const modelClass = { modelName: 'user' };
+      const snapshot = { id: 'user_a', age: 50 };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('firebase', {
-        firestore() {
-          return {
-            collection: collectionStub,
-
-            batch() {
-              return {
-                set: setStub,
-
-                commit() {
-                  return Promise.resolve();
-                },
-              };
-            },
-          };
-        },
-      });
-      adapter.set('serialize', () => {
-        return [{
-          id: 'ID',
-          path: 'users',
-          data: { name: 'Name' },
-        }, {
-          id: 'batch_id',
-          path: 'users',
-          data: { name: 'Batch Name' },
-        }];
-      });
+      adapter.generateIdForRecord = sinon.stub().returns('12345');
+      adapter.serialize = sinon.stub().returns([{
+        id: 'user_a',
+        path: 'users',
+        data: { age: 50 },
+      }, {
+        id: 'user_100',
+        path: 'users',
+        data: { age: 60 },
+      }, {
+        path: 'users',
+        data: { age: 70 },
+      }, {
+        id: 'user_b',
+        path: 'users',
+        data: null,
+      }]);
 
       // Act
-      const result = await adapter.updateRecord(this.store, {
-        modelName: 'user',
-      }, {
-        id: 'ID',
-      });
+      const result = await adapter.updateRecord(
+        this.store,
+        modelClass,
+        snapshot,
+      );
 
       // Assert
-      assert.ok(collectionStub.calledWithExactly('users'));
-      assert.ok(docStub.calledWithExactly('ID'));
-      assert.ok(docStub.calledWithExactly('batch_id'));
-      assert.ok(setStub.calledWithExactly(docStub(), {
-        name: 'Name',
-      }, {
-        merge: true,
-      }));
-      assert.ok(setStub.calledWithExactly(docStub(), {
-        name: 'Batch Name',
-      }, {
-        merge: true,
-      }));
+      delete result.cloudFirestoreReference;
+
       assert.deepEqual(result, {
-        id: 'ID',
-        name: 'Name',
-        cloudFirestoreReference: 'ref',
-      });
-    });
-
-    test('should update record with batched writes that has no ID but with data and resolve with the updated resource', async function(assert) {
-      assert.expect(6);
-
-      // Arrange
-      const setStub = sinon.stub();
-      const docStub = sinon.stub().returns({
-        onSnapshot(onSuccess) {
-          onSuccess({
-            id: 'ID',
-            ref: 'ref',
-
-            data() {
-              return { name: 'Name' };
-            },
-          });
-
-          return () => {};
-        },
-      });
-      const collectionStub = sinon.stub().returns({ doc: docStub });
-      const adapter = this.owner.lookup('adapter:cloud-firestore');
-
-      adapter.set('firebase', {
-        firestore() {
-          return {
-            collection: collectionStub,
-
-            batch() {
-              return {
-                set: setStub,
-
-                commit() {
-                  return Promise.resolve();
-                },
-              };
-            },
-          };
-        },
-      });
-      adapter.set('generateIdForRecord', () => {
-        return 'new_id';
-      });
-      adapter.set('serialize', () => {
-        return [{
-          id: 'ID',
-          path: 'users',
-          data: { name: 'Name' },
-        }, {
-          path: 'users',
-          data: { name: 'Batch Name' },
-        }];
+        id: 'user_a',
+        age: 50,
+        username: 'user_a',
       });
 
-      // Act
-      const result = await adapter.updateRecord(this.store, {
-        modelName: 'user',
-      }, {
-        id: 'ID',
-      });
+      const userA = await db.collection('users').doc('user_a').get();
 
-      // Assert
-      assert.ok(collectionStub.calledWithExactly('users'));
-      assert.ok(docStub.calledWithExactly('ID'));
-      assert.ok(docStub.calledWithExactly('new_id'));
-      assert.ok(setStub.calledWithExactly(docStub(), {
-        name: 'Name',
-      }, {
-        merge: true,
-      }));
-      assert.ok(setStub.calledWithExactly(docStub(), {
-        name: 'Batch Name',
-      }, {
-        merge: true,
-      }));
-      assert.deepEqual(result, {
-        id: 'ID',
-        name: 'Name',
-        cloudFirestoreReference: 'ref',
-      });
-    });
+      assert.deepEqual(userA.data(), { age: 50, username: 'user_a' });
 
-    test('should update record with batched writes that has ID and null data and resolve with the updated resource', async function(assert) {
-      assert.expect(6);
+      const user100 = await db.collection('users').doc('user_100').get();
 
-      // Arrange
-      const deleteStub = sinon.stub();
-      const setStub = sinon.stub();
-      const docStub = sinon.stub().returns({
-        onSnapshot(onSuccess) {
-          onSuccess({
-            id: 'ID',
-            ref: 'ref',
+      assert.deepEqual(user100.data(), { age: 60 });
 
-            data() {
-              return { name: 'Name' };
-            },
-          });
+      const noIdProvidedUser = await db.collection('users').doc('12345').get();
 
-          return () => {};
-        },
-      });
-      const collectionStub = sinon.stub().returns({ doc: docStub });
-      const adapter = this.owner.lookup('adapter:cloud-firestore');
+      assert.deepEqual(noIdProvidedUser.data(), { age: 70 });
 
-      adapter.set('firebase', {
-        firestore() {
-          return {
-            collection: collectionStub,
+      const userB = await db.collection('users').doc('user_b').get();
 
-            batch() {
-              return {
-                set: setStub,
-                delete: deleteStub,
-
-                commit() {
-                  return Promise.resolve();
-                },
-              };
-            },
-          };
-        },
-      });
-      adapter.set('generateIdForRecord', () => {
-        return 'new_id';
-      });
-      adapter.set('serialize', () => {
-        return [{
-          id: 'ID',
-          path: 'users',
-          data: { name: 'Name' },
-        }, {
-          id: 'batch_id',
-          path: 'users',
-          data: null,
-        }];
-      });
-
-      // Act
-      const result = await adapter.updateRecord(this.store, {
-        modelName: 'user',
-      }, {
-        id: 'ID',
-      });
-
-      // Assert
-      assert.ok(collectionStub.calledWithExactly('users'));
-      assert.ok(docStub.calledWithExactly('ID'));
-      assert.ok(docStub.calledWithExactly('batch_id'));
-      assert.ok(setStub.calledWithExactly(docStub(), {
-        name: 'Name',
-      }, {
-        merge: true,
-      }));
-      assert.ok(deleteStub.calledWithExactly(docStub()));
-      assert.deepEqual(result, {
-        id: 'ID',
-        name: 'Name',
-        cloudFirestoreReference: 'ref',
-      });
+      assert.notOk(userB.exists);
     });
 
     test('should reject when failing to update record with ID', async function(assert) {
       assert.expect(1);
 
       // Arrange
+      const modelClass = { modelName: 'user' };
+      const snapshot = { id: 'user_a' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       adapter.set('firebase', {
@@ -430,11 +242,7 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
 
       try {
         // Act
-        await adapter.updateRecord(this.store, {
-          modelName: 'user',
-        }, {
-          id: 'ID',
-        });
+        await adapter.updateRecord(this.store, modelClass, snapshot);
       } catch (error) {
         // Assert
         assert.equal(error, 'error');
@@ -443,172 +251,86 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
   });
 
   module('deleteRecord', function(hooks) {
-    test('should delete record with batched writes that has ID and data', async function(assert) {
-      assert.expect(5);
+    test('should delete record', async function(assert) {
+      assert.expect(1);
 
       // Arrange
-      const deleteStub = sinon.stub();
-      const setStub = sinon.stub();
-      const docStub = sinon.stub().returns();
-      const collectionStub = sinon.stub().returns({ doc: docStub });
+      const modelClass = { modelName: 'user' };
+      const snapshot = { id: 'user_a' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('firebase', {
-        firestore() {
-          return {
-            collection: collectionStub,
-
-            batch() {
-              return {
-                set: setStub,
-                delete: deleteStub,
-
-                commit() {
-                  return Promise.resolve();
-                },
-              };
-            },
-          };
-        },
-      });
       adapter.set('serialize', () => {
         return [{
-          id: 'ID',
+          id: 'user_a',
           path: 'users',
-          data: { name: 'Name' },
-        }, {
-          id: 'batch_id',
-          path: 'users',
-          data: { name: 'Batch Name' },
+          data: { age: 15, username: 'user_a' },
         }];
       });
 
       // Act
-      await adapter.deleteRecord({}, { modelName: 'user' }, { id: 'ID' });
+      await adapter.deleteRecord({}, modelClass, snapshot);
 
       // Assert
-      assert.ok(collectionStub.calledWithExactly('users'));
-      assert.ok(docStub.calledWithExactly('ID'));
-      assert.ok(docStub.calledWithExactly('batch_id'));
-      assert.ok(deleteStub.calledWithExactly(docStub()));
-      assert.ok(setStub.calledWithExactly(docStub(), {
-        name: 'Batch Name',
-      }, {
-        merge: true,
-      }));
+      const userA = await db.collection('users').doc('user_a').get();
+
+      assert.notOk(userA.exists);
     });
 
-    test('should delete record with batched writes that has ID and null data', async function(assert) {
+    test('should delete record and process additional batched writes', async function(assert) {
       assert.expect(4);
 
       // Arrange
-      const deleteStub = sinon.stub();
-      const setStub = sinon.stub();
-      const docStub = sinon.stub().returns();
-      const collectionStub = sinon.stub().returns({ doc: docStub });
+      const modelClass = { modelName: 'user' };
+      const snapshot = { id: 'user_a' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('firebase', {
-        firestore() {
-          return {
-            collection: collectionStub,
-
-            batch() {
-              return {
-                set: setStub,
-                delete: deleteStub,
-
-                commit() {
-                  return Promise.resolve();
-                },
-              };
-            },
-          };
-        },
-      });
+      adapter.generateIdForRecord = sinon.stub().returns('12345');
       adapter.set('serialize', () => {
         return [{
-          id: 'ID',
+          id: 'user_a',
           path: 'users',
-          data: { name: 'Name' },
+          data: { age: 15, username: 'user_a' },
         }, {
-          id: 'batch_id',
+          id: 'user_100',
+          path: 'users',
+          data: { age: 60 },
+        }, {
+          path: 'users',
+          data: { age: 70 },
+        }, {
+          id: 'user_b',
           path: 'users',
           data: null,
         }];
       });
 
       // Act
-      await adapter.deleteRecord({}, { modelName: 'user' }, { id: 'ID' });
+      await adapter.deleteRecord({}, modelClass, snapshot);
 
       // Assert
-      assert.ok(collectionStub.calledWithExactly('users'));
-      assert.ok(docStub.calledWithExactly('ID'));
-      assert.ok(docStub.calledWithExactly('batch_id'));
-      assert.ok(deleteStub.alwaysCalledWithExactly(docStub()));
-    });
+      const userA = await db.collection('users').doc('user_a').get();
 
-    test('should delete record with batched writes that has not ID but with data', async function(assert) {
-      assert.expect(5);
+      assert.notOk(userA.exists);
 
-      // Arrange
-      const deleteStub = sinon.stub();
-      const setStub = sinon.stub();
-      const docStub = sinon.stub().returns();
-      const collectionStub = sinon.stub().returns({ doc: docStub });
-      const adapter = this.owner.lookup('adapter:cloud-firestore');
+      const user100 = await db.collection('users').doc('user_100').get();
 
-      adapter.set('firebase', {
-        firestore() {
-          return {
-            collection: collectionStub,
+      assert.deepEqual(user100.data(), { age: 60 });
 
-            batch() {
-              return {
-                set: setStub,
-                delete: deleteStub,
+      const noIdProvidedUser = await db.collection('users').doc('12345').get();
 
-                commit() {
-                  return Promise.resolve();
-                },
-              };
-            },
-          };
-        },
-      });
-      adapter.set('generateIdForRecord', () => {
-        return 'new_id';
-      });
-      adapter.set('serialize', () => {
-        return [{
-          id: 'ID',
-          path: 'users',
-          data: { name: 'Name' },
-        }, {
-          path: 'users',
-          data: { name: 'Batch Name' },
-        }];
-      });
+      assert.deepEqual(noIdProvidedUser.data(), { age: 70 });
 
-      // Act
-      await adapter.deleteRecord({}, { modelName: 'user' }, { id: 'ID' });
+      const userB = await db.collection('users').doc('user_b').get();
 
-      // Assert
-      assert.ok(collectionStub.calledWithExactly('users'));
-      assert.ok(docStub.calledWithExactly('ID'));
-      assert.ok(docStub.calledWithExactly('new_id'));
-      assert.ok(deleteStub.calledWithExactly(docStub()));
-      assert.ok(setStub.calledWithExactly(docStub(), {
-        name: 'Batch Name',
-      }, {
-        merge: true,
-      }));
+      assert.notOk(userB.exists);
     });
 
     test('should reject when failing to delete record', async function(assert) {
       assert.expect(1);
 
       // Arrange
+      const modelClass = { modelName: 'user' };
+      const snapshot = { id: 'user_a' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       adapter.set('firebase', {
@@ -642,7 +364,7 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
 
       try {
         // Act
-        await adapter.deleteRecord({}, { modelName: 'user' }, { id: 'ID' });
+        await adapter.deleteRecord({}, modelClass, snapshot);
       } catch (error) {
         // Assert
         assert.equal(error, 'error');
@@ -654,83 +376,39 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
     hooks.beforeEach(function() {
       this.store = {
         listenForCollectionChanges() {},
+        listenForDocChanges() {},
         normalize() {},
         push() {},
       };
     });
 
     test('should fetch all records for a model', async function(assert) {
-      assert.expect(3);
+      assert.expect(1);
 
       // Arrange
-      const findRecordStub = sinon.stub().returns(Promise.resolve({
-        id: 'post_a',
-        title: 'Title',
-        body: 'Body',
-        author: {
-          id: 'user_a',
-          parent: { id: 'users' },
-          firestore: {},
-        },
-        cloudFirestoreReference: 'ref',
-      }));
-      const collectionStub = sinon.stub().returns({
-        onSnapshot(onSuccess) {
-          onSuccess([{
-            id: 'post_a',
-            ref: 'ref',
-
-            data() {
-              return {
-                title: 'Title',
-                body: 'Body',
-
-                author: {
-                  id: 'user_a',
-                  parent: { id: 'users' },
-                  firestore: {},
-                },
-              };
-            },
-          }]);
-
-          return () => {};
-        },
-      });
-      const modelClass = {
-        modelName: 'post',
-
-        eachRelationship(callback) {
-          callback('author', { kind: 'belongsTo', type: 'user' });
-        },
-      };
+      const modelClass = { modelName: 'user' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
-
-      adapter.set('firebase', {
-        firestore() {
-          return { collection: collectionStub };
-        },
-      });
-      adapter.set('findRecord', findRecordStub);
 
       // Act
       const result = await adapter.findAll(this.store, modelClass);
 
       // Assert
-      assert.ok(
-        findRecordStub.calledWithExactly(this.store, modelClass, 'post_a'),
-      );
-      assert.ok(collectionStub.calledWithExactly('posts'));
+      delete result[0].cloudFirestoreReference;
+      delete result[1].cloudFirestoreReference;
+      delete result[2].cloudFirestoreReference;
+
       assert.deepEqual(result, [{
-        id: 'post_a',
-        title: 'Title',
-        body: 'Body',
-        author: {
-          id: 'user_a',
-          parent: { id: 'users' },
-          firestore: {},
-        },
-        cloudFirestoreReference: 'ref',
+        id: 'user_a',
+        age: 15,
+        username: 'user_a',
+      }, {
+        id: 'user_b',
+        age: 10,
+        username: 'user_b',
+      }, {
+        id: 'user_c',
+        age: 20,
+        username: 'user_c',
       }]);
     });
 
@@ -774,134 +452,55 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
     });
 
     test('should fetch a record without a path', async function(assert) {
-      assert.expect(3);
+      assert.expect(1);
 
       // Arrange
-      const docStub = sinon.stub().returns({
-        onSnapshot(onSuccess) {
-          onSuccess({
-            exists: true,
-            id: 'post_a',
-            ref: 'ref',
-
-            data() {
-              return {
-                title: 'Title',
-                body: 'Body',
-
-                author: {
-                  id: 'user_a',
-                  parent: { id: 'users' },
-                  firestore: {},
-                },
-              };
-            },
-          });
-
-          return () => {};
-        },
-      });
-      const collectionStub = sinon.stub().returns({ doc: docStub });
+      const modelClass = { modelName: 'user' };
+      const modelId = 'user_a';
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('firebase', {
-        firestore() {
-          return { collection: collectionStub };
-        },
-      });
-
       // Act
-      const result = await adapter.findRecord(this.store, {
-        modelName: 'post',
-
-        eachRelationship(callback) {
-          callback('author', { kind: 'belongsTo', type: 'user' });
-        },
-      }, 'post_a', { adapterOptions: null });
+      const result = await adapter.findRecord(
+        this.store,
+        modelClass,
+        modelId,
+      );
 
       // Assert
-      assert.ok(collectionStub.calledWithExactly('posts'));
-      assert.ok(docStub.calledWithExactly('post_a'));
+      delete result.cloudFirestoreReference;
+
       assert.deepEqual(result, {
-        id: 'post_a',
-        title: 'Title',
-        body: 'Body',
-        author: {
-          id: 'user_a',
-          parent: { id: 'users' },
-          firestore: {},
-        },
-        cloudFirestoreReference: 'ref',
+        id: 'user_a',
+        age: 15,
+        username: 'user_a',
       });
     });
 
     test('should fetch a record with a path', async function(assert) {
-      assert.expect(5);
+      assert.expect(1);
 
       // Arrange
-      const nestedDocStub = sinon.stub().returns({
-        onSnapshot(onSuccess) {
-          onSuccess({
-            exists: true,
-            id: 'post_a',
-            ref: 'ref',
-
-            data() {
-              return {
-                title: 'Title',
-                body: 'Body',
-
-                author: {
-                  id: 'user_a',
-                  parent: { id: 'users' },
-                  firestore: {},
-                },
-              };
-            },
-          });
-
-          return () => {};
-        },
-      });
-      const nestedCollectionStub = sinon.stub().returns({ doc: nestedDocStub });
-      const rootDocStub = sinon.stub().returns({
-        collection: nestedCollectionStub,
-      });
-      const rootCollectionStub = sinon.stub().returns({ doc: rootDocStub });
+      const modelClass = { modelName: 'user' };
+      const modelId = 'user_a';
+      const snapshot = {
+        adapterOptions: { path: 'admins' },
+      };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('firebase', {
-        firestore() {
-          return { collection: rootCollectionStub };
-        },
-      });
-
       // Act
-      const result = await adapter.findRecord(this.store, {
-        modelName: 'post',
-
-        eachRelationship(callback) {
-          callback('author', { kind: 'belongsTo', type: 'user' });
-        },
-      }, 'post_a', {
-        adapterOptions: { path: 'sites/site_a/posts' },
-      });
+      const result = await adapter.findRecord(
+        this.store,
+        modelClass,
+        modelId,
+        snapshot,
+      );
 
       // Assert
-      assert.ok(rootCollectionStub.calledWithExactly('sites'));
-      assert.ok(rootDocStub.calledWithExactly('site_a'));
-      assert.ok(nestedCollectionStub.calledWithExactly('posts'));
-      assert.ok(nestedDocStub.calledWithExactly('post_a'));
+      delete result.cloudFirestoreReference;
+
       assert.deepEqual(result, {
-        id: 'post_a',
-        title: 'Title',
-        body: 'Body',
-        author: {
-          id: 'user_a',
-          parent: { id: 'users' },
-          firestore: {},
-        },
-        cloudFirestoreReference: 'ref',
+        id: 'user_a',
+        since: 2010,
       });
     });
 
@@ -909,6 +508,8 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       assert.expect(1);
 
       // Arrange
+      const modelClass = { modelName: 'user' };
+      const modelId = 'user_a';
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       adapter.set('firebase', {
@@ -931,7 +532,7 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
 
       try {
         // Act
-        await adapter.findRecord(this.store, { modelName: 'post' }, 'post_a');
+        await adapter.findRecord(this.store, modelClass, modelId);
       } catch (error) {
         // Assert
         assert.ok(true);
@@ -940,24 +541,38 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
   });
 
   module('findBelongsTo', function(hooks) {
+    hooks.beforeEach(function() {
+      this.store = {
+        listenForDocChanges() {},
+        normalize() {},
+        push() {},
+      };
+    });
+
     test('should fetch a belongs to record', async function(assert) {
       assert.expect(1);
 
       // Arrange
-      const findRecordStub = sinon.stub().returns(Promise.resolve());
+      const snapshot = {};
+      const url = 'admins/user_a';
+      const relationship = { type: 'user' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('findRecord', findRecordStub);
-
       // Act
-      await adapter.findBelongsTo({}, {}, 'users/user_b', { type: 'user' });
+      const result = await adapter.findBelongsTo(
+        this.store,
+        snapshot,
+        url,
+        relationship,
+      );
 
       // Assert
-      assert.ok(
-        findRecordStub.calledWithExactly({}, { modelName: 'user' }, 'user_b', {
-          adapterOptions: { path: 'users' },
-        }),
-      );
+      delete result.cloudFirestoreReference;
+
+      assert.deepEqual(result, {
+        id: 'user_a',
+        since: 2010,
+      });
     });
   });
 
