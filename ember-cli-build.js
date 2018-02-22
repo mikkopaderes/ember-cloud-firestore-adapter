@@ -14,5 +14,8 @@ module.exports = function(defaults) {
     behave. You most likely want to be modifying `./index.js` or app's build file
   */
 
+ app.import('node_modules/mock-cloud-firestore/dist/mock-cloud-firestore.js');
+ app.import('vendor/shims/mock-cloud-firestore.js');
+
   return app.toTree();
 };
