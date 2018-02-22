@@ -11,6 +11,10 @@ export default function getFixtureData() {
           user_a: {
             since: 2010,
           },
+
+          user_b: {
+            since: 2015,
+          },
         },
       },
 

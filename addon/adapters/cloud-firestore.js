@@ -6,7 +6,6 @@ import { run } from '@ember/runloop';
 import RESTAdapter from 'ember-data/adapters/rest';
 
 import {
-  buildPathFromRef,
   buildRefFromPath,
   parseDocSnapshot,
 } from 'ember-cloud-firestore-adapter/utils/parser';
@@ -183,11 +182,11 @@ export default RESTAdapter.extend({
   findRecord(store, type, id, snapshot = {}) {
     return new Promise((resolve, reject) => {
       const db = this.get('firebase').firestore();
-      const collectionName = this.buildCollectionName(type.modelName);
-      const path = this.getAdapterOptionAttribute(snapshot, 'path');
-      const collectionRef = path
-        ? buildRefFromPath(db, path)
-        : db.collection(collectionName);
+      const collectionRef = this.buildCollectionRef(
+        type.modelName,
+        snapshot.adapterOptions,
+        db,
+      );
       const docRef = collectionRef.doc(id);
       const unsubscribe = docRef.onSnapshot((docSnapshot) => {
         if (docSnapshot.exists) {
@@ -213,7 +212,11 @@ export default RESTAdapter.extend({
     const id = urlNodes.pop();
 
     return this.findRecord(store, type, id, {
-      adapterOptions: { path: urlNodes.join('/') },
+      adapterOptions: {
+        buildReference(db) {
+          return buildRefFromPath(db, urlNodes.join('/'));
+        },
+      },
     });
   },
 
@@ -249,12 +252,14 @@ export default RESTAdapter.extend({
 
             requests.push(request);
           } else {
-            const reference = docSnapshot.get('cloudFirestoreReference');
-            const pathNodes = buildPathFromRef(reference).split('/');
-            const id = pathNodes.pop();
-            const path = pathNodes.join('/');
-            const request = this.findRecord(store, type, id, {
-              adapterOptions: { path },
+            const docRef = docSnapshot.get('cloudFirestoreReference');
+            const docId = docRef.id;
+            const request = this.findRecord(store, type, docId, {
+              adapterOptions: {
+                buildReference() {
+                  return docRef.parent;
+                },
+              },
             });
 
             requests.push(request);
@@ -292,65 +297,37 @@ export default RESTAdapter.extend({
   query(store, type, query = {}) {
     return new Promise((resolve, reject) => {
       const db = this.get('firebase').firestore();
-      const collectionName = this.buildCollectionName(type.modelName);
-      let collectionRef = query.path
-        ? buildRefFromPath(db, query.path)
-        : db.collection(collectionName);
+      let collectionRef = this.buildCollectionRef(type.modelName, query, db);
 
-      collectionRef = this.filterCollectionRef(collectionRef, query);
-      collectionRef = this.sortCollectionRef(collectionRef, query);
-      collectionRef = this.paginateCollectionRef(collectionRef, query);
+      collectionRef = this.buildQuery(collectionRef, query);
 
-      if (query.queryId) {
-        const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
-          const requests = this.findQuerySnapshotRecords(
-            store,
-            type,
-            query,
-            querySnapshot,
-          );
+      const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
+        const requests = this.findQuerySnapshotRecords(
+          store,
+          type,
+          query,
+          querySnapshot,
+        );
 
-          Promise.all(requests).then((responses) => {
+        Promise.all(requests).then((responses) => {
+          if (query.queryId) {
             store.listenForQueryChanges(type.modelName, query, collectionRef);
+          }
 
-            const docs = [];
+          const docs = [];
 
-            responses.forEach((doc) => {
-              docs.push(doc);
-            });
-
-            run(null, resolve, docs);
-            unsubscribe();
-          }).catch((error) => {
-            run(null, reject, error);
+          responses.forEach((doc) => {
+            docs.push(doc);
           });
-        }, (error) => {
-          run(null, reject, error);
-        });
-      } else {
-        collectionRef.get().then((querySnapshot) => {
-          const requests = this.findQuerySnapshotRecords(
-            store,
-            type,
-            query,
-            querySnapshot,
-          );
 
-          Promise.all(requests).then((responses) => {
-            const docs = [];
-
-            responses.forEach((doc) => {
-              docs.push(doc);
-            });
-
-            run(null, resolve, docs);
-          }).catch((error) => {
-            run(null, reject, error);
-          });
+          run(null, resolve, docs);
+          unsubscribe();
         }).catch((error) => {
           run(null, reject, error);
         });
-      }
+      }, (error) => {
+        run(null, reject, error);
+      });
     });
   },
 
@@ -375,31 +352,6 @@ export default RESTAdapter.extend({
   },
 
   /**
-   * @override
-   */
-  buildURL(modelName, id, snapshot, requestType, query) {
-    const path = this.getAdapterOptionAttribute(snapshot, 'path');
-
-    if (path) {
-      let url = '';
-
-      if (this.get('host')) {
-        url = this.get('host');
-      }
-
-      if (this.get('namespace')) {
-        url = `${url}/${this.get('namespace')}`;
-      }
-
-      url = `${url}/${path}`;
-
-      return url;
-    } else {
-      return this._super(modelName, id, snapshot, requestType, query);
-    }
-  },
-
-  /**
    * Camelizes and pluralizes the model name
    *
    * @param {string} modelName
@@ -408,6 +360,37 @@ export default RESTAdapter.extend({
    */
   buildCollectionName(modelName) {
     return camelize(pluralize(modelName));
+  },
+
+  /**
+   * Builds a reference to a collection
+   *
+   * @param {string} modelName
+   * @param {Object} [option={}]
+   * @param {firebase.firestore} db
+   * @return {firebase.firestore.CollectionReference} Collection reference
+   */
+  buildCollectionRef(modelName, option = {}, db) {
+    if (option.hasOwnProperty('buildReference')) {
+      return option.buildReference(db);
+    }
+
+    return db.collection(pluralize(modelName));
+  },
+
+  /**
+   * Builds a query for a collection reference
+   *
+   * @param {firebase.firestore.CollectionReference} collectionRef
+   * @param {Object} [option={}]
+   * @return {firebase.firestore.Query} Query
+   */
+  buildQuery(collectionRef, option = {}) {
+    if (option.hasOwnProperty('filter')) {
+      return option.filter(collectionRef);
+    }
+
+    return collectionRef;
   },
 
   /**
@@ -446,121 +429,6 @@ export default RESTAdapter.extend({
   },
 
   /**
-   * Applies filtering to a collection reference
-   *
-   * @param {firebase.firestore.CollectionReference} collectionRef
-   * @param {Object} query
-   * @return {firebase.firestore.Query} Collection query
-   * @private
-   */
-  filterCollectionRef(collectionRef, query) {
-    let filteredCollectionRef = collectionRef;
-
-    for (const filter in query.filter) {
-      if (Object.prototype.hasOwnProperty.call(query.filter, filter)) {
-        const fieldQuery = query['filter'][filter];
-        let operator = Object.keys(fieldQuery)[0];
-        const value = fieldQuery[operator];
-
-        if (operator == 'lt') {
-          operator = '<';
-        } else if (operator == 'lte') {
-          operator = '<=';
-        } else if (operator == 'eq') {
-          operator = '==';
-        } else if (operator == 'gt') {
-          operator = '>';
-        } else if (operator == 'gte') {
-          operator = '>=';
-        }
-
-        filteredCollectionRef = filteredCollectionRef.where(
-          filter,
-          operator,
-          value,
-        );
-      }
-    }
-
-    return filteredCollectionRef;
-  },
-
-  /**
-   * Applies sorting to a collection ref
-   *
-   * @param {firebase.firestore.CollectionReference} collectionRef
-   * @param {Object} query
-   * @return {firebase.firestore.Query} Collection query
-   * @private
-   */
-  sortCollectionRef(collectionRef, query) {
-    let sortedCollectionRef = collectionRef;
-
-    if (query.sort) {
-      for (const sort of query.sort.split(',')) {
-        if (sort.startsWith('-')) {
-          sortedCollectionRef = sortedCollectionRef.orderBy(
-            sort.substr(1),
-            'desc',
-          );
-        } else {
-          sortedCollectionRef = sortedCollectionRef.orderBy(sort);
-        }
-      }
-    }
-
-    return sortedCollectionRef;
-  },
-
-  /**
-   * Applies pagination to a collection reference
-   *
-   * @param {firebase.firestore.CollectionReference} collectionRef
-   * @param {Object} query
-   * @return {firebase.firestore.Query} Collection query
-   * @private
-   */
-  paginateCollectionRef(collectionRef, query) {
-    let paginatedCollectionRef = collectionRef;
-
-    if (query.page) {
-      if (query.page.cursor) {
-        if (query.page.cursor.startAt) {
-          const cursors = query.page.cursor.startAt.split(',');
-
-          paginatedCollectionRef = paginatedCollectionRef.startAt(...cursors);
-        }
-
-        if (query.page.cursor.startAfter) {
-          const cursors = query.page.cursor.startAfter.split(',');
-
-          paginatedCollectionRef = paginatedCollectionRef.startAfter(
-            ...cursors,
-          );
-        }
-
-        if (query.page.cursor.endAt) {
-          const cursors = query.page.cursor.endAt.split(',');
-
-          paginatedCollectionRef = paginatedCollectionRef.endAt(...cursors);
-        }
-
-        if (query.page.cursor.endBefore) {
-          const cursors = query.page.cursor.endBefore.split(',');
-
-          paginatedCollectionRef = paginatedCollectionRef.endBefore(...cursors);
-        }
-      }
-
-      if (query.page.limit) {
-        paginatedCollectionRef = paginatedCollectionRef.limit(query.page.limit);
-      }
-    }
-
-    return paginatedCollectionRef;
-  },
-
-  /**
    * Finds all records returned by a query snapshot
    *
    * @param {DS.Store} store
@@ -574,20 +442,23 @@ export default RESTAdapter.extend({
     const requests = [];
 
     querySnapshot.forEach((docSnapshot) => {
-      const reference = docSnapshot.get('cloudFirestoreReference');
+      const referenceTo = docSnapshot.get('cloudFirestoreTo');
 
-      if (reference && reference.hasOwnProperty('firestore')) {
-        const pathNodes = buildPathFromRef(reference).split('/');
-        const id = pathNodes.pop();
-        const path = pathNodes.join('/');
-        const request = this.findRecord(store, type, id, {
-          adapterOptions: { path },
+      if (referenceTo && referenceTo.hasOwnProperty('firestore')) {
+        const docId = referenceTo.id;
+        const collectionRef = referenceTo.parent;
+        const request = this.findRecord(store, type, docId, {
+          adapterOptions: {
+            buildReference() {
+              return collectionRef;
+            },
+          },
         });
 
         requests.push(request);
       } else {
         const request = this.findRecord(store, type, docSnapshot.id, {
-          adapterOptions: { path: query.path },
+          adapterOptions: query,
         });
 
         requests.push(request);
