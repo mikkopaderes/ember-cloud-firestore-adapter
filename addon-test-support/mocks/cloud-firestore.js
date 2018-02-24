@@ -4,11 +4,11 @@ import Service from '@ember/service';
 /**
  * Mocks Cloud Firestore
  *
- * @param {Object} context
+ * @param {Object} owner
  * @param {Object} fixtureData
  * @return {Ember.Service} Firebase service
  */
-export default function mockCloudFirestore(context, fixtureData) {
+export default function mockCloudFirestore(owner, fixtureData) {
   const mockFirebase = new MockFirebase();
 
   const mockFirebasePojo = {
@@ -18,7 +18,7 @@ export default function mockCloudFirestore(context, fixtureData) {
   };
   const firebaseService = Service.extend(mockFirebasePojo);
 
-  context.owner.register(`service:firebase`, firebaseService);
+  owner.register(`service:firebase`, firebaseService);
 
-  return context.owner.lookup('service:firebase', { as: 'firebase' });
+  return owner.lookup('service:firebase', { as: 'firebase' });
 }

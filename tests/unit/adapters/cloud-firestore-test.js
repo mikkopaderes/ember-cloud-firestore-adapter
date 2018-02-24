@@ -14,7 +14,7 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
   setupTest(hooks);
 
   hooks.beforeEach(function() {
-    db = mockFirebase(this, getFixtureData()).firestore();
+    db = mockFirebase(this.owner, getFixtureData()).firestore();
   });
 
   module('generateIdForRecord', function(hooks) {
@@ -47,14 +47,10 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       const snapshot = { id: 'user_100', age: 30, username: 'user_100' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.serialize = sinon.stub().returns([{
-        id: 'user_100',
-        path: 'users',
-        data: {
-          age: 30,
-          username: 'user_100',
-        },
-      }]);
+      adapter.serialize = sinon.stub().returns({
+        age: 30,
+        username: 'user_100',
+      });
 
       // Act
       const result = await adapter.createRecord(
@@ -73,6 +69,49 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       });
 
       const user100 = await db.collection('users').doc('user_100').get();
+
+      assert.deepEqual(user100.data(), { age: 30, username: 'user_100' });
+    });
+
+    test('should create record while overriding buildReference hook and resolve with the created resource', async function(assert) {
+      assert.expect(2);
+
+      // Arrange
+      const modelClass = { modelName: 'user' };
+      const snapshot = {
+        id: 'user_100',
+        age: 30,
+        username: 'user_100',
+        adapterOptions: {
+          buildReference(db) {
+            return db.collection('foobar');
+          },
+        },
+      };
+      const adapter = this.owner.lookup('adapter:cloud-firestore');
+
+      adapter.serialize = sinon.stub().returns({
+        age: 30,
+        username: 'user_100',
+      });
+
+      // Act
+      const result = await adapter.createRecord(
+        this.store,
+        modelClass,
+        snapshot,
+      );
+
+      // Assert
+      delete result.cloudFirestoreReference;
+
+      assert.deepEqual(result, {
+        id: 'user_100',
+        age: 30,
+        username: 'user_100',
+      });
+
+      const user100 = await db.collection('foobar').doc('user_100').get();
 
       assert.deepEqual(user100.data(), { age: 30, username: 'user_100' });
     });
@@ -110,17 +149,55 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
 
       // Arrange
       const modelClass = { modelName: 'user' };
+      const snapshot = {
+        id: 'user_a',
+        age: 50,
+        adapterOptions: {
+          buildReference(db) {
+            return db.collection('foobar');
+          },
+        },
+      };
+      const adapter = this.owner.lookup('adapter:cloud-firestore');
+
+      adapter.serialize = sinon.stub().returns({
+        age: 50,
+        username: 'user_a',
+      });
+
+      // Act
+      const result = await adapter.updateRecord(
+        this.store,
+        modelClass,
+        snapshot,
+      );
+
+      // Assert
+      delete result.cloudFirestoreReference;
+
+      assert.deepEqual(result, {
+        id: 'user_a',
+        age: 50,
+        username: 'user_a',
+      });
+
+      const userA = await db.collection('foobar').doc('user_a').get();
+
+      assert.notOk(userA.exists);
+    });
+
+    test('should update record while ignoring buildReference hook when function is not called from createRecord()', async function(assert) {
+      assert.expect(2);
+
+      // Arrange
+      const modelClass = { modelName: 'user' };
       const snapshot = { id: 'user_a', age: 50 };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.serialize = sinon.stub().returns([{
-        id: 'user_a',
-        path: 'users',
-        data: {
-          age: 50,
-          username: 'user_a',
-        },
-      }]);
+      adapter.serialize = sinon.stub().returns({
+        age: 50,
+        username: 'user_a',
+      });
 
       // Act
       const result = await adapter.updateRecord(
@@ -144,30 +221,26 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
     });
 
     test('should update record and process additional batched writes', async function(assert) {
-      assert.expect(5);
+      assert.expect(3);
 
       // Arrange
       const modelClass = { modelName: 'user' };
-      const snapshot = { id: 'user_a', age: 50 };
+      const snapshot = {
+        id: 'user_a',
+        age: 50,
+        adapterOptions: {
+          include(batch, db) {
+            batch.set(db.collection('users').doc('user_100'), { age: 60 });
+          },
+        },
+      };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       adapter.generateIdForRecord = sinon.stub().returns('12345');
-      adapter.serialize = sinon.stub().returns([{
-        id: 'user_a',
-        path: 'users',
-        data: { age: 50 },
-      }, {
-        id: 'user_100',
-        path: 'users',
-        data: { age: 60 },
-      }, {
-        path: 'users',
-        data: { age: 70 },
-      }, {
-        id: 'user_b',
-        path: 'users',
-        data: null,
-      }]);
+      adapter.serialize = sinon.stub().returns({
+        age: 50,
+        username: 'user_a',
+      });
 
       // Act
       const result = await adapter.updateRecord(
@@ -192,14 +265,6 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       const user100 = await db.collection('users').doc('user_100').get();
 
       assert.deepEqual(user100.data(), { age: 60 });
-
-      const noIdProvidedUser = await db.collection('users').doc('12345').get();
-
-      assert.deepEqual(noIdProvidedUser.data(), { age: 70 });
-
-      const userB = await db.collection('users').doc('user_b').get();
-
-      assert.notOk(userB.exists);
     });
 
     test('should reject when failing to update record with ID', async function(assert) {
@@ -259,12 +324,9 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       const snapshot = { id: 'user_a' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('serialize', () => {
-        return [{
-          id: 'user_a',
-          path: 'users',
-          data: { age: 15, username: 'user_a' },
-        }];
+      adapter.serialize = sinon.stub().returns({
+        age: 15,
+        username: 'user_a',
       });
 
       // Act
@@ -277,31 +339,23 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
     });
 
     test('should delete record and process additional batched writes', async function(assert) {
-      assert.expect(4);
+      assert.expect(2);
 
       // Arrange
       const modelClass = { modelName: 'user' };
-      const snapshot = { id: 'user_a' };
+      const snapshot = {
+        id: 'user_a',
+        adapterOptions: {
+          include(batch, db) {
+            batch.delete(db.collection('users').doc('user_b'));
+          },
+        },
+      };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.generateIdForRecord = sinon.stub().returns('12345');
-      adapter.set('serialize', () => {
-        return [{
-          id: 'user_a',
-          path: 'users',
-          data: { age: 15, username: 'user_a' },
-        }, {
-          id: 'user_100',
-          path: 'users',
-          data: { age: 60 },
-        }, {
-          path: 'users',
-          data: { age: 70 },
-        }, {
-          id: 'user_b',
-          path: 'users',
-          data: null,
-        }];
+      adapter.serialize = sinon.stub().returns({
+        age: 50,
+        username: 'user_a',
       });
 
       // Act
@@ -311,14 +365,6 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       const userA = await db.collection('users').doc('user_a').get();
 
       assert.notOk(userA.exists);
-
-      const user100 = await db.collection('users').doc('user_100').get();
-
-      assert.deepEqual(user100.data(), { age: 60 });
-
-      const noIdProvidedUser = await db.collection('users').doc('12345').get();
-
-      assert.deepEqual(noIdProvidedUser.data(), { age: 70 });
 
       const userB = await db.collection('users').doc('user_b').get();
 

@@ -6,9 +6,11 @@ export default Controller.extend({
   async handleCreateRecordClick() {
     const user = await this.get('store').createRecord('user', {
       id: 'new',
-      name: 'New User',
+      username: 'new_user',
       age: 25,
-    }).save();
+    }).save({
+      adapterOptions: { onServer: true },
+    });
 
     this.set('users', [user]);
   },
@@ -16,9 +18,11 @@ export default Controller.extend({
   async handleUpdateRecordClick() {
     const user = await this.get('store').findRecord('user', 'user_a');
 
-    user.set('name', 'Updated');
+    user.set('username', 'updated_user');
 
-    await user.save();
+    await user.save({
+      adapterOptions: { onServer: true },
+    });
     this.set('users', [user]);
   },
 
@@ -26,7 +30,9 @@ export default Controller.extend({
     const users = await this.get('store').findAll('user');
     const user = users.get('firstObject');
 
-    await user.destroyRecord();
+    await user.destroyRecord({
+      adapterOptions: { onServer: true },
+    });
 
     this.set('users', users);
   },
@@ -45,17 +51,8 @@ export default Controller.extend({
 
   async handleQuery1Click() {
     const users = await this.get('store').query('user', {
-      filter: {
-        company: { eq: 'Google' },
-      },
-
-      sort: 'age',
-
-      page: {
-        cursor: {
-          startAt: 45,
-          endAt: 80,
-        },
+      filter(reference) {
+        return reference.where('age', '>=', '15');
       },
     });
 
@@ -64,47 +61,9 @@ export default Controller.extend({
 
   async handleQuery2Click() {
     const users = await this.get('store').query('user', {
-      filter: {
-        company: { eq: 'Google' },
+      buildReference(db) {
+        return db.collection('users').doc('user_a').collection('foobar');
       },
-
-      sort: 'age',
-
-      page: {
-        cursor: {
-          startAfter: 33,
-          endBefore: 80,
-        },
-      },
-    });
-
-    this.set('users', users);
-  },
-
-  async handleQuery3Click() {
-    const users = await this.get('store').query('user', {
-      filter: {
-        company: { eq: 'Google' },
-      },
-
-      sort: '-age',
-
-      page: {
-        cursor: {
-          startAt: 45,
-          endAt: 80,
-        },
-
-        limit: 1,
-      },
-    });
-
-    this.set('users', users);
-  },
-
-  async handleQuery4Click() {
-    const users = await this.get('store').query('user', {
-      path: 'users/user_a/foobar',
     });
 
     this.set('users', users);
