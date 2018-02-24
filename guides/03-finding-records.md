@@ -19,7 +19,9 @@ This will retrieve the `post_a` document under the `users/user_a/feeds` subcolle
 ```javascript
 this.get('store').findRecord('user', 'post_a', {
   adapterOptions: {
-    path: 'users/user_a/feeds'
+    buildReference(db) {
+      return db.collection('users').doc('user_a').collection('feeds');
+    }
   }
 });
 ```
@@ -38,11 +40,9 @@ this.get('store').findAll('post');
 
 ## Querying for Multiple Records
 
-APIs for querying tries to adhere to [JSON API](http://jsonapi.org/) convention as much as possible.
+Queries use `buildReference()` and `filter()` options.
 
-All queries that'll be explained below can be combined in a single request.
-
-### Filter
+### Using Filters
 
 This will retrieve all `post` documents under the `posts` collection that has an `author` with a `Reference` [data type](https://firebase.google.com/docs/firestore/manage-data/data-types#data_types) to `users/user_a` and a `createdOn` date greater than 2016-12-31.
 
@@ -50,83 +50,17 @@ This will retrieve all `post` documents under the `posts` collection that has an
 this.get('store').findRecord('user', 'user_a').then((user) => {
   // Assume that the `user` is stored under `users` collection
   this.get('store').query('post', {
-    filter: {
-      author: { eq: user.get('cloudFirestoreReference') },
-      createdOn: { gt: new Date('2016-12-31') }
+    filter(reference) {
+      const db = reference.firestore;
+      const userRef = db.collection('users').doc(user.get('id'));
+
+      return reference
+        .where('author', '==', userRef)
+        .where('createdOn', '>=', new Date('2016-12-31'));
     }
   });
 });
 ```
-
-> Notes:
->
-> - Filters support the following comparisons, `lt`, `lte`, `eq`, `gte`, and `gt`.
-
-### Sort
-
-This will retrieve all `post` documents under the `posts` collection sorted by `createdOn` in **ascending** order.
-
-```javascript
-this.get('store').query('post', {
-  sort: 'createdOn'
-});
-```
-
-This will retrieve all `post` documents under the `posts` collection sorted by `createdOn` in **descending** order.
-
-```javascript
-this.get('store').query('post', {
-  sort: '-createdOn'
-});
-```
-
-This will retrieve all `post` documents under the `posts` collection sorted by `createdOn` and `title` both in **ascending** order.
-
-```javascript
-this.get('store').query('post', {
-  sort: 'createdOn,title'
-});
-```
-
-### Page
-
-#### Cursor
-
-This will retrieve all `post` documents under the `posts` collection using [multiple cursor](https://firebase.google.com/docs/firestore/query-data/query-cursors#set_multiple_cursor_conditions) conditions.
-
-```javascript
-this.get('store').query('post', {
-  sort: 'body,title',
-  page: {
-    cursor: {
-      startAt: 'Post A Body,Post A Title'
-    }
-  }
-});
-```
-
-> Notes:
->
-> - As of the moment, only string cursors are supported.
-> - Using cursors requires to have a `sort` parameter passed-in as well.
-> - You can use `startAt`, `endAt`, `startAfter`, and `endAfter`.
-
-#### Limit
-
-This will retrieve the **first** 3 `post` documents under the `posts` subcollection.
-
-```javascript
-this.get('store').query('post', {
-  sort: 'createdOn',
-  page: {
-    limit: 3
-  }
-});
-```
-
-> Notes:
->
-> - You can also sort in descending order to get the **last** 3 `post`
 
 ### Under a Subcollection
 
@@ -134,15 +68,17 @@ This will retrieve the first 3 `post` documents under the `users/user_a/feeds` s
 
 ```javascript
 this.get('store').query('post', {
-  sort: 'createdOn',
-  page: {
-    limit: 3
+  buildReference(db) {
+    return db.collection('users').doc('user_a').collection('feeds');
   },
-  path: 'users/user_a/feeds'
+
+  filter(reference) {
+    return reference.orderBy('createdOn').limit(3);
+  }
 });
 ```
 
-### Under a Subcollection with a Document Reference (e.g. `hasMany` relationship)
+### Under a Subcollection with a Document Reference
 
 If the document that your query hits is simply a reference to another document in a different collection, it will return that document instead.
 
@@ -150,10 +86,13 @@ This will retrieve the first 3 `group` documents under the `users/user_a/groups`
 
 ```javascript
 this.get('store').query('group', {
-  page: {
-    limit: 3
+  buildReference(db) {
+    return db.collection('users').doc('user_a').collection('groups');
   },
-  path: 'users/user_a/groups'
+
+  filter(reference) {
+    return reference.limit(3);
+  }
 });
 ```
 
@@ -167,18 +106,18 @@ By default, documents returned by a query will listen for changes **individually
 
 ```javascript
 this.get('store').query('post', {
-  sort: '-createdOn',
-  page: {
-    limit: 3
-  },
-  queryId: 'last_3_posts'
+  queryId: 'last_3_posts',
+
+  filter(reference) {
+    return reference.orderBy('createdOn', 'desc').limit(3);
+  }
 });
 ```
 
 > Notes:
 >
 > - `queryId` are something that you provide yourself. Make sure it's unique.
-> - If you make another query request while using an existing `queryId`, the listener for the old query will be turned off.
+> - If you make another query request while using an existing `queryId`, the listener for the old query will be turned off and be replaced with the new one.
 
 ---
 
