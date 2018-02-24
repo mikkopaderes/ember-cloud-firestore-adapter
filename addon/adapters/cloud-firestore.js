@@ -241,6 +241,8 @@ export default RESTAdapter.extend({
         collectionRef = buildRefFromPath(db, url);
       }
 
+      collectionRef = this.buildQuery(collectionRef, relationship.options);
+
       const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
         const requests = [];
 

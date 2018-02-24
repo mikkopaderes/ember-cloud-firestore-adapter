@@ -583,236 +583,102 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
   module('findHasMany', function(hooks) {
     hooks.beforeEach(function() {
       this.store = {
+        listenForDocChanges() {},
         listenForHasManyChanges() {},
       };
     });
 
-    test('should fetch manyToOne cardinality', async function(assert) {
-      assert.expect(7);
+    test('should fetch many-to-one cardinality', async function(assert) {
+      assert.expect(3);
 
       // Arrange
-      const listenForHasManyChangesStub = sinon.stub();
-      const store = { listenForHasManyChanges: listenForHasManyChangesStub };
       const determineRelationshipTypeStub = sinon.stub().returns('manyToOne');
-      const inverseForStub = sinon.stub().returns({ name: 'group' });
+      const inverseForStub = sinon.stub().returns({ name: 'author' });
       const snapshot = {
-        modelName: 'group',
-        id: 'group_a',
+        record: EmberObject.create({
+          cloudFirestoreReference: db.collection('users').doc('user_a'),
+        }),
         type: {
           determineRelationshipType: determineRelationshipTypeStub,
           inverseFor: inverseForStub,
         },
-        record: EmberObject.create({ cloudFirestoreReference: 'groups/group_a' }),
       };
-      const url = 'url';
-      const relationship = { type: 'post' };
-      const whereStub = sinon.stub().returns({
-        onSnapshot(onSuccess) {
-          onSuccess([{ id: 'post_a' }]);
-        },
-      });
-      const collectionStub = sinon.stub().returns({ where: whereStub });
-      const firebaseStub = {
-        firestore: sinon.stub().returns({ collection: collectionStub }),
-      };
-      const findRecordStub = sinon.stub().returns(
-        Promise.resolve('record'),
-      );
-      const adapter = this.owner.lookup('adapter:cloud-firestore');
-
-      adapter.set('firebase', firebaseStub);
-      adapter.set('findRecord', findRecordStub);
-
-      // Act
-      const result = await adapter.findHasMany(
-        store,
-        snapshot,
-        url,
-        relationship,
-      );
-
-      // Assert
-      assert.ok(determineRelationshipTypeStub.calledWithExactly(
-        relationship,
-        store,
-      ));
-      assert.ok(inverseForStub.calledWithExactly(relationship.key, store));
-      assert.ok(collectionStub.calledWithExactly(url));
-      assert.ok(whereStub.calledWithExactly('group', '==', 'groups/group_a'));
-      assert.ok(findRecordStub.calledWithExactly(
-        store,
-        { modelName: 'post' },
-        'post_a',
-      ));
-      assert.ok(listenForHasManyChangesStub.calledWith(
-        snapshot.modelName,
-        snapshot.id,
-        relationship.key,
-      ));
-      assert.deepEqual(result, ['record']);
-    });
-
-    test('should fetch non-manyToOne cardinality', async function(assert) {
-      assert.expect(7);
-
-      // Arrange
-      const listenForHasManyChangesStub = sinon.stub();
-      const store = { listenForHasManyChanges: listenForHasManyChangesStub };
-      const determineRelationshipTypeStub = sinon.stub().returns('manyToMany');
-      const snapshot = {
-        modelName: 'group',
-        id: 'group_a',
-        type: { determineRelationshipType: determineRelationshipTypeStub },
-      };
-      const url = 'groups/group_a/posts';
-      const relationship = { type: 'post' };
-      const subCollectionStub = sinon.stub().returns({
-        onSnapshot(onSuccess) {
-          onSuccess([{
-            id: 'post_a',
-
-            get() {
-              return {
-                id: 'post_a',
-                parent: { id: 'posts' },
-                firestore: {},
-              };
-            },
-          }]);
-        },
-      });
-      const rootDocStub = sinon.stub().returns({
-        collection: subCollectionStub,
-      });
-      const rootCollectionStub = sinon.stub().returns({ doc: rootDocStub });
-      const firebaseStub = {
-        firestore: sinon.stub().returns({ collection: rootCollectionStub }),
-      };
-      const findRecordStub = sinon.stub().returns(
-        Promise.resolve('record'),
-      );
-      const adapter = this.owner.lookup('adapter:cloud-firestore');
-
-      adapter.set('firebase', firebaseStub);
-      adapter.set('findRecord', findRecordStub);
-
-      // Act
-      const result = await adapter.findHasMany(
-        store,
-        snapshot,
-        url,
-        relationship,
-      );
-
-      // Assert
-      assert.ok(determineRelationshipTypeStub.calledWithExactly(
-        relationship,
-        store,
-      ));
-      assert.ok(rootCollectionStub.calledWithExactly('groups'));
-      assert.ok(rootDocStub.calledWithExactly('group_a'));
-      assert.ok(subCollectionStub.calledWithExactly('posts'));
-      assert.ok(findRecordStub.calledWith(store, {
-        modelName: 'post',
-      }, 'post_a'));
-      assert.ok(listenForHasManyChangesStub.calledWith(
-        snapshot.modelName,
-        snapshot.id,
-        relationship.key,
-      ));
-      assert.deepEqual(result, ['record']);
-    });
-
-    test('should reject when unable to fetch from url', async function(assert) {
-      assert.expect(1);
-
-      // Arrange
-      const store = {};
-      const snapshot = {
-        type: { determineRelationshipType: sinon.stub().returns('manyToMany') },
-      };
-      const url = 'groups/group_a/posts';
-      const relationship = {};
-      const firebaseStub = {
-        firestore: sinon.stub().returns({
-          collection: sinon.stub().returns({
-            doc: sinon.stub().returns({
-              collection: sinon.stub().returns({
-                onSnapshot(onSuccess, onError) {
-                  onError();
-                },
-              }),
-            }),
-          }),
-        }),
-      };
-      const adapter = this.owner.lookup('adapter:cloud-firestore');
-
-      adapter.set('firebase', firebaseStub);
-
-      try {
-        await adapter.findHasMany(
-          store,
-          snapshot,
-          url,
-          relationship,
-        );
-      } catch (error) {
-        assert.ok(true);
-      }
-    });
-
-    test('should reject when unable to fetch referenced record', async function(assert) {
-      assert.expect(1);
-
-      // Arrange
-      const store = {};
-      const snapshot = {
-        type: { determineRelationshipType: sinon.stub().returns('manyToMany') },
-      };
-      const url = 'groups/group_a/posts';
+      const url = 'posts';
       const relationship = {
-        parentType: { typeForRelationship: sinon.stub() },
+        key: 'posts',
+        options: {
+          filter(reference) {
+            return reference.limit(1);
+          },
+        },
+        type: 'post',
       };
-      const firebaseStub = {
-        firestore: sinon.stub().returns({
-          collection: sinon.stub().returns({
-            doc: sinon.stub().returns({
-              collection: sinon.stub().returns({
-                onSnapshot(onSuccess) {
-                  onSuccess([{
-                    id: 'post_a',
-
-                    get() {
-                      return {
-                        id: 'post_a',
-                        parent: { id: 'posts' },
-                        firestore: {},
-                      };
-                    },
-                  }]);
-                },
-              }),
-            }),
-          }),
-        }),
-      };
-      const findRecordStub = sinon.stub().returns(Promise.reject('error'));
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('firebase', firebaseStub);
-      adapter.set('findRecord', findRecordStub);
+      // Act
+      const result = await adapter.findHasMany(
+        this.store,
+        snapshot,
+        url,
+        relationship,
+      );
 
-      try {
-        await adapter.findHasMany(
-          store,
-          snapshot,
-          url,
-          relationship,
-        );
-      } catch (error) {
-        assert.equal(error, 'error');
-      }
+      // Assert
+      delete result[0].author;
+      delete result[0].cloudFirestoreReference;
+
+      assert.deepEqual(result, [{ id: 'post_a' }]);
+      assert.ok(determineRelationshipTypeStub.calledWithExactly(
+        relationship,
+        this.store,
+      ));
+      assert.ok(inverseForStub.calledWithExactly(relationship.key, this.store));
+    });
+
+    test('should fetch many-to-whatever cardinality', async function(assert) {
+      assert.expect(2);
+
+      // Arrange
+      const determineRelationshipTypeStub = sinon.stub().returns('manyToNone');
+      const snapshot = {
+        record: EmberObject.create({
+          cloudFirestoreReference: db.collection('users').doc('user_a'),
+        }),
+        type: {
+          determineRelationshipType: determineRelationshipTypeStub,
+        },
+      };
+      const url = 'users/user_a/friends';
+      const relationship = {
+        options: {
+          filter(reference) {
+            return reference.limit(1);
+          },
+        },
+        type: 'user',
+      };
+      const adapter = this.owner.lookup('adapter:cloud-firestore');
+
+      // Act
+      const result = await adapter.findHasMany(
+        this.store,
+        snapshot,
+        url,
+        relationship,
+      );
+
+      // Assert
+      delete result[0].cloudFirestoreReference;
+
+      assert.deepEqual(result, [{
+        id: 'user_b',
+        age: 10,
+        username: 'user_b',
+      }]);
+      assert.ok(determineRelationshipTypeStub.calledWithExactly(
+        relationship,
+        this.store,
+      ));
     });
   });
 
