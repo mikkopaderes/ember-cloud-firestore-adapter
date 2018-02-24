@@ -9,6 +9,3 @@ tests/dummy/config/*.js
 tests/helpers/destroy-app.js
 tests/helpers/module-for-acceptance.js
 tests/helpers/start-app.js
-
-# mirage files
-tests/dummy/mirage/*

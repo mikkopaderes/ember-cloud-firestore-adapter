@@ -14,7 +14,7 @@ Router.map(function() {
   this.route('update-record', { path: '/update-record/:title' });
   this.route('delete-record');
   this.route('reset-data');
-  this.route('mirage');
+  this.route('features');
 });
 
 export default Router;

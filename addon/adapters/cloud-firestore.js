@@ -1,5 +1,6 @@
 import { Promise } from 'rsvp';
 import { camelize } from '@ember/string';
+import { getOwner } from '@ember/application';
 import { inject } from '@ember/service';
 import { pluralize } from 'ember-inflector';
 import { run } from '@ember/runloop';
@@ -57,12 +58,19 @@ export default RESTAdapter.extend({
    */
   createRecord(store, type, snapshot) {
     const onServer = this.getAdapterOptionAttribute(snapshot, 'onServer');
+    const config = getOwner(this).resolveRegistration('config:environment');
 
-    if (onServer) {
+    if (onServer && config.environment !== 'test') {
       return this._super(store, type, snapshot).then(() => {
         return this.findRecord(store, type, snapshot.id, snapshot);
       });
     } else {
+      if (snapshot.adapterOptions) {
+        snapshot.adapterOptions.isCreate = true;
+      } else {
+        snapshot.adapterOptions = { isCreate: true };
+      }
+
       return this.updateRecord(store, type, snapshot);
     }
   },
@@ -72,20 +80,14 @@ export default RESTAdapter.extend({
    */
   updateRecord(store, type, snapshot) {
     const onServer = this.getAdapterOptionAttribute(snapshot, 'onServer');
+    const config = getOwner(this).resolveRegistration('config:environment');
 
-    if (onServer) {
+    if (onServer && config.environment !== 'test') {
       return this._super(store, type, snapshot);
     } else {
       return new Promise((resolve, reject) => {
-        const db = this.get('firebase').firestore();
-        const payloads = this.serialize(snapshot, { includeId: true });
-        const batch = db.batch();
-        const mainDocRef = this.buildBatchedWrites(
-          store,
-          type.modelName,
-          payloads,
-          batch,
-        );
+        const docRef = this.buildUpdateRecordDocRef(type, snapshot);
+        const batch = this.buildWriteBatch(type, snapshot, docRef, false);
 
         batch.commit().then(() => {
           // Only relevant when used by `createRecord()` as this will
@@ -94,8 +96,8 @@ export default RESTAdapter.extend({
           // `onSnapshot()` will resolve to the cached record and
           // `listenForDocChanges()` will do nothing since there's
           // already a listener for the record to be updated.
-          const unsubscribe = mainDocRef.onSnapshot((docSnapshot) => {
-            store.listenForDocChanges(type, mainDocRef);
+          const unsubscribe = docRef.onSnapshot((docSnapshot) => {
+            store.listenForDocChanges(type, docRef);
             run(null, resolve, parseDocSnapshot(type, docSnapshot));
             unsubscribe();
           });
@@ -111,24 +113,17 @@ export default RESTAdapter.extend({
    */
   deleteRecord(store, type, snapshot) {
     const onServer = this.getAdapterOptionAttribute(snapshot, 'onServer');
+    const config = getOwner(this).resolveRegistration('config:environment');
 
-    if (onServer) {
+    if (onServer && config.environment !== 'test') {
       return this._super(store, type, snapshot);
     } else {
       return new Promise((resolve, reject) => {
         const db = this.get('firebase').firestore();
-        const payloads = this.serialize(snapshot, { includeId: true });
-
-        payloads[0].data = null;
-
-        const batch = db.batch();
-
-        this.buildBatchedWrites(
-          store,
-          type.modelName,
-          payloads,
-          batch,
-        );
+        const docRef = db
+          .collection(this.buildCollectionName(type.modelName))
+          .doc(snapshot.id);
+        const batch = this.buildWriteBatch(type, snapshot, docRef, true);
 
         batch.commit().then(() => {
           run(null, resolve);
@@ -371,13 +366,64 @@ export default RESTAdapter.extend({
    * @param {Object} [option={}]
    * @param {firebase.firestore} db
    * @return {firebase.firestore.CollectionReference} Collection reference
+   * @private
    */
   buildCollectionRef(modelName, option = {}, db) {
     if (option.hasOwnProperty('buildReference')) {
       return option.buildReference(db);
     }
 
-    return db.collection(pluralize(modelName));
+    return db.collection(this.buildCollectionName(modelName));
+  },
+
+  /**
+   * Builds a document reference for `updateRecord()`
+   *
+   * @param {DS.Model} type
+   * @param {Object} snapshot
+   * @return {firebase.firestore.DocumentReference} Document reference
+   * @private
+   */
+  buildUpdateRecordDocRef(type, snapshot) {
+    const isCreate = this.getAdapterOptionAttribute(snapshot, 'isCreate');
+
+    if (!isCreate) {
+      if (this.getAdapterOptionAttribute(snapshot, 'buildReference')) {
+        delete snapshot.adapterOptions.buildReference;
+      }
+    }
+
+    return this.buildCollectionRef(
+      type.modelName,
+      snapshot.adapterOptions,
+      this.get('firebase').firestore(),
+    ).doc(snapshot.id);
+  },
+
+  /**
+   * Builds a write batch for `updateRecord()`
+   *
+   * @param {DS.Model} type
+   * @param {Object} snapshot
+   * @param {firebase.firestore.DocumentReference} docRef
+   * @param {boolean} isDeletingMainDoc
+   * @return {firebase.firestore.WriteBatch} Write batch
+   * @private
+   */
+  buildWriteBatch(type, snapshot, docRef, isDeletingMainDoc) {
+    const db = this.get('firebase').firestore();
+    const payload = this.serialize(snapshot);
+    const batch = db.batch();
+
+    if (isDeletingMainDoc) {
+      batch.delete(docRef);
+    } else {
+      batch.set(docRef, payload, { merge: true });
+    }
+
+    this.addIncludesToBatch(batch, db, snapshot);
+
+    return batch;
   },
 
   /**
@@ -386,6 +432,7 @@ export default RESTAdapter.extend({
    * @param {firebase.firestore.CollectionReference} collectionRef
    * @param {Object} [option={}]
    * @return {firebase.firestore.Query} Query
+   * @private
    */
   buildQuery(collectionRef, option = {}) {
     if (option.hasOwnProperty('filter')) {
@@ -396,38 +443,19 @@ export default RESTAdapter.extend({
   },
 
   /**
-   * Builds a batched write
+   * Adds snapshot.adapterOptions.include to batch if any
    *
-   * @param {DS.Store} store
-   * @param {string} modelName
-   * @param {Array} payloads
    * @param {firebase.firestore.WriteBatch} batch
-   * @return {firebase.firestore.DocumentReference} Doc ref of main payload
+   * @param {firebase.firestore} db
+   * @param {Object} snapshot
+   * @private
    */
-  buildBatchedWrites(store, modelName, payloads, batch) {
-    const db = this.get('firebase').firestore();
-    let mainDocRef;
+  addIncludesToBatch(batch, db, snapshot) {
+    const include = this.getAdapterOptionAttribute(snapshot, 'include');
 
-    payloads.forEach((payload, index) => {
-      if (!payload.id) {
-        payload.id = this.generateIdForRecord(store, modelName);
-      }
-
-      const path = `${payload.path}/${payload.id}`;
-      const docRef = buildRefFromPath(db, path);
-
-      if (index === 0) {
-        mainDocRef = docRef;
-      }
-
-      if (payload.data !== null) {
-        batch.set(docRef, payload.data, { merge: true });
-      } else {
-        batch.delete(docRef);
-      }
-    });
-
-    return mainDocRef;
+    if (include) {
+      include(batch, db);
+    }
   },
 
   /**

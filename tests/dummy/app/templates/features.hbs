@@ -8,8 +8,8 @@
   {{#each users as |user|}}
     <tr>
       <td data-test-id="{{user.id}}">{{user.id}}</td>
-      <td data-test-name="{{user.id}}">{{user.name}}</td>
       <td data-test-age="{{user.id}}">{{user.age}}</td>
+      <td data-test-username="{{user.id}}">{{user.username}}</td>
     </tr>
   {{/each}}
 </table>
@@ -21,7 +21,5 @@
 <button data-test-button="find-record" onclick={{action handleFindRecordClick}}>Find record</button>
 <button data-test-button="query-1" onclick={{action handleQuery1Click}}>Query 1</button>
 <button data-test-button="query-2" onclick={{action handleQuery2Click}}>Query 2</button>
-<button data-test-button="query-3" onclick={{action handleQuery3Click}}>Query 3</button>
-<button data-test-button="query-4" onclick={{action handleQuery4Click}}>Query 4</button>
 
 {{outlet}}
