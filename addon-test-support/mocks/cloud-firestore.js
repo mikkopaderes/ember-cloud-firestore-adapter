@@ -10,6 +10,7 @@ import Service from '@ember/service';
  */
 export default function mockCloudFirestore(context, fixtureData) {
   const mockFirebase = new MockFirebase();
+
   const mockFirebasePojo = {
     _data: fixtureData,
     initializeApp: mockFirebase.initializeApp,
