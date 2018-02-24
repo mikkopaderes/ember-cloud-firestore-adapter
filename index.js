@@ -8,5 +8,10 @@ module.exports = {
 
     app.import('node_modules/firebase/firebase.js');
     app.import('node_modules/firebase/firebase-firestore.js');
+
+    if (app.env !== 'production') {
+      app.import('node_modules/mock-cloud-firestore/dist/mock-cloud-firestore.js');
+      app.import('vendor/shims/mock-cloud-firestore.js');
+    }
   },
 };
