@@ -16,9 +16,9 @@ export default JSONSerializer.extend({
    */
   extractRelationship(relationshipModelName, relationshipHash) {
     if (
-      relationshipHash !== null &&
-      typeof relationshipHash === 'object' &&
-      relationshipHash.hasOwnProperty('firestore')
+      relationshipHash !== null
+      && typeof relationshipHash === 'object'
+      && relationshipHash.firestore
     ) {
       const path = buildPathFromRef(relationshipHash);
       const pathNodes = path.split('/');
@@ -42,10 +42,10 @@ export default JSONSerializer.extend({
     modelClass.eachRelationship((name, descriptor) => {
       if (descriptor.kind === 'belongsTo') {
         if (
-          resourceHash.hasOwnProperty(name) &&
-          resourceHash[name] !== null &&
-          typeof resourceHash[name] === 'object' &&
-          resourceHash[name].hasOwnProperty('firestore')
+          resourceHash.hasOwnProperty(name)
+          && resourceHash[name] !== null
+          && typeof resourceHash[name] === 'object'
+          && resourceHash[name].firestore
         ) {
           const path = buildPathFromRef(resourceHash[name]);
 
@@ -155,8 +155,8 @@ export default JSONSerializer.extend({
    */
   getAdapterOptionAttribute(snapshot, key) {
     if (
-      snapshot.adapterOptions &&
-      snapshot.adapterOptions.hasOwnProperty(key)
+      snapshot.adapterOptions
+      && snapshot.adapterOptions.hasOwnProperty(key)
     ) {
       return snapshot['adapterOptions'][key];
     }

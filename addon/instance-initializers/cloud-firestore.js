@@ -54,8 +54,8 @@ function reopenStore(appInstance) {
     query(modelName, query) {
       return this._super(modelName, query).then((records) => {
         if (
-          this.adapterFor(modelName).get('dbType') === 'cloud-firestore' &&
-          query.queryId
+          this.adapterFor(modelName).get('dbType') === 'cloud-firestore'
+          && query.queryId
         ) {
           this.get('tracker')['_query'][query.queryId]['recordArray'] = records;
         }
@@ -72,8 +72,8 @@ function reopenStore(appInstance) {
      */
     listenForDocChanges(type, docRef) {
       if (
-        !this.isInFastBoot() &&
-        !this.hasListenerForDoc(type.modelName, docRef.id)
+        !this.isInFastBoot()
+        && !this.hasListenerForDoc(type.modelName, docRef.id)
       ) {
         this.trackDocListener(type.modelName, docRef.id);
 
@@ -199,8 +199,8 @@ function reopenStore(appInstance) {
      */
     listenForHasManyChanges(modelName, id, field, collectionRef) {
       if (
-        !this.isInFastBoot() &&
-        !this.hasListenerForHasMany(modelName, id, field)
+        !this.isInFastBoot()
+        && !this.hasListenerForHasMany(modelName, id, field)
       ) {
         this.trackHasManyListener(modelName, id, field);
 
@@ -298,9 +298,9 @@ function reopenStore(appInstance) {
      */
     hasListenerForHasMany(modelName, id, field) {
       if (
-        this.get('tracker').hasOwnProperty(modelName) &&
-        this.get('tracker')[modelName]['document'].hasOwnProperty(id) &&
-        this.get('tracker')[modelName]['document'][id]['relationship'][field]
+        this.get('tracker').hasOwnProperty(modelName)
+        && this.get('tracker')[modelName]['document'].hasOwnProperty(id)
+        && this.get('tracker')[modelName]['document'][id]['relationship'][field]
       ) {
         return true;
       }
