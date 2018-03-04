@@ -508,8 +508,8 @@ export default RESTAdapter.extend({
    */
   getAdapterOptionAttribute(snapshot, key) {
     if (
-      snapshot.adapterOptions &&
-      snapshot.adapterOptions.hasOwnProperty(key)
+      snapshot.adapterOptions
+      && snapshot.adapterOptions.hasOwnProperty(key)
     ) {
       return snapshot['adapterOptions'][key];
     }
