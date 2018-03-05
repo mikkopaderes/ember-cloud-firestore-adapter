@@ -57,10 +57,17 @@ export default RESTAdapter.extend({
    * @override
    */
   createRecord(store, type, snapshot) {
-    const onServer = this.getAdapterOptionAttribute(snapshot, 'onServer');
     const config = getOwner(this).resolveRegistration('config:environment');
+    let onServer = this.getAdapterOptionAttribute(snapshot, 'onServer');
 
-    if (onServer && config.environment !== 'test') {
+    // TODO: Figure out a better way to solve this
+    if (onServer && config.environment === 'test') {
+      // Force to false so we could mock our tests
+      snapshot.adapterOptions.onServer = false;
+      onServer = false;
+    }
+
+    if (onServer) {
       return this._super(store, type, snapshot).then(() => {
         return this.findRecord(store, type, snapshot.id, snapshot);
       });
@@ -79,10 +86,17 @@ export default RESTAdapter.extend({
    * @override
    */
   updateRecord(store, type, snapshot) {
-    const onServer = this.getAdapterOptionAttribute(snapshot, 'onServer');
     const config = getOwner(this).resolveRegistration('config:environment');
+    let onServer = this.getAdapterOptionAttribute(snapshot, 'onServer');
 
-    if (onServer && config.environment !== 'test') {
+    // TODO: Figure out a better way to solve this
+    if (onServer && config.environment === 'test') {
+      // Force to false so we could mock our tests
+      snapshot.adapterOptions.onServer = false;
+      onServer = false;
+    }
+
+    if (onServer) {
       return this._super(store, type, snapshot);
     } else {
       return new Promise((resolve, reject) => {
@@ -112,10 +126,17 @@ export default RESTAdapter.extend({
    * @override
    */
   deleteRecord(store, type, snapshot) {
-    const onServer = this.getAdapterOptionAttribute(snapshot, 'onServer');
     const config = getOwner(this).resolveRegistration('config:environment');
+    let onServer = this.getAdapterOptionAttribute(snapshot, 'onServer');
 
-    if (onServer && config.environment !== 'test') {
+    // TODO: Figure out a better way to solve this
+    if (onServer && config.environment === 'test') {
+      // Force to false so we could mock our tests
+      snapshot.adapterOptions.onServer = false;
+      onServer = false;
+    }
+
+    if (onServer) {
       return this._super(store, type, snapshot);
     } else {
       return new Promise((resolve, reject) => {
