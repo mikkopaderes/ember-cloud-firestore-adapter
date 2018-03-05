@@ -3,7 +3,7 @@ import { computed } from '@ember/object';
 import { dasherize } from '@ember/string';
 import { getOwner } from '@ember/application';
 import { inject } from '@ember/service';
-import { run } from '@ember/runloop';
+import { next } from '@ember/runloop';
 import { singularize } from 'ember-inflector';
 
 import {
@@ -78,7 +78,7 @@ function reopenStore(appInstance) {
         this.trackDocListener(type.modelName, docRef.id);
 
         docRef.onSnapshot((docSnapshot) => {
-          run(() => {
+          next(() => {
             if (docSnapshot.exists) {
               const payload = parseDocSnapshot(type, docSnapshot);
               const normalizedPayload = this.normalize(type.modelName, payload);
@@ -112,7 +112,7 @@ function reopenStore(appInstance) {
         this.trackCollectionListener(modelName);
 
         collectionRef.onSnapshot((querySnapshot) => {
-          run(() => {
+          next(() => {
             querySnapshot.forEach((docSnapshot) => {
               this.findRecord(modelName, docSnapshot.id);
             });
@@ -172,7 +172,7 @@ function reopenStore(appInstance) {
             });
 
             Promise.all(requests).then((responses) => {
-              run(() => {
+              next(() => {
                 queryTracker.recordArray.get('content').clear();
 
                 responses.forEach((record) => {
@@ -205,7 +205,7 @@ function reopenStore(appInstance) {
         this.trackHasManyListener(modelName, id, field);
 
         collectionRef.onSnapshot(() => {
-          run(() => {
+          next(() => {
             this.peekRecord(modelName, id).hasMany(field).reload();
           });
         });
