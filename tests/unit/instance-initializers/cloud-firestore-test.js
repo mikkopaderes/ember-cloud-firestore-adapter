@@ -1,5 +1,6 @@
 import { A } from '@ember/array';
 import { module, test } from 'qunit';
+import { next } from '@ember/runloop';
 import { setupTest } from 'ember-qunit';
 import ArrayProxy from '@ember/array/proxy';
 import EmberObject from '@ember/object';
@@ -57,25 +58,27 @@ module('Unit | Instance Initializer | store', function(hooks) {
       }, docRef);
 
       // Assert
-      assert.ok(
-        normalizeStub.calledWithExactly('user', {
-          id: 'ID',
-          name: 'Name',
-          cloudFirestoreReference: 'ref',
-        }),
-      );
-      assert.ok(
-        pushStub.calledWithExactly({
-          data: {
+      next(() => {
+        assert.ok(
+          normalizeStub.calledWithExactly('user', {
             id: 'ID',
-            type: 'user',
+            name: 'Name',
+            cloudFirestoreReference: 'ref',
+          }),
+        );
+        assert.ok(
+          pushStub.calledWithExactly({
+            data: {
+              id: 'ID',
+              type: 'user',
 
-            attributes: {
-              name: 'Name',
+              attributes: {
+                name: 'Name',
+              },
             },
-          },
-        }),
-      );
+          }),
+        );
+      });
     });
 
     test('should unload a record when the document no longer exists', function(assert) {
@@ -107,8 +110,10 @@ module('Unit | Instance Initializer | store', function(hooks) {
       }, docRef);
 
       // Assert
-      assert.ok(peekRecordStub.calledWithExactly('user', 'ID'));
-      assert.ok(unloadRecordStub.calledWithExactly(record));
+      next(() => {
+         assert.ok(peekRecordStub.calledWithExactly('user', 'ID'));
+        assert.ok(unloadRecordStub.calledWithExactly(record));
+      });
     });
 
     test('should unload a record when unable to listen for changes and model adapter is configured to unload it', function(assert) {
@@ -211,7 +216,9 @@ module('Unit | Instance Initializer | store', function(hooks) {
       store.listenForCollectionChanges(collectionRef);
 
       // Assert
-      assert.ok(findRecordStub.calledWithExactly('user', 'ID'));
+      next(() => {
+        assert.ok(findRecordStub.calledWithExactly('user', 'ID'));
+      });
     });
   });
 
@@ -297,9 +304,11 @@ module('Unit | Instance Initializer | store', function(hooks) {
       });
 
       // Assert
-      assert.ok(peekRecordStub.calledWithExactly('user', 'user_a'));
-      assert.ok(hasManyStub.calledWithExactly('friends'));
-      assert.ok(reloadStub.calledOnce);
+      next(() => {
+        assert.ok(peekRecordStub.calledWithExactly('user', 'user_a'));
+        assert.ok(hasManyStub.calledWithExactly('friends'));
+        assert.ok(reloadStub.calledOnce);
+      });
     });
   });
 });
