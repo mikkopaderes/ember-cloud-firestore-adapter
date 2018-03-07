@@ -673,7 +673,7 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       delete result[0].author;
       delete result[0].cloudFirestoreReference;
 
-      assert.deepEqual(result, [{ id: 'post_a' }]);
+      assert.deepEqual(result, [{ id: 'post_a', title: 'user_a' }]);
       assert.ok(determineRelationshipTypeStub.calledWithExactly(
         relationship,
         this.store,
@@ -725,6 +725,62 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
         relationship,
         this.store,
       ));
+    });
+
+    test('should fetch with filter using a record property', async function(assert) {
+      assert.expect(3);
+
+      // Arrange
+      const determineRelationshipTypeStub = sinon.stub().returns('manyToOne');
+      const inverseForStub = sinon.stub().returns({ name: 'author' });
+      const snapshot = {
+        record: EmberObject.create({
+          id: 'user_a',
+          cloudFirestoreReference: db.collection('users').doc('user_a'),
+        }),
+        type: {
+          determineRelationshipType: determineRelationshipTypeStub,
+          inverseFor: inverseForStub,
+        },
+      };
+      const url = 'posts';
+      const relationship = {
+        key: 'posts',
+        options: {
+          filter(reference, record) {
+            return reference.where('title', '==', record.get('id'));
+          },
+        },
+        type: 'post',
+      };
+      const adapter = this.owner.lookup('adapter:cloud-firestore');
+
+      // Act
+      const result = await adapter.findHasMany(
+        this.store,
+        snapshot,
+        url,
+        relationship,
+      );
+
+      // Assert
+      delete result[0].author;
+      delete result[0].cloudFirestoreReference;
+      delete result[1].author;
+      delete result[1].cloudFirestoreReference;
+
+      assert.deepEqual(result, [{
+        id: 'post_a',
+        title: 'user_a',
+      }, {
+        id: 'post_c',
+        title: 'user_a',
+      }]);
+      assert.ok(determineRelationshipTypeStub.calledWithExactly(
+        relationship,
+        this.store,
+      ));
+      assert.ok(inverseForStub.calledWithExactly(relationship.key, this.store));
     });
   });
 

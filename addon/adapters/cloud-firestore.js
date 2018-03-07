@@ -257,7 +257,11 @@ export default RESTAdapter.extend({
         collectionRef = buildRefFromPath(db, url);
       }
 
-      collectionRef = this.buildQuery(collectionRef, relationship.options);
+      collectionRef = this.buildQuery(
+        collectionRef,
+        relationship.options,
+        snapshot.record,
+      );
 
       const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
         const requests = [];
@@ -452,12 +456,13 @@ export default RESTAdapter.extend({
    *
    * @param {firebase.firestore.CollectionReference} collectionRef
    * @param {Object} [option={}]
+   * @param {Model.<*>} [record]
    * @return {firebase.firestore.Query} Query
    * @private
    */
-  buildQuery(collectionRef, option = {}) {
+  buildQuery(collectionRef, option = {}, record) {
     if (option.hasOwnProperty('filter')) {
-      return option.filter(collectionRef);
+      return option.filter(collectionRef, record);
     }
 
     return collectionRef;
