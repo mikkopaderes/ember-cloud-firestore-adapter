@@ -21,14 +21,17 @@ export default function getFixtureData() {
       posts: {
         __doc__: {
           post_a: {
+            title: 'user_a',
             author: '__ref__:users/user_a',
           },
 
           post_b: {
+            title: 'user_b',
             author: '__ref__:users/user_b',
           },
 
           post_c: {
+            title: 'user_a',
             author: '__ref__:users/user_a',
           },
         },
