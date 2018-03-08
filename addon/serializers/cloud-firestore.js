@@ -1,7 +1,12 @@
+import { inject } from '@ember/service';
 import { pluralize } from 'ember-inflector';
 import JSONSerializer from 'ember-data/serializers/json';
 
-import { buildPathFromRef } from 'ember-cloud-firestore-adapter/utils/parser';
+import {
+  buildCollectionName,
+  buildPathFromRef,
+  buildRefFromPath,
+} from 'ember-cloud-firestore-adapter/utils/parser';
 
 /**
  * @class CloudFirestore
@@ -9,6 +14,11 @@ import { buildPathFromRef } from 'ember-cloud-firestore-adapter/utils/parser';
  * @extends DS.JSONSerializer
  */
 export default JSONSerializer.extend({
+  /**
+   * @type {Ember.Service}
+   */
+  firebase: inject(),
+
   /**
    * Overriden to properly get the data of a `Reference` type relationship
    *
@@ -61,9 +71,10 @@ export default JSONSerializer.extend({
         if (cardinality === 'manyToOne') {
           hasManyPath = pluralize(descriptor.type);
         } else {
-          const path = buildPathFromRef(resourceHash.cloudFirestoreReference);
+          const collectionName = buildCollectionName(modelClass.modelName);
+          const docId = resourceHash.id;
 
-          hasManyPath = `${path}/${name}`;
+          hasManyPath = `${collectionName}/${docId}/${name}`;
         }
 
         links[name] = hasManyPath;
@@ -76,42 +87,23 @@ export default JSONSerializer.extend({
   },
 
   /**
-   * Overriden to delete cloudFirestoreReference attribute
-   *
-   * @override
-   */
-  serialize(snapshot, options) {
-    const data = this._super(snapshot, options);
-
-    delete data.cloudFirestoreReference;
-
-    return data;
-  },
-
-  /**
    * @override
    */
   serializeBelongsTo(snapshot, json, relationship) {
     this._super(snapshot, json, relationship);
 
     if (json[relationship.key]) {
-      const record = this.get('store').peekRecord(
-        relationship.type,
-        json[relationship.key],
-      );
+      const collectionName = buildCollectionName(relationship.type);
+      const docId = json[relationship.key];
+      const path = `${collectionName}/${docId}`;
 
-      // Don't include the relationship in the payload if we can't
-      // get its cloud firestore reference.
-      if (record) {
-        if (this.getAdapterOptionAttribute(snapshot, 'onServer')) {
-          json[relationship.key] = buildPathFromRef(
-            record.get('cloudFirestoreReference'),
-          );
-        } else {
-          json[relationship.key] = record.get('cloudFirestoreReference');
-        }
+      if (this.getAdapterOptionAttribute(snapshot, 'onServer')) {
+        json[relationship.key] = path;
       } else {
-        delete json[relationship.key];
+        json[relationship.key] = buildRefFromPath(
+          this.get('firebase').firestore(),
+          path,
+        );
       }
     }
   },
@@ -126,16 +118,16 @@ export default JSONSerializer.extend({
       const references = [];
 
       json[relationship.key].forEach((id) => {
-        const record = this.get('store').peekRecord(relationship.type, id);
+        const collectionName = buildCollectionName(relationship.type);
+        const path = `${collectionName}/${id}`;
 
-        if (record) {
-          if (this.getAdapterOptionAttribute(snapshot, 'onServer')) {
-            references.push(buildPathFromRef(
-              record.get('cloudFirestoreReference'),
-            ));
-          } else {
-            references.push(record.get('cloudFirestoreReference'));
-          }
+        if (this.getAdapterOptionAttribute(snapshot, 'onServer')) {
+          references.push(path);
+        } else {
+          references.push(buildRefFromPath(
+            this.get('firebase').firestore(),
+            path,
+          ));
         }
       });
 

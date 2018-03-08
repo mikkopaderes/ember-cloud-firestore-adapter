@@ -1,12 +1,11 @@
 import { Promise } from 'rsvp';
-import { camelize } from '@ember/string';
 import { getOwner } from '@ember/application';
 import { inject } from '@ember/service';
-import { pluralize } from 'ember-inflector';
 import { run } from '@ember/runloop';
 import RESTAdapter from 'ember-data/adapters/rest';
 
 import {
+  buildCollectionName,
   buildRefFromPath,
   parseDocSnapshot,
 } from 'ember-cloud-firestore-adapter/utils/parser';
@@ -48,7 +47,7 @@ export default RESTAdapter.extend({
    */
   generateIdForRecord(store, type) {
     const db = this.get('firebase').firestore();
-    const collectionName = this.buildCollectionName(type);
+    const collectionName = buildCollectionName(type);
 
     return db.collection(collectionName).doc().id;
   },
@@ -142,7 +141,7 @@ export default RESTAdapter.extend({
       return new Promise((resolve, reject) => {
         const db = this.get('firebase').firestore();
         const docRef = db
-          .collection(this.buildCollectionName(type.modelName))
+          .collection(buildCollectionName(type.modelName))
           .doc(snapshot.id);
         const batch = this.buildWriteBatch(type, snapshot, docRef, true);
 
@@ -161,7 +160,7 @@ export default RESTAdapter.extend({
   findAll(store, type) {
     return new Promise((resolve, reject) => {
       const db = this.get('firebase').firestore();
-      const collectionName = this.buildCollectionName(type.modelName);
+      const collectionName = buildCollectionName(type.modelName);
       const collectionRef = db.collection(collectionName);
       const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
         store.listenForCollectionChanges(collectionRef);
@@ -250,7 +249,8 @@ export default RESTAdapter.extend({
 
       if (cardinality === 'manyToOne') {
         const inverse = snapshot.type.inverseFor(relationship.key, store);
-        const reference = snapshot.record.get('cloudFirestoreReference');
+        const collectionName = buildCollectionName(snapshot.modelName);
+        const reference = db.collection(collectionName).doc(snapshot.id);
 
         collectionRef = db.collection(url).where(inverse.name, '==', reference);
       } else {
@@ -374,17 +374,6 @@ export default RESTAdapter.extend({
   },
 
   /**
-   * Camelizes and pluralizes the model name
-   *
-   * @param {string} modelName
-   * @return {string} Camelized and pluralized model name
-   * @private
-   */
-  buildCollectionName(modelName) {
-    return camelize(pluralize(modelName));
-  },
-
-  /**
    * Builds a reference to a collection
    *
    * @param {string} modelName
@@ -398,7 +387,7 @@ export default RESTAdapter.extend({
       return option.buildReference(db);
     }
 
-    return db.collection(this.buildCollectionName(modelName));
+    return db.collection(buildCollectionName(modelName));
   },
 
   /**
@@ -500,7 +489,7 @@ export default RESTAdapter.extend({
     querySnapshot.forEach((docSnapshot) => {
       const referenceTo = docSnapshot.get('cloudFirestoreTo');
 
-      if (referenceTo && referenceTo.hasOwnProperty('firestore')) {
+      if (referenceTo && referenceTo.firestore) {
         const docId = referenceTo.id;
         const collectionRef = referenceTo.parent;
         const request = this.findRecord(store, type, docId, {

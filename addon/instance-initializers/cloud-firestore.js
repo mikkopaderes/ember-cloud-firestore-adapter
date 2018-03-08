@@ -153,7 +153,7 @@ function reopenStore(appInstance) {
             querySnapshot.forEach((docSnapshot) => {
               const reference = docSnapshot.get('cloudFirestoreReference');
 
-              if (reference && reference.hasOwnProperty('firestore')) {
+              if (reference && reference.firestore) {
                 const pathNodes = buildPathFromRef(reference).split('/');
                 const id = pathNodes.pop();
                 const path = pathNodes.join('/');
