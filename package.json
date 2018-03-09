@@ -21,7 +21,7 @@
   "dependencies": {
     "ember-cli-babel": "^6.6.0",
     "ember-firebase-service": "^4.0.0",
-    "mock-cloud-firestore": "^0.1.0"
+    "mock-cloud-firestore": "^0.1.1"
   },
   "devDependencies": {
     "broccoli-asset-rev": "^2.4.5",
