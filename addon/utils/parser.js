@@ -1,4 +1,6 @@
 import { assign } from '@ember/polyfills';
+import { camelize } from '@ember/string';
+import { pluralize } from 'ember-inflector';
 
 /**
  * Parses a document snapshot from Cloud Firestore
@@ -45,7 +47,6 @@ import { assign } from '@ember/polyfills';
  *   title: 'Foo',
  *   body: 'Bar',
  *   author: <cloud firestore reference to users/user_a document>,
- *   cloudFirestoreReference: <cloud firestore reference to this document>
  * }
  * ```
  *
@@ -56,9 +57,18 @@ import { assign } from '@ember/polyfills';
 export function parseDocSnapshot(type, docSnapshot) {
   const id = docSnapshot.id;
   const data = docSnapshot.data();
-  const cloudFirestoreReference = docSnapshot.ref;
 
-  return assign({}, data, { id, cloudFirestoreReference });
+  return assign({}, data, { id });
+}
+
+/**
+ * Builds a collection name from a given name
+ *
+ * @param {string} name
+ * @return {string} URL
+ */
+export function buildCollectionName(name) {
+  return camelize(pluralize(name));
 }
 
 /**

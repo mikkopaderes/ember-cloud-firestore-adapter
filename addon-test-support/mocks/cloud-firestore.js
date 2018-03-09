@@ -1,7 +1,6 @@
 import MockFirebase from 'mock-cloud-firestore';
 import Service from '@ember/service';
 
-import { initialize as initializeInitializer } from 'ember-cloud-firestore-adapter/initializers/cloud-firestore';
 import { initialize as initializeInstanceInitializer } from 'ember-cloud-firestore-adapter/instance-initializers/cloud-firestore';
 
 /**
@@ -12,7 +11,6 @@ import { initialize as initializeInstanceInitializer } from 'ember-cloud-firesto
  * @return {Ember.Service} Firebase service
  */
 export default function mockCloudFirestore(owner, fixtureData) {
-  initializeInitializer(owner);
   initializeInstanceInitializer(owner);
 
   const mockFirebase = new MockFirebase();

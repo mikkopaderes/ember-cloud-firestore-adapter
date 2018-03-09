@@ -60,8 +60,6 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       );
 
       // Assert
-      delete result.cloudFirestoreReference;
-
       assert.deepEqual(result, {
         id: 'user_100',
         age: 30,
@@ -103,8 +101,6 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       );
 
       // Assert
-      delete result.cloudFirestoreReference;
-
       assert.deepEqual(result, {
         id: 'user_100',
         age: 30,
@@ -173,8 +169,6 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       );
 
       // Assert
-      delete result.cloudFirestoreReference;
-
       assert.deepEqual(result, {
         id: 'user_a',
         age: 50,
@@ -207,8 +201,6 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       );
 
       // Assert
-      delete result.cloudFirestoreReference;
-
       assert.deepEqual(result, {
         id: 'user_a',
         age: 50,
@@ -250,8 +242,6 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       );
 
       // Assert
-      delete result.cloudFirestoreReference;
-
       assert.deepEqual(result, {
         id: 'user_a',
         age: 50,
@@ -439,10 +429,6 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       const result = await adapter.findAll(this.store, modelClass);
 
       // Assert
-      delete result[0].cloudFirestoreReference;
-      delete result[1].cloudFirestoreReference;
-      delete result[2].cloudFirestoreReference;
-
       assert.deepEqual(result, [{
         id: 'user_a',
         age: 15,
@@ -513,8 +499,6 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       );
 
       // Assert
-      delete result.cloudFirestoreReference;
-
       assert.deepEqual(result, {
         id: 'user_a',
         age: 15,
@@ -546,8 +530,6 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       );
 
       // Assert
-      delete result.cloudFirestoreReference;
-
       assert.deepEqual(result, {
         id: 'user_a',
         since: 2010,
@@ -617,8 +599,6 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       );
 
       // Assert
-      delete result.cloudFirestoreReference;
-
       assert.deepEqual(result, {
         id: 'user_a',
         since: 2010,
@@ -641,9 +621,9 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       const determineRelationshipTypeStub = sinon.stub().returns('manyToOne');
       const inverseForStub = sinon.stub().returns({ name: 'author' });
       const snapshot = {
-        record: EmberObject.create({
-          cloudFirestoreReference: db.collection('users').doc('user_a'),
-        }),
+        id: 'user_a',
+        modelName: 'user',
+        record: EmberObject.create(),
         type: {
           determineRelationshipType: determineRelationshipTypeStub,
           inverseFor: inverseForStub,
@@ -671,7 +651,6 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
 
       // Assert
       delete result[0].author;
-      delete result[0].cloudFirestoreReference;
 
       assert.deepEqual(result, [{ id: 'post_a', title: 'user_a' }]);
       assert.ok(determineRelationshipTypeStub.calledWithExactly(
@@ -714,8 +693,6 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       );
 
       // Assert
-      delete result[0].cloudFirestoreReference;
-
       assert.deepEqual(result, [{
         id: 'user_b',
         age: 10,
@@ -734,9 +711,10 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       const determineRelationshipTypeStub = sinon.stub().returns('manyToOne');
       const inverseForStub = sinon.stub().returns({ name: 'author' });
       const snapshot = {
+        id: 'user_a',
+        modelName: 'user',
         record: EmberObject.create({
           id: 'user_a',
-          cloudFirestoreReference: db.collection('users').doc('user_a'),
         }),
         type: {
           determineRelationshipType: determineRelationshipTypeStub,
@@ -765,9 +743,7 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
 
       // Assert
       delete result[0].author;
-      delete result[0].cloudFirestoreReference;
       delete result[1].author;
-      delete result[1].cloudFirestoreReference;
 
       assert.deepEqual(result, [{
         id: 'post_a',
@@ -808,8 +784,6 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       const result = await adapter.query(this.store, modelClass, option);
 
       // Assert
-      delete result[0].cloudFirestoreReference;
-
       assert.deepEqual(result, [{
         id: 'user_a',
         age: 15,
@@ -837,8 +811,6 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       const result = await adapter.query(this.store, modelClass, option);
 
       // Assert
-      delete result[0].cloudFirestoreReference;
-
       assert.deepEqual(result, [{
         id: 'user_b',
         since: 2015,

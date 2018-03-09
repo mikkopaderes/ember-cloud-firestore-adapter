@@ -63,7 +63,6 @@ module('Unit | Instance Initializer | store', function(hooks) {
           normalizeStub.calledWithExactly('user', {
             id: 'ID',
             name: 'Name',
-            cloudFirestoreReference: 'ref',
           }),
         );
         assert.ok(

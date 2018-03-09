@@ -3,12 +3,25 @@ import { module, test } from 'qunit';
 import sinon from 'sinon';
 
 import {
+  buildCollectionName,
   buildPathFromRef,
   buildRefFromPath,
   parseDocSnapshot,
 } from 'ember-cloud-firestore-adapter/utils/parser';
 
 module('Unit | Utility | parser', function() {
+  module('buildCollectionName', function() {
+    test('should return a camelize and pluralize name', function(assert) {
+      assert.expect(1);
+
+      // Act
+      const result = buildCollectionName('blog-post');
+
+      // Assert
+      assert.equal(result, 'blogPosts');
+    });
+  });
+
   module('buildPathFromRef', function() {
     test('should build a path from a cloud firestore reference', function(assert) {
       assert.expect(1);
@@ -55,7 +68,6 @@ module('Unit | Utility | parser', function() {
         },
       }, {
         id: 'post_a',
-        ref: 'ref',
 
         data() {
           return {
@@ -80,7 +92,6 @@ module('Unit | Utility | parser', function() {
           parent: { id: 'users' },
           firestore: {},
         },
-        cloudFirestoreReference: 'ref',
       });
     });
   });
