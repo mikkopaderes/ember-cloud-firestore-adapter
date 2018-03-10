@@ -28,7 +28,9 @@ this.get('store').findRecord('user', 'user_a').then((user) => {
     author: user
   }).save({
     adapterOptions: {
-      path: 'users/user_b/feeds'
+      buildReference(db) {
+        return db.collection('users').doc('user_b').collection('feeds');
+      }
     }
   });
 });
@@ -36,7 +38,7 @@ this.get('store').findRecord('user', 'user_a').then((user) => {
 
 ### Batched Writes
 
-This will create a new `post` document under the `posts` collection and duplicates of it under the `users/user_a/feeds` and `users/user_a/feeds` subcollections. This is done atomically using [batched writes](https://firebase.google.com/docs/firestore/manage-data/transactions#batched-writes).
+This will create a new `post` document under the `posts` collection and duplicates of it under the `users/user_a/feeds` and `users/user_b/feeds` subcollections. This is done atomically using [batched writes](https://firebase.google.com/docs/firestore/manage-data/transactions#batched-writes).
 
 ```javascript
 this.get('store').findRecord('user', 'user_a').then((user) => {
@@ -48,31 +50,22 @@ this.get('store').findRecord('user', 'user_a').then((user) => {
 
   post.save({
     adapterOptions: {
-      batch: [{
-        id: post.get('id'),
-        path: 'users/user_a/feeds',
-        data: {
+      include(batch, db) {
+        batch.set(db.collection('users').doc('user_a').collection('feeds'), {
           body: 'New Post Body',
           title: 'New Post Title',
           author: user
-        }
-      }, {
-        id: post.get('id'),
-        path: 'users/user_b/feeds',
-        data: {
+        });
+        batch.set(db.collection('users').doc('user_b').collection('feeds'), {
           body: 'New Post Body',
           title: 'New Post Title',
           author: user
-        }
-      }]
+        });
+      }
     }
   });
 });
 ```
-
-> Notes:
->
-> - Setting `data` to `null` in batched writes will delete that document if it exists
 
 ### Using your Server APIs
 
