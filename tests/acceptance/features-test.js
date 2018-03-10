@@ -1,8 +1,6 @@
 import { test } from 'qunit';
 import moduleForAcceptance from '../../tests/helpers/module-for-acceptance';
 
-import { click, find, findAll, visit } from 'ember-native-dom-helpers';
-
 moduleForAcceptance('Acceptance | features');
 
 test('should create record', async function(assert) {
@@ -15,12 +13,9 @@ test('should create record', async function(assert) {
   await click('[data-test-button="create-record"]');
 
   // Assert
-  assert.equal(find('[data-test-id="new"]').textContent.trim(), 'new');
-  assert.equal(
-    find('[data-test-username="new"]').textContent.trim(),
-    'new_user',
-  );
-  assert.equal(find('[data-test-age="new"]').textContent.trim(), '25');
+  assert.dom('[data-test-id="new"]').hasText('new');
+  assert.dom('[data-test-username="new"]').hasText('new_user');
+  assert.dom('[data-test-age="new"]').hasText('25');
 });
 
 test('should update record', async function(assert) {
@@ -33,10 +28,7 @@ test('should update record', async function(assert) {
   await click('[data-test-button="update-record"]');
 
   // Assert
-  assert.equal(
-    find('[data-test-username="user_a"]').textContent.trim(),
-    'updated_user',
-  );
+  assert.dom('[data-test-username="user_a"]').hasText('updated_user');
 });
 
 test('should delete record', async function(assert) {
@@ -49,7 +41,7 @@ test('should delete record', async function(assert) {
   await click('[data-test-button="delete-record"]');
 
   // Assert
-  assert.notOk(find('[data-test-id="user_a"]'));
+  assert.dom('[data-test-id="user-a"]').doesNotExist();
 });
 
 test('should find all record', async function(assert) {
@@ -62,7 +54,7 @@ test('should find all record', async function(assert) {
   await click('[data-test-button="find-all"]');
 
   // Assert
-  assert.equal(findAll('[data-test-id]').length, 3);
+  assert.dom('[data-test-id]').exists({ count: 3 });
 });
 
 test('should find record', async function(assert) {
@@ -75,11 +67,11 @@ test('should find record', async function(assert) {
   await click('[data-test-button="find-record"]');
 
   // Assert
-  assert.equal(find('[data-test-id="user_a"]').textContent.trim(), 'user_a');
+  assert.dom('[data-test-id="user_a"]').hasText('user_a');
 });
 
 test('should query', async function(assert) {
-  assert.expect(3);
+  assert.expect(1);
 
   // Arrange
   await visit('/features');
@@ -88,11 +80,7 @@ test('should query', async function(assert) {
   await click('[data-test-button="query-1"]');
 
   // Assert
-  const idElements = findAll('[data-test-id]');
-
-  assert.equal(idElements.length, 2);
-  assert.equal(idElements[0].textContent.trim(), 'user_a');
-  assert.equal(idElements[1].textContent.trim(), 'user_c');
+  assert.dom('[data-test-id]').exists({ count: 2 });
 });
 
 test('should return nothing when querying to a path that does not exist', async function(assert) {
@@ -105,7 +93,5 @@ test('should return nothing when querying to a path that does not exist', async 
   await click('[data-test-button="query-2"]');
 
   // Assert
-  const idElements = findAll('[data-test-id]');
-
-  assert.equal(idElements.length, 0);
+  assert.dom('[data-test-id]').doesNotExist();
 });

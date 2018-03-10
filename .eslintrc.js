@@ -8,15 +8,17 @@ module.exports = {
     'ember'
   ],
   extends: [
+    'eslint:recommended',
+    'plugin:ember/recommended',
     'rmmmp/base',
-    'rmmmp/ember',
-    'plugin:ember/recommended'
+    'rmmmp/ember'
   ],
   env: {
     browser: true
   },
   rules: {
-    'ember/avoid-leaking-state-in-ember-objects': 'off',
+    // We use immutability to prevent this
+    "ember/avoid-leaking-state-in-ember-objects": "off"
   },
   overrides: [
     // node files
@@ -45,15 +47,6 @@ module.exports = {
       rules: Object.assign({}, require('eslint-plugin-node').configs.recommended.rules, {
         // add your custom rules and overrides for node files here
       })
-    },
-
-    // test files
-    {
-      files: ['tests/**/*.js'],
-      excludedFiles: ['tests/dummy/**/*.js'],
-      env: {
-        embertest: true
-      }
     }
   ]
 };
