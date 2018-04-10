@@ -138,6 +138,21 @@ export default JSONSerializer.extend({
   },
 
   /**
+   * @override
+   */
+  serialize(snapshot, ...args) {
+    const json = this._super(snapshot, ...args);
+
+    snapshot.eachRelationship((name, relationship) => {
+      if (relationship.kind === 'hasMany') {
+        delete json[name];
+      }
+    });
+
+    return json;
+  },
+
+  /**
    * Returns an attribute from the snapshot adapter options if it exists
    *
    * @param {Object} snapshot
