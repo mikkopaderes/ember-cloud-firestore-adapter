@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "ember-cli-babel": "^6.6.0",
-    "ember-firebase-service": "^4.0.1",
+    "ember-firebase-service": "^4.1.0",
     "mock-cloud-firestore": "^0.1.1"
   },
   "devDependencies": {
@@ -56,6 +56,10 @@
     "node": "^4.5 || 6.* || >= 7.*"
   },
   "ember-addon": {
-    "configPath": "tests/dummy/config"
+    "configPath": "tests/dummy/config",
+    "fastbootDependencies": [
+      "firebase",
+      "@firebase/firestore"
+    ]
   }
 }
