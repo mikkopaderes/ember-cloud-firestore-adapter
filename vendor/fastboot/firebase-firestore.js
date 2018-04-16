@@ -1,5 +1,5 @@
 (function() {
   if (typeof FastBoot !== 'undefined') {
-    FastBoot.require('@firebase/firestore');
+    FastBoot.require('firebase/firestore');
   }
 }());
