@@ -1,9 +1,11 @@
 {
   "name": "ember-cloud-firestore-adapter",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "Unofficial Ember Data Adapter and Serializer for Cloud Firestore",
   "keywords": [
-    "ember-addon"
+    "ember-addon",
+    "firebase",
+    "cloud-firestore"
   ],
   "license": "MIT",
   "author": "Mikko Paderes",
