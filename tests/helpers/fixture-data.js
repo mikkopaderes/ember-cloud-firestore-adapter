@@ -61,11 +61,31 @@ export default function getFixtureData() {
           user_b: {
             age: 10,
             username: 'user_b',
+
+            __collection__: {
+              friends: {
+                __doc__: {
+                  user_a: {
+                    cloudFirestoreReference: '__ref__:users/user_a',
+                  },
+                },
+              },
+            },
           },
 
           user_c: {
             age: 20,
             username: 'user_c',
+
+            __collection__: {
+              friends: {
+                __doc__: {
+                  user_a: {
+                    cloudFirestoreReference: '__ref__:users/user_a',
+                  },
+                },
+              },
+            },
           },
         },
       },

@@ -704,7 +704,7 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       ));
     });
 
-    test('should fetch with filter using a record property', async function(assert) {
+    test('should be able to fetch with filter using a record property', async function(assert) {
       assert.expect(3);
 
       // Arrange
@@ -757,6 +757,49 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
         this.store,
       ));
       assert.ok(inverseForStub.calledWithExactly(relationship.key, this.store));
+    });
+
+    test('should be able to fetch with a custom reference when not a many-to-one cardinality', async function(assert) {
+      assert.expect(2);
+
+      // Arrange
+      const determineRelationshipTypeStub = sinon.stub().returns('manyToNone');
+      const snapshot = {
+        record: EmberObject.create({ id: 'user_a' }),
+        type: { determineRelationshipType: determineRelationshipTypeStub },
+      };
+      const url = null;
+      const relationship = {
+        key: 'userBPosts',
+        options: {
+          buildReference(db) {
+            return db.collection('posts');
+          },
+
+          filter(reference) {
+            return reference.limit(1);
+          },
+        },
+        type: 'post',
+      };
+      const adapter = this.owner.lookup('adapter:cloud-firestore');
+
+      // Act
+      const result = await adapter.findHasMany(
+        this.store,
+        snapshot,
+        url,
+        relationship,
+      );
+
+      // Assert
+      delete result[0].author;
+
+      assert.deepEqual(result, [{ id: 'post_a', title: 'user_a' }]);
+      assert.ok(determineRelationshipTypeStub.calledWithExactly(
+        relationship,
+        this.store,
+      ));
     });
   });
 

@@ -240,40 +240,19 @@ export default RESTAdapter.extend({
    */
   findHasMany(store, snapshot, url, relationship) {
     return new Promise((resolve, reject) => {
-      const db = this.get('firebase').firestore();
-      const cardinality = snapshot.type.determineRelationshipType(
-        relationship,
+      const collectionRef = this.buildHasManyCollectionRef(
         store,
+        snapshot,
+        url,
+        relationship,
       );
-      let collectionRef;
-
-      if (cardinality === 'manyToOne') {
-        const inverse = snapshot.type.inverseFor(relationship.key, store);
-        const collectionName = buildCollectionName(snapshot.modelName);
-        const reference = db.collection(collectionName).doc(snapshot.id);
-
-        collectionRef = db.collection(url).where(inverse.name, '==', reference);
-      } else {
-        collectionRef = buildRefFromPath(db, url);
-      }
-
-      collectionRef = this.buildQuery(
-        collectionRef,
-        relationship.options,
-        snapshot.record,
-      );
-
       const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
         const requests = [];
 
         querySnapshot.forEach((docSnapshot) => {
           const type = { modelName: relationship.type };
 
-          if (cardinality === 'manyToOne') {
-            const request = this.findRecord(store, type, docSnapshot.id);
-
-            requests.push(request);
-          } else {
+          if (docSnapshot.get('cloudFirestoreReference')) {
             const docRef = docSnapshot.get('cloudFirestoreReference');
             const docId = docRef.id;
             const request = this.findRecord(store, type, docId, {
@@ -283,6 +262,10 @@ export default RESTAdapter.extend({
                 },
               },
             });
+
+            requests.push(request);
+          } else {
+            const request = this.findRecord(store, type, docSnapshot.id);
 
             requests.push(request);
           }
@@ -296,13 +279,7 @@ export default RESTAdapter.extend({
             collectionRef,
           );
 
-          const docs = [];
-
-          responses.forEach((doc) => {
-            docs.push(doc);
-          });
-
-          run(null, resolve, docs);
+          run(null, resolve, responses);
           unsubscribe();
         }).catch((error) => {
           run(null, reject, error);
@@ -388,6 +365,42 @@ export default RESTAdapter.extend({
     }
 
     return db.collection(buildCollectionName(modelName));
+  },
+
+  /**
+   * @param {DS.Store} store
+   * @param {Object} snapshot
+   * @param {string} url
+   * @param {Object} relationship
+   * @return {firebase.firestore.CollectionReference|firebase.firestore.Query} Reference
+   */
+  buildHasManyCollectionRef(store, snapshot, url, relationship) {
+    const db = this.get('firebase').firestore();
+    const cardinality = snapshot.type.determineRelationshipType(
+      relationship,
+      store,
+    );
+    let collectionRef;
+
+    if (cardinality === 'manyToOne') {
+      const inverse = snapshot.type.inverseFor(relationship.key, store);
+      const collectionName = buildCollectionName(snapshot.modelName);
+      const reference = db.collection(collectionName).doc(snapshot.id);
+
+      collectionRef = db.collection(url).where(inverse.name, '==', reference);
+    } else {
+      if (relationship.options.hasOwnProperty('buildReference')) {
+        collectionRef = relationship.options.buildReference(db);
+      } else {
+        collectionRef = buildRefFromPath(db, url);
+      }
+    }
+
+    return this.buildQuery(
+      collectionRef,
+      relationship.options,
+      snapshot.record,
+    );
   },
 
   /**
