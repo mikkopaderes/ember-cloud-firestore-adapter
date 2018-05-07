@@ -84,7 +84,9 @@ It'll be stored in Cloud Firestore like this
     "user_a": {
       "name": "User A",
       "groups": {  // Subcollection
-        "group_a": "<reference to groups/group_a>"
+        "group_a": {
+          "cloudFirestoreReference": "<reference to groups/group_a>"
+        }
       }
     }
   }
