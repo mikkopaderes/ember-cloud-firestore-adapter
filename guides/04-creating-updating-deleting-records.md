@@ -67,6 +67,10 @@ this.get('store').findRecord('user', 'user_a').then((user) => {
 });
 ```
 
+> Notes:
+>
+> - The adapter doesn't handle saving many-to-many and many-to-none relationships. You'll have to manually persist them through batch writes. This is because unlike in other Ember Data Adapters, we allow loading only a subset of a `hasMany` relationship (see [here](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/06-relationships.md)). This prevents us from knowing whether a record in a `hasMany` has just been removed or just not yet loaded when we save it.
+
 ### Using your Server APIs
 
 Batching writes can only get you so far. For intesive operations, you'll most likely want to offload it to your servers rather than in your user's device.
