@@ -390,7 +390,10 @@ export default RESTAdapter.extend({
       collectionRef = db.collection(url).where(inverse.name, '==', reference);
     } else {
       if (relationship.options.hasOwnProperty('buildReference')) {
-        collectionRef = relationship.options.buildReference(db);
+        collectionRef = relationship.options.buildReference(
+          db,
+          snapshot.record,
+        );
       } else {
         collectionRef = buildRefFromPath(db, url);
       }

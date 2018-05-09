@@ -44,6 +44,15 @@ export default function getFixtureData() {
             username: 'user_a',
 
             __collection__: {
+              feeds: {
+                __doc__: {
+                  post_b: {
+                    title: 'user_b',
+                    author: '__ref__:users/user_b',
+                  },
+                },
+              },
+
               friends: {
                 __doc__: {
                   user_b: {
@@ -63,6 +72,20 @@ export default function getFixtureData() {
             username: 'user_b',
 
             __collection__: {
+              feeds: {
+                __doc__: {
+                  post_a: {
+                    title: 'user_a',
+                    author: '__ref__:users/user_a',
+                  },
+
+                  post_c: {
+                    title: 'user_a',
+                    author: '__ref__:users/user_a',
+                  },
+                },
+              },
+
               friends: {
                 __doc__: {
                   user_a: {
@@ -78,6 +101,20 @@ export default function getFixtureData() {
             username: 'user_c',
 
             __collection__: {
+              feeds: {
+                __doc__: {
+                  post_a: {
+                    title: 'user_a',
+                    author: '__ref__:users/user_a',
+                  },
+
+                  post_c: {
+                    title: 'user_a',
+                    author: '__ref__:users/user_a',
+                  },
+                },
+              },
+
               friends: {
                 __doc__: {
                   user_a: {
