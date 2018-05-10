@@ -1,5 +1,5 @@
 import { typeOf } from '@ember/utils';
-import Transform from 'ember-data/transforms/date';
+import Transform from 'ember-data/transform';
 
 import firebase from 'firebase';
 
@@ -13,9 +13,7 @@ export default Transform.extend({
    * @override
    */
   deserialize(serialized) {
-    const date = this._super(serialized);
-
-    return date ? date : serialized;
+    return serialized.toDate();
   },
 
   /**
