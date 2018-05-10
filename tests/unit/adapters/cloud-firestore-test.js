@@ -770,10 +770,10 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       };
       const url = null;
       const relationship = {
-        key: 'userBPosts',
+        key: 'userBFeeds',
         options: {
-          buildReference(db) {
-            return db.collection('posts');
+          buildReference(db, record) {
+            return db.collection('users').doc(record.get('id')).collection('feeds');
           },
 
           filter(reference) {
@@ -795,7 +795,7 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       // Assert
       delete result[0].author;
 
-      assert.deepEqual(result, [{ id: 'post_a', title: 'user_a' }]);
+      assert.deepEqual(result, [{ id: 'post_b', title: 'user_b' }]);
       assert.ok(determineRelationshipTypeStub.calledWithExactly(
         relationship,
         this.store,

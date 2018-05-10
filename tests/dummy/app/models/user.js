@@ -6,11 +6,11 @@ export default Model.extend({
   name: attr('string'),
   groups: hasMany('group'),
   posts: hasMany('post'),
-  userBPosts: hasMany('post', {
+  userBFeeds: hasMany('post', {
     inverse: null,
 
-    buildReference(db) {
-      return db.collection('posts');
+    buildReference(db, record) {
+      return db.collection('users').doc(record.get('id')).collection('feeds');
     },
 
     filter(reference) {
