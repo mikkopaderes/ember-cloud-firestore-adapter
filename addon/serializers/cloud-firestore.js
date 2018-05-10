@@ -17,7 +17,7 @@ export default JSONSerializer.extend({
   /**
    * @type {Ember.Service}
    */
-  firebase: inject(),
+  firestore: inject(),
 
   /**
    * Overriden to properly get the data of a `Reference` type relationship
@@ -101,7 +101,7 @@ export default JSONSerializer.extend({
         json[relationship.key] = path;
       } else {
         json[relationship.key] = buildRefFromPath(
-          this.get('firebase').firestore(),
+          this.get('firestore.instance'),
           path,
         );
       }
@@ -125,7 +125,7 @@ export default JSONSerializer.extend({
           references.push(path);
         } else {
           references.push(buildRefFromPath(
-            this.get('firebase').firestore(),
+            this.get('firestore.instance'),
             path,
           ));
         }
