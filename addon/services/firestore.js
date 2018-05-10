@@ -4,7 +4,7 @@ import { inject as service } from '@ember/service';
 export default Service.extend({
   firebase: service(),
   instance: null,
-  settings: { timestampInSnapshots: true },
+  settings: { timestampsInSnapshots: true },
 
   init(...args) {
     this._super(...args);
