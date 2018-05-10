@@ -19,7 +19,7 @@ export default RESTAdapter.extend({
   /**
    * @type {Ember.Service}
    */
-  firebase: inject(),
+  firestore: inject(),
 
   /**
    * @type {string}
@@ -46,7 +46,7 @@ export default RESTAdapter.extend({
    * @override
    */
   generateIdForRecord(store, type) {
-    const db = this.get('firebase').firestore();
+    const db = this.get('firestore.instance');
     const collectionName = buildCollectionName(type);
 
     return db.collection(collectionName).doc().id;
@@ -139,7 +139,7 @@ export default RESTAdapter.extend({
       return this._super(store, type, snapshot);
     } else {
       return new Promise((resolve, reject) => {
-        const db = this.get('firebase').firestore();
+        const db = this.get('firestore.instance');
         const docRef = db
           .collection(buildCollectionName(type.modelName))
           .doc(snapshot.id);
@@ -159,7 +159,7 @@ export default RESTAdapter.extend({
    */
   findAll(store, type) {
     return new Promise((resolve, reject) => {
-      const db = this.get('firebase').firestore();
+      const db = this.get('firestore.instance');
       const collectionName = buildCollectionName(type.modelName);
       const collectionRef = db.collection(collectionName);
       const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
@@ -196,7 +196,7 @@ export default RESTAdapter.extend({
    */
   findRecord(store, type, id, snapshot = {}) {
     return new Promise((resolve, reject) => {
-      const db = this.get('firebase').firestore();
+      const db = this.get('firestore.instance');
       const collectionRef = this.buildCollectionRef(
         type.modelName,
         snapshot.adapterOptions,
@@ -295,7 +295,7 @@ export default RESTAdapter.extend({
    */
   query(store, type, query = {}) {
     return new Promise((resolve, reject) => {
-      const db = this.get('firebase').firestore();
+      const db = this.get('firestore.instance');
       let collectionRef = this.buildCollectionRef(type.modelName, query, db);
 
       collectionRef = this.buildQuery(collectionRef, query);
@@ -375,7 +375,7 @@ export default RESTAdapter.extend({
    * @return {firebase.firestore.CollectionReference|firebase.firestore.Query} Reference
    */
   buildHasManyCollectionRef(store, snapshot, url, relationship) {
-    const db = this.get('firebase').firestore();
+    const db = this.get('firestore.instance');
     const cardinality = snapshot.type.determineRelationshipType(
       relationship,
       store,
@@ -426,7 +426,7 @@ export default RESTAdapter.extend({
     return this.buildCollectionRef(
       type.modelName,
       snapshot.adapterOptions,
-      this.get('firebase').firestore(),
+      this.get('firestore.instance'),
     ).doc(snapshot.id);
   },
 
@@ -441,7 +441,7 @@ export default RESTAdapter.extend({
    * @private
    */
   buildWriteBatch(type, snapshot, docRef, isDeletingMainDoc) {
-    const db = this.get('firebase').firestore();
+    const db = this.get('firestore.instance');
     const payload = this.serialize(snapshot);
     const batch = db.batch();
 

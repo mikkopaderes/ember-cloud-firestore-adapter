@@ -265,27 +265,25 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       const snapshot = { id: 'user_a' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('firebase', {
-        firestore() {
-          return {
-            batch() {
-              return {
-                set() {},
+      adapter.set('firestore', {
+        instance: {
+          batch() {
+            return {
+              set() {},
 
-                commit() {
-                  return Promise.reject('error');
-                },
-              };
-            },
+              commit() {
+                return Promise.reject('error');
+              },
+            };
+          },
 
-            collection() {
-              return {
-                doc() {
-                  return {};
-                },
-              };
-            },
-          };
+          collection() {
+            return {
+              doc() {
+                return {};
+              },
+            };
+          },
         },
       });
       adapter.set('serialize', () => {
@@ -369,25 +367,23 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       const snapshot = { id: 'user_a' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('firebase', {
-        firestore() {
-          return {
-            batch() {
-              return {
-                commit() {
-                  return Promise.reject('error');
-                },
+      adapter.set('firestore', {
+        instance: {
+          batch() {
+            return {
+              commit() {
+                return Promise.reject('error');
+              },
 
-                delete() {},
-              };
-            },
+              delete() {},
+            };
+          },
 
-            collection() {
-              return {
-                doc() {},
-              };
-            },
-          };
+          collection() {
+            return {
+              doc() {},
+            };
+          },
         },
       });
       adapter.set('serialize', () => {
@@ -450,17 +446,15 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       // Arrange
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('firebase', {
-        firestore() {
-          return {
-            collection() {
-              return {
-                onSnapshot(onSuccess, onError) {
-                  onError();
-                },
-              };
-            },
-          };
+      adapter.set('firestore', {
+        instance: {
+          collection() {
+            return {
+              onSnapshot(onSuccess, onError) {
+                onError();
+              },
+            };
+          },
         },
       });
 
@@ -544,21 +538,19 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       const modelId = 'user_a';
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('firebase', {
-        firestore() {
-          return {
-            collection() {
-              return {
-                doc() {
-                  return {
-                    onSnapshot(onSuccess, onError) {
-                      onError();
-                    },
-                  };
-                },
-              };
-            },
-          };
+      adapter.set('firestore', {
+        instance: {
+          collection() {
+            return {
+              doc() {
+                return {
+                  onSnapshot(onSuccess, onError) {
+                    onError();
+                  },
+                };
+              },
+            };
+          },
         },
       });
 
@@ -916,21 +908,19 @@ module('Unit | Adapter | cloud firestore', function(hooks) {
       };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('firebase', {
-        firestore() {
-          return {
-            collection() {
-              return {
-                where() {
-                  return {
-                    onSnapshot(onSuccess, onError) {
-                      onError();
-                    },
-                  };
-                },
-              };
-            },
-          };
+      adapter.set('firestore', {
+        instance: {
+          collection() {
+            return {
+              where() {
+                return {
+                  onSnapshot(onSuccess, onError) {
+                    onError();
+                  },
+                };
+              },
+            };
+          },
         },
       });
 
