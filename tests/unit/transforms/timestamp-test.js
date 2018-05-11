@@ -6,58 +6,52 @@ import firebase from 'firebase';
 module('Unit | Transform | timestamp', function(hooks) {
   setupTest(hooks);
 
-  test('should deserialize to a Date when already a Date', function(assert) {
-    assert.expect(1);
+  module('function: deserialize', function() {
+    test('should deserialize firestore timestamp', function(assert) {
+      assert.expect(1);
 
-    // Arrange
-    const date = new Date();
-    const transform = this.owner.lookup('transform:timestamp');
+      // Arrange
+      const timestamp = {
+        toDate() {
+          return 'foo';
+        },
+      };
+      const transform = this.owner.lookup('transform:timestamp');
 
-    // Act
-    const result = transform.deserialize(date);
+      // Act
+      const result = transform.deserialize(timestamp);
 
-    // Assert
-    assert.deepEqual(result, date);
+      // Assert
+      assert.equal(result, 'foo');
+    });
   });
 
-  test('should deserialize reusing the Date transform when value is not a date', function(assert) {
-    assert.expect(1);
+  module('function: serialize', function() {
+    test('should serialize to Firebase server timestamp when deserialized value isn\'t a date', function(assert) {
+      assert.expect(1);
 
-    // Arrange
-    const date = new Date();
-    const transform = this.owner.lookup('transform:timestamp');
+      // Arrange
+      const transform = this.owner.lookup('transform:timestamp');
 
-    // Act
-    const result = transform.deserialize(date.getTime());
+      // Act
+      const result = transform.serialize(null);
 
-    // Assert
-    assert.deepEqual(result, date);
-  });
+      // Assert
+      assert.deepEqual(result, firebase.firestore.FieldValue.serverTimestamp());
+    });
 
-  test('should serialize to Firebase server timestamp when deserialized value isn\'t a date', function(assert) {
-    assert.expect(1);
+    test('should not serialize to Firebase server timestamp when deserialized value is a date', function(assert) {
+      assert.expect(1);
 
-    // Arrange
-    const transform = this.owner.lookup('transform:timestamp');
+      // Arrange
+      const date = new Date();
+      const transform = this.owner.lookup('transform:timestamp');
 
-    // Act
-    const result = transform.serialize(null);
+      // Act
+      const result = transform.serialize(date);
 
-    // Assert
-    assert.deepEqual(result, firebase.firestore.FieldValue.serverTimestamp());
-  });
-
-  test('should not serialize to Firebase server timestamp when deserialized value is a date', function(assert) {
-    assert.expect(1);
-
-    // Arrange
-    const date = new Date();
-    const transform = this.owner.lookup('transform:timestamp');
-
-    // Act
-    const result = transform.serialize(date);
-
-    // Assert
-    assert.equal(result, date);
+      // Assert
+      assert.equal(result, date);
+    });
   });
 });
