@@ -52,7 +52,7 @@ export default JSONSerializer.extend({
     modelClass.eachRelationship((name, descriptor) => {
       if (descriptor.kind === 'belongsTo') {
         if (
-          resourceHash.hasOwnProperty(name)
+          Object.prototype.hasOwnProperty.call(resourceHash, name)
           && resourceHash[name] !== null
           && typeof resourceHash[name] === 'object'
           && resourceHash[name].firestore
@@ -62,10 +62,7 @@ export default JSONSerializer.extend({
           links[name] = path;
         }
       } else {
-        const cardinality = modelClass.determineRelationshipType(
-          descriptor,
-          this.get('store'),
-        );
+        const cardinality = modelClass.determineRelationshipType(descriptor, this.get('store'));
         let hasManyPath;
 
         if (cardinality === 'manyToOne') {
@@ -100,10 +97,7 @@ export default JSONSerializer.extend({
       if (this.getAdapterOptionAttribute(snapshot, 'onServer')) {
         json[relationship.key] = path;
       } else {
-        json[relationship.key] = buildRefFromPath(
-          this.get('firestore.instance'),
-          path,
-        );
+        json[relationship.key] = buildRefFromPath(this.get('firestore.instance'), path);
       }
     }
   },
@@ -124,10 +118,7 @@ export default JSONSerializer.extend({
         if (this.getAdapterOptionAttribute(snapshot, 'onServer')) {
           references.push(path);
         } else {
-          references.push(buildRefFromPath(
-            this.get('firestore.instance'),
-            path,
-          ));
+          references.push(buildRefFromPath(this.get('firestore.instance'), path));
         }
       });
 
@@ -153,19 +144,18 @@ export default JSONSerializer.extend({
   },
 
   /**
-   * Returns an attribute from the snapshot adapter options if it exists
-   *
    * @param {Object} snapshot
    * @param {string} key
    * @return {*} Attribute value
+   * @function
    * @private
    */
   getAdapterOptionAttribute(snapshot, key) {
     if (
       snapshot.adapterOptions
-      && snapshot.adapterOptions.hasOwnProperty(key)
+      && Object.prototype.hasOwnProperty.call(snapshot, key)
     ) {
-      return snapshot['adapterOptions'][key];
+      return snapshot.adapterOptions[key];
     }
 
     return null;

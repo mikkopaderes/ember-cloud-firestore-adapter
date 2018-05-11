@@ -9,9 +9,9 @@ import {
   parseDocSnapshot,
 } from 'ember-cloud-firestore-adapter/utils/parser';
 
-module('Unit | Utility | parser', function() {
-  module('buildCollectionName', function() {
-    test('should return a camelize and pluralize name', function(assert) {
+module('Unit | Utility | parser', function () {
+  module('function: buildCollectionName', function () {
+    test('should return a camelize and pluralize name', function (assert) {
       assert.expect(1);
 
       // Act
@@ -22,8 +22,8 @@ module('Unit | Utility | parser', function() {
     });
   });
 
-  module('buildPathFromRef', function() {
-    test('should build a path from a cloud firestore reference', function(assert) {
+  module('function: buildPathFromRef', function () {
+    test('should build a path from a cloud firestore reference', function (assert) {
       assert.expect(1);
 
       // Act
@@ -37,8 +37,8 @@ module('Unit | Utility | parser', function() {
     });
   });
 
-  module('buildRefFromPath', function() {
-    test('should build a cloud firestore reference from a path', function(assert) {
+  module('function: buildRefFromPath', function () {
+    test('should build a cloud firestore reference from a path', function (assert) {
       assert.expect(3);
 
       // Arrange
@@ -46,9 +46,7 @@ module('Unit | Utility | parser', function() {
       const collectionStub = sinon.stub().returns({ doc: docStub });
 
       // Act
-      const result = buildRefFromPath({
-        collection: collectionStub,
-      }, 'users/user');
+      const result = buildRefFromPath({ collection: collectionStub }, 'users/user');
 
       // Assert
       assert.ok(collectionStub.calledWithExactly('users'));
@@ -57,8 +55,8 @@ module('Unit | Utility | parser', function() {
     });
   });
 
-  module('parseDocSnapshot', function() {
-    test('should parse a document snapshot fit to be normalized by the serializer', function(assert) {
+  module('function: parseDocSnapshot', function () {
+    test('should parse a document snapshot fit to be normalized by the serializer', function (assert) {
       assert.expect(1);
 
       // Act

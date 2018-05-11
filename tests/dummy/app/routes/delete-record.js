@@ -4,8 +4,6 @@ export default Route.extend({
   model() {
     return this.get('store').createRecord('user', {
       name: 'To be deleted',
-    }).save().then((user) => {
-      return user.destroyRecord();
-    });
+    }).save().then(user => user.destroyRecord());
   },
 });

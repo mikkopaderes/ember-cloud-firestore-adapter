@@ -22,7 +22,7 @@ export default function mockCloudFirestore(owner, fixtureData) {
   };
   const firebaseService = Service.extend(mockFirebasePojo);
 
-  owner.register(`service:firebase`, firebaseService);
+  owner.register('service:firebase', firebaseService);
 
   return owner.lookup('service:firebase', { as: 'firebase' });
 }

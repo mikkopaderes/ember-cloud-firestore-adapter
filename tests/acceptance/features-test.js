@@ -3,7 +3,7 @@ import moduleForAcceptance from '../../tests/helpers/module-for-acceptance';
 
 moduleForAcceptance('Acceptance | features');
 
-test('should create record', async function(assert) {
+test('should create record', async function (assert) {
   assert.expect(3);
 
   // Arrange
@@ -18,7 +18,7 @@ test('should create record', async function(assert) {
   assert.dom('[data-test-age="new"]').hasText('25');
 });
 
-test('should update record', async function(assert) {
+test('should update record', async function (assert) {
   assert.expect(1);
 
   // Arrange
@@ -31,7 +31,7 @@ test('should update record', async function(assert) {
   assert.dom('[data-test-username="user_a"]').hasText('updated_user');
 });
 
-test('should delete record', async function(assert) {
+test('should delete record', async function (assert) {
   assert.expect(1);
 
   // Arrange
@@ -44,7 +44,7 @@ test('should delete record', async function(assert) {
   assert.dom('[data-test-id="user-a"]').doesNotExist();
 });
 
-test('should find all record', async function(assert) {
+test('should find all record', async function (assert) {
   assert.expect(1);
 
   // Arrange
@@ -57,7 +57,7 @@ test('should find all record', async function(assert) {
   assert.dom('[data-test-id]').exists({ count: 3 });
 });
 
-test('should find record', async function(assert) {
+test('should find record', async function (assert) {
   assert.expect(1);
 
   // Arrange
@@ -70,7 +70,7 @@ test('should find record', async function(assert) {
   assert.dom('[data-test-id="user_a"]').hasText('user_a');
 });
 
-test('should query', async function(assert) {
+test('should query', async function (assert) {
   assert.expect(1);
 
   // Arrange
@@ -83,7 +83,7 @@ test('should query', async function(assert) {
   assert.dom('[data-test-id]').exists({ count: 2 });
 });
 
-test('should return nothing when querying to a path that does not exist', async function(assert) {
+test('should return nothing when querying to a path that does not exist', async function (assert) {
   assert.expect(1);
 
   // Arrange

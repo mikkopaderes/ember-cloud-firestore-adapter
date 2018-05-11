@@ -5,9 +5,7 @@ export default Route.extend({
     return this.get('store').findRecord('post', 'post_a').then((post) => {
       post.set('title', params.title);
 
-      return post.save().then(() => {
-        return post;
-      });
+      return post.save().then(() => post);
     });
   },
 });

@@ -9,11 +9,11 @@ import sinon from 'sinon';
 
 import { initialize } from 'ember-cloud-firestore-adapter/instance-initializers/cloud-firestore';
 
-module('Unit | Instance Initializer | store', function(hooks) {
+module('Unit | Instance Initializer | store', function (hooks) {
   setupTest(hooks);
 
-  module('listenForDocChanges', function() {
-    test('should listen for record changes', function(assert) {
+  module('function: listenForDocChanges', function () {
+    test('should listen for record changes', function (assert) {
       assert.expect(2);
 
       // Arrange
@@ -38,10 +38,7 @@ module('Unit | Instance Initializer | store', function(hooks) {
         data: {
           id: 'ID',
           type: 'user',
-
-          attributes: {
-            name: 'Name',
-          },
+          attributes: { name: 'Name' },
         },
       });
       const pushStub = sinon.stub();
@@ -59,28 +56,18 @@ module('Unit | Instance Initializer | store', function(hooks) {
 
       // Assert
       next(() => {
-        assert.ok(
-          normalizeStub.calledWithExactly('user', {
+        assert.ok(normalizeStub.calledWithExactly('user', { id: 'ID', name: 'Name' }));
+        assert.ok(pushStub.calledWithExactly({
+          data: {
             id: 'ID',
-            name: 'Name',
-          }),
-        );
-        assert.ok(
-          pushStub.calledWithExactly({
-            data: {
-              id: 'ID',
-              type: 'user',
-
-              attributes: {
-                name: 'Name',
-              },
-            },
-          }),
-        );
+            type: 'user',
+            attributes: { name: 'Name' },
+          },
+        }));
       });
     });
 
-    test('should unload a record when the document no longer exists', function(assert) {
+    test('should unload a record when the document no longer exists', function (assert) {
       assert.expect(2);
 
       // Arrange
@@ -110,12 +97,12 @@ module('Unit | Instance Initializer | store', function(hooks) {
 
       // Assert
       next(() => {
-         assert.ok(peekRecordStub.calledWithExactly('user', 'ID'));
+        assert.ok(peekRecordStub.calledWithExactly('user', 'ID'));
         assert.ok(unloadRecordStub.calledWithExactly(record));
       });
     });
 
-    test('should unload a record when unable to listen for changes and model adapter is configured to unload it', function(assert) {
+    test('should unload a record when unable to listen for changes and model adapter is configured to unload it', function (assert) {
       assert.expect(3);
 
       // Arrange
@@ -150,7 +137,7 @@ module('Unit | Instance Initializer | store', function(hooks) {
       assert.ok(unloadRecordStub.calledWithExactly(record));
     });
 
-    test('should not unload a record when unable to listen for changes and model adapter is configured to not unload it', function(assert) {
+    test('should not unload a record when unable to listen for changes and model adapter is configured to not unload it', function (assert) {
       assert.expect(3);
 
       // Arrange
@@ -186,8 +173,8 @@ module('Unit | Instance Initializer | store', function(hooks) {
     });
   });
 
-  module('listenForCollectionChanges', function() {
-    test('should listen for collection changes', function(assert) {
+  module('function: listenForCollectionChanges', function () {
+    test('should listen for collection changes', function (assert) {
       assert.expect(1);
 
       // Arrange
@@ -197,13 +184,15 @@ module('Unit | Instance Initializer | store', function(hooks) {
         id: 'users',
 
         onSnapshot(onSuccess) {
-          onSuccess([{
-            id: 'ID',
+          onSuccess([
+            {
+              id: 'ID',
 
-            data() {
-              return { name: 'Name' };
+              data() {
+                return { name: 'Name' };
+              },
             },
-          }]);
+          ]);
         },
       };
       const findRecordStub = sinon.stub();
@@ -221,8 +210,8 @@ module('Unit | Instance Initializer | store', function(hooks) {
     });
   });
 
-  module('listenForQueryChanges', function() {
-    test('should listen for query changes', function(assert) {
+  module('function: listenForQueryChanges', function () {
+    test('should listen for query changes', function (assert) {
       assert.expect(2);
 
       // Arrange
@@ -232,54 +221,51 @@ module('Unit | Instance Initializer | store', function(hooks) {
         _internalModel: { id: 'ID', name: 'Name' },
       });
       const store = this.owner.lookup('service:store');
+      const option = { queryId: 'queryId' };
       const queryRef = {
         onSnapshot(onSuccess) {
           store.get('tracker')._query.queryId.recordArray = ArrayProxy.create({
             content: new A([]),
           });
 
-          onSuccess([{
-            id: 'user_b',
-
-            get() {
-              return {
+          onSuccess({
+            docs: [
+              {
                 id: 'user_b',
-                parent: { id: 'users' },
-                firestore: {},
-              };
-            },
-          }, {
-            id: 'user_c',
 
-            get() {},
-          }]);
+                get() {
+                  return {
+                    id: 'user_b',
+                    parent: { id: 'users' },
+                    firestore: {},
+                  };
+                },
+              },
+              {
+                id: 'user_c',
+
+                get() {},
+              },
+            ],
+          });
         },
       };
 
       store.set('findRecord', findRecordStub);
 
       // Act
-      store.listenForQueryChanges('user', {
-        queryId: 'queryId',
-        path: 'users/user_a/friends',
-      }, queryRef);
+      store.listenForQueryChanges('user', option, queryRef);
 
       // Assert
-      assert.ok(
-        findRecordStub.firstCall.calledWithExactly('user', 'user_b', {
-          adapterOptions: { path: 'users' },
-        }),
-      );
-      assert.ok(
-        findRecordStub.secondCall.calledWithExactly('user', 'user_c', {
-          adapterOptions: { path: 'users/user_a/friends' },
-        }),
-      );
+      assert.ok(findRecordStub.firstCall.calledWith('user', 'user_b'));
+      assert.ok(findRecordStub.secondCall.calledWithExactly('user', 'user_c', {
+        adapterOptions: option,
+      }));
     });
   });
 
-  module('listenForHasManyChanges', function() {
-    test('should listen for hasMany changes', function(assert) {
+  module('function: listenForHasManyChanges', function () {
+    test('should listen for hasMany changes', function (assert) {
       assert.expect(3);
 
       // Arrange
@@ -291,7 +277,11 @@ module('Unit | Instance Initializer | store', function(hooks) {
       const store = this.owner.lookup('service:store');
 
       store.set('tracker', {
-        user: { document: { user_a: { relationship: {} } } },
+        user: {
+          document: {
+            user_a: { relationship: {} },
+          },
+        },
       });
       store.set('peekRecord', peekRecordStub);
 

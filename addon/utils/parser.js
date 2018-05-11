@@ -53,29 +53,28 @@ import { pluralize } from 'ember-inflector';
  * @param {DS.Model} type
  * @param {firebase.firestore.DocumentSnapshot} docSnapshot
  * @return {Object} Parsed document snapshot
+ * @function
  */
 export function parseDocSnapshot(type, docSnapshot) {
-  const id = docSnapshot.id;
+  const { id } = docSnapshot;
   const data = docSnapshot.data();
 
   return assign({}, data, { id });
 }
 
 /**
- * Builds a collection name from a given name
- *
  * @param {string} name
  * @return {string} URL
+ * @function
  */
 export function buildCollectionName(name) {
   return camelize(pluralize(name));
 }
 
 /**
- * Builds a path based on a given Cloud Firestore reference
- *
  * @param {Object} ref
  * @return {string} URL
+ * @function
  */
 export function buildPathFromRef(ref) {
   let url = '';
@@ -96,13 +95,11 @@ export function buildPathFromRef(ref) {
 }
 
 /**
-   * Builds a Cloud Firestore reference based on a given path
-   *
-   * @param {firebase.firestore} db
-   * @param {string} path
-   * @return {Object} Cloud Firestore reference
-   * @private
-   */
+ * @param {firebase.firestore} db
+ * @param {string} path
+ * @return {Object} Cloud Firestore reference
+ * @function
+ */
 export function buildRefFromPath(db, path) {
   const nodes = path.split('/');
   let ref = db;
