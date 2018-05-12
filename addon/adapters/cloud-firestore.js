@@ -43,6 +43,11 @@ export default RESTAdapter.extend({
   headers: { 'Content-Type': 'application/json' },
 
   /**
+   * @type {string}
+   */
+  referenceKeyName: 'cloudFirestoreReference',
+
+  /**
    * @type {boolean}
    */
   willUnloadRecordOnListenError: true,
@@ -431,7 +436,7 @@ export default RESTAdapter.extend({
   findHasManyRecords(store, relationship, querySnapshot) {
     return querySnapshot.docs.map((docSnapshot) => {
       const type = { modelName: relationship.type };
-      const referenceTo = docSnapshot.get('cloudFirestoreReference');
+      const referenceTo = docSnapshot.get(this.get('referenceKeyName'));
 
       if (referenceTo && referenceTo.firestore) {
         const request = this.findRecord(store, type, referenceTo.id, {
@@ -462,7 +467,7 @@ export default RESTAdapter.extend({
    */
   findQueryRecords(store, type, option, querySnapshot) {
     return querySnapshot.docs.map((docSnapshot) => {
-      const referenceTo = docSnapshot.get('cloudFirestoreReference');
+      const referenceTo = docSnapshot.get(this.get('referenceKeyName'));
 
       if (referenceTo && referenceTo.firestore) {
         const request = this.findRecord(store, type, referenceTo.id, {
