@@ -41,7 +41,7 @@ export default CloudFirestoreAdapter.extend();
 
 These are the settings currently available
 
-- `firestoreSettings` - Specifies custom configurations for your Cloud Firestore instance. See [here](https://firebase.google.com/docs/reference/js/firebase.firestore.Settings). Defaults to `undefined`.
+- `firestoreSettings` - Specifies custom configurations for your Cloud Firestore instance. See [here](https://firebase.google.com/docs/reference/js/firebase.firestore.Settings). Defaults to `{ timestampsInSnapshots: true }`.
 - `referenceKeyName` - Name of the field that will indicate whether a document is a reference to another one. Defaults to `cloudFirestoreReference`.
 - `willUnloadRecordOnListenError` - Unloads a record whenever a listener for a document fails (e.g. sudden permission denied). Defaults to `true`.
 
