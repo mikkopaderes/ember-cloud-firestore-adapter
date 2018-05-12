@@ -24,9 +24,7 @@ export default Service.extend({
 
     const firestore = this.get('firebase').firestore();
 
-    if (firestore.settings) {
-      firestore.settings(this.get('settings'));
-    }
+    firestore.settings(this.get('settings'));
 
     this.set('instance', firestore);
   },
