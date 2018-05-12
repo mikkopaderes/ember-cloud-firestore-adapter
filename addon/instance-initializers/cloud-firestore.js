@@ -6,28 +6,11 @@ import { inject } from '@ember/service';
 import { next } from '@ember/runloop';
 import { singularize } from 'ember-inflector';
 
-import {
-  buildPathFromRef,
-  parseDocSnapshot,
-} from 'ember-cloud-firestore-adapter/utils/parser';
+import { parseDocSnapshot } from 'ember-cloud-firestore-adapter/utils/parser';
 
 /**
- * Initializer
- *
  * @param {Application} appInstance
- */
-export function initialize(appInstance) {
-  reopenStore(appInstance);
-}
-
-export default {
-  initialize,
-};
-
-/**
- * Reopens the Store service for extension
- *
- * @param {Application} appInstance
+ * @function
  */
 function reopenStore(appInstance) {
   appInstance.lookup('service:store').reopen({
@@ -44,7 +27,7 @@ function reopenStore(appInstance) {
     /**
      * @type {Ember.Service}
      */
-    fastboot: computed(function() {
+    fastboot: computed(function () {
       return getOwner(this).lookup('service:fastboot');
     }),
 
@@ -57,7 +40,7 @@ function reopenStore(appInstance) {
           this.adapterFor(modelName).get('dbType') === 'cloud-firestore'
           && query.queryId
         ) {
-          this.get('tracker')['_query'][query.queryId]['recordArray'] = records;
+          this.get('tracker')._query[query.queryId].recordArray = records;
         }
 
         return records;
@@ -65,10 +48,9 @@ function reopenStore(appInstance) {
     },
 
     /**
-     * Listen for changes to a document
-     *
      * @param {DS.Model} type
      * @param {firebase.firestore.DocumentReference} docRef
+     * @function
      */
     listenForDocChanges(type, docRef) {
       if (
@@ -88,7 +70,7 @@ function reopenStore(appInstance) {
               this.unloadRecordUsingModelNameAndId(type.modelName, docRef.id);
             }
           });
-        }, (error) => {
+        }, () => {
           const willUnloadRecordOnListenError = this
             .adapterFor(type.modelName)
             .get('willUnloadRecordOnListenError');
@@ -101,9 +83,8 @@ function reopenStore(appInstance) {
     },
 
     /**
-     * Listen for changes to a collection
-     *
      * @param {firebase.firestore.CollectionReference} collectionRef
+     * @function
      */
     listenForCollectionChanges(collectionRef) {
       const modelName = this.buildModelName(collectionRef.id);
@@ -112,28 +93,25 @@ function reopenStore(appInstance) {
         this.trackCollectionListener(modelName);
 
         collectionRef.onSnapshot((querySnapshot) => {
-          next(() => {
-            querySnapshot.forEach((docSnapshot) => {
-              this.findRecord(modelName, docSnapshot.id);
-            });
-          });
+          next(() => (
+            querySnapshot.forEach(docSnapshot => this.findRecord(modelName, docSnapshot.id))
+          ));
         });
       }
     },
 
     /**
-     * Listen for changes to a query
-     *
      * @param {string} modelName
      * @param {Object} option
      * @param {firebase.firestore.Query} queryRef
+     * @function
      */
     listenForQueryChanges(modelName, option, queryRef) {
       if (!this.isInFastBoot()) {
         let queryTracker;
 
         if (this.hasListenerForQuery(option.queryId)) {
-          queryTracker = this.get('tracker')['_query'][option.queryId];
+          queryTracker = this.get('tracker')._query[option.queryId];
 
           queryTracker.unsubscribe();
 
@@ -143,42 +121,19 @@ function reopenStore(appInstance) {
         } else {
           this.trackQueryListener(option.queryId);
 
-          queryTracker = this.get('tracker')['_query'][option.queryId];
+          queryTracker = this.get('tracker')._query[option.queryId];
         }
 
         const unsubscribe = queryRef.onSnapshot((querySnapshot) => {
           if (queryTracker.recordArray) {
-            const requests = [];
-
-            querySnapshot.forEach((docSnapshot) => {
-              const reference = docSnapshot.get('cloudFirestoreReference');
-
-              if (reference && reference.firestore) {
-                const pathNodes = buildPathFromRef(reference).split('/');
-                const id = pathNodes.pop();
-                const path = pathNodes.join('/');
-                const request = this.findRecord(modelName, id, {
-                  adapterOptions: { path },
-                });
-
-                requests.push(request);
-              } else {
-                const request = this.findRecord(modelName, docSnapshot.id, {
-                  adapterOptions: { path: option.path },
-                });
-
-                requests.push(request);
-              }
-            });
+            const requests = this.findQueryRecords(modelName, option, querySnapshot);
 
             Promise.all(requests).then((responses) => {
               next(() => {
                 queryTracker.recordArray.get('content').clear();
 
                 responses.forEach((record) => {
-                  queryTracker.recordArray.get('content').pushObject(
-                    record._internalModel,
-                  );
+                  queryTracker.recordArray.get('content').pushObject(record._internalModel);
                 });
               });
             });
@@ -190,12 +145,11 @@ function reopenStore(appInstance) {
     },
 
     /**
-     * Listen for changes to a hasMany collection
-     *
      * @param {string} modelName
      * @param {string} id
      * @param {string} field
      * @param {firebase.firestore.CollectionReference} collectionRef
+     * @function
      */
     listenForHasManyChanges(modelName, id, field, collectionRef) {
       if (
@@ -204,19 +158,16 @@ function reopenStore(appInstance) {
       ) {
         this.trackHasManyListener(modelName, id, field);
 
-        collectionRef.onSnapshot(() => {
-          next(() => {
-            this.peekRecord(modelName, id).hasMany(field).reload();
-          });
-        });
+        collectionRef.onSnapshot(() => (
+          next(() => this.peekRecord(modelName, id).hasMany(field).reload())
+        ));
       }
     },
 
     /**
-     * Camelizes and pluralizes the collection name
-     *
      * @param {string} collectionName
      * @return {string} Dasherized and singularized model name
+     * @function
      * @private
      */
     buildModelName(collectionName) {
@@ -224,9 +175,8 @@ function reopenStore(appInstance) {
     },
 
     /**
-     * Checks if in FastBoot
-     *
      * @return {boolean} True if in FastBoot. Otherwise, false.
+     * @function
      * @private
      */
     isInFastBoot() {
@@ -236,16 +186,15 @@ function reopenStore(appInstance) {
     },
 
     /**
-     * Checks if there's already an active change listener for a document
-     *
      * @param {string} modelName
      * @param {string} id
      * @return {boolean} True if there's a listener. Otherwise, false.
+     * @function
      * @private
      */
     hasListenerForDoc(modelName, id) {
-      if (this.get('tracker').hasOwnProperty(modelName)) {
-        if (this.get('tracker')[modelName]['document'][id]) {
+      if (Object.prototype.hasOwnProperty.call(this.get('tracker'), modelName)) {
+        if (this.get('tracker')[modelName].document[id]) {
           return true;
         }
       }
@@ -254,15 +203,14 @@ function reopenStore(appInstance) {
     },
 
     /**
-     * Checks if there's already a change listener for a collection
-     *
      * @param {string} modelName
      * @return {boolean} True if there's a listener. Otherwise, false.
+     * @function
      * @private
      */
     hasListenerForCollection(modelName) {
-      if (this.get('tracker').hasOwnProperty(modelName)) {
-        if (this.get('tracker')[modelName]['collection']) {
+      if (Object.prototype.hasOwnProperty.call(this.get('tracker'), modelName)) {
+        if (this.get('tracker')[modelName].collection) {
           return true;
         }
       }
@@ -271,36 +219,15 @@ function reopenStore(appInstance) {
     },
 
     /**
-     * Checks if there's already a change listener for a query
-     *
      * @param {string} queryId
      * @return {boolean} True if there's a listener. Otherwise, false.
+     * @function
      * @private
      */
     hasListenerForQuery(queryId) {
-      if (this.get('tracker').hasOwnProperty('_query')) {
-        if (this.get('tracker._query').hasOwnProperty(queryId)) {
-          return true;
-        }
-      }
-
-      return false;
-    },
-
-    /**
-     * Checks if there's already an active change listener for a hasMany
-     *
-     * @param {string} modelName
-     * @param {string} id
-     * @param {string} field
-     * @return {boolean} True if there's a listener. Otherwise, false.
-     * @private
-     */
-    hasListenerForHasMany(modelName, id, field) {
       if (
-        this.get('tracker').hasOwnProperty(modelName)
-        && this.get('tracker')[modelName]['document'].hasOwnProperty(id)
-        && this.get('tracker')[modelName]['document'][id]['relationship'][field]
+        Object.prototype.hasOwnProperty.call(this.get('tracker'), '_query')
+        && Object.prototype.hasOwnProperty.call(this.get('tracker._query'), queryId)
       ) {
         return true;
       }
@@ -309,67 +236,82 @@ function reopenStore(appInstance) {
     },
 
     /**
-     * Tracks a document change listener
-     *
      * @param {string} modelName
      * @param {string} id
+     * @param {string} field
+     * @return {boolean} True if there's a listener. Otherwise, false.
+     * @function
+     * @private
+     */
+    hasListenerForHasMany(modelName, id, field) {
+      if (
+        Object.prototype.hasOwnProperty.call(this.get('tracker'), modelName)
+        && Object.prototype.hasOwnProperty.call(this.get('tracker')[modelName], id)
+        && this.get('tracker')[modelName].document[id].relationship[field]
+      ) {
+        return true;
+      }
+
+      return false;
+    },
+
+    /**
+     * @param {string} modelName
+     * @param {string} id
+     * @function
      * @private
      */
     trackDocListener(modelName, id) {
-      if (!this.get('tracker').hasOwnProperty(modelName)) {
+      if (!Object.prototype.hasOwnProperty.call(this.get('tracker'), modelName)) {
         this.get('tracker')[modelName] = { collection: false, document: {} };
       }
 
-      this.get('tracker')[modelName]['document'][id] = {
+      this.get('tracker')[modelName].document[id] = {
         relationship: {},
       };
     },
 
     /**
-     * Tracks a collection change listener
-     *
      * @param {string} modelName
+     * @function
      * @private
      */
     trackCollectionListener(modelName) {
-      if (!this.get('tracker').hasOwnProperty(modelName)) {
+      if (!Object.prototype.hasOwnProperty.call(this.get('tracker'), modelName)) {
         this.get('tracker')[modelName] = { collection: false, document: {} };
       }
 
-      this.get('tracker')[modelName]['collection'] = true;
+      this.get('tracker')[modelName].collection = true;
     },
 
     /**
-     * Tracks a query change listener
-     *
      * @param {string} queryId
+     * @function
      * @private
      */
     trackQueryListener(queryId) {
-      if (!this.get('tracker').hasOwnProperty('_query')) {
-        this.get('tracker')['_query'] = {};
+      if (!Object.prototype.hasOwnProperty.call(this.get('tracker'), '_query')) {
+        this.get('tracker')._query = {};
       }
 
-      this.get('tracker')['_query'][queryId] = {};
+      this.get('tracker')._query[queryId] = {};
     },
 
     /**
-     * Tracks a collection change listener for a hasMany
-     *
      * @param {string} modelName
      * @param {string} id
      * @param {string} field
+     * @function
      * @private
      */
     trackHasManyListener(modelName, id, field) {
-      this.get('tracker')[modelName]['document'][id]['relationship'][field] =
-        true;
+      this.get('tracker')[modelName].document[id].relationship[field] = true;
     },
 
     /**
-     * Unloads a record using model name and ID
      * @param {string} modelName
      * @param {string} id
+     * @function
      * @private
      */
     unloadRecordUsingModelNameAndId(modelName, id) {
@@ -379,5 +321,43 @@ function reopenStore(appInstance) {
         this.unloadRecord(record);
       }
     },
+
+    /**
+     * @param {string} modelName
+     * @param {Object} option
+     * @param {firebase.firestore.QuerySnapshot} querySnapshot
+     * @return {Array.<Promise>} Find record promises
+     * @function
+     * @private
+     */
+    findQueryRecords(modelName, option, querySnapshot) {
+      return querySnapshot.docs.map((docSnapshot) => {
+        const referenceTo = docSnapshot.get('cloudFirestoreReference');
+
+        if (referenceTo && referenceTo.firestore) {
+          const request = this.findRecord(modelName, referenceTo.id, {
+            adapterOptions: {
+              buildReference() {
+                return referenceTo.parent;
+              },
+            },
+          });
+
+          return request;
+        }
+
+        return this.findRecord(modelName, docSnapshot.id, { adapterOptions: option });
+      });
+    },
   });
 }
+
+/**
+ * @param {Application} appInstance
+ * @function
+ */
+export function initialize(appInstance) {
+  reopenStore(appInstance);
+}
+
+export default { initialize };

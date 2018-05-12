@@ -1,11 +1,11 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 
-module('Unit | Serializer | cloud firestore', function(hooks) {
+module('Unit | Serializer | cloud firestore', function (hooks) {
   setupTest(hooks);
 
-  module('extractRelationship', function() {
-    test('should extract a relationship given a document reference', function(assert) {
+  module('function: extractRelationship', function () {
+    test('should extract a relationship given a document reference', function (assert) {
       assert.expect(1);
 
       // Arrange
@@ -23,18 +23,18 @@ module('Unit | Serializer | cloud firestore', function(hooks) {
     });
   });
 
-  module('extractRelationships', function() {
+  module('function: extractRelationships', function () {
     // Hard to test due to `this._super()`
-    test('nothing to test', function(assert) {
+    test('nothing to test', function (assert) {
       assert.expect(1);
 
       assert.ok(this.owner.lookup('serializer:cloud-firestore'));
     });
   });
 
-  module('serialize', function() {
+  module('function: serialize', function () {
     // Hard to test due to `this._super()`
-    test('nothing to test', function(assert) {
+    test('nothing to test', function (assert) {
       assert.expect(1);
 
       assert.ok(this.owner.lookup('serializer:cloud-firestore'));
