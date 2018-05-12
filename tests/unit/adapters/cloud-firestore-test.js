@@ -210,8 +210,8 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const snapshot = { id: 'user_a' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('firestore', {
-        instance: {
+      adapter.set('firebase', {
+        firestore: sinon.stub().returns({
           batch() {
             return {
               set() {},
@@ -229,7 +229,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
               },
             };
           },
-        },
+        }),
       });
       adapter.set('serialize', () => [
         {
@@ -306,8 +306,8 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const snapshot = { id: 'user_a' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('firestore', {
-        instance: {
+      adapter.set('firebase', {
+        firestore: sinon.stub().returns({
           batch() {
             return {
               commit() {
@@ -323,7 +323,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
               doc() {},
             };
           },
-        },
+        }),
       });
       adapter.set('serialize', () => [
         {
@@ -391,8 +391,8 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       // Arrange
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('firestore', {
-        instance: {
+      adapter.set('firebase', {
+        firestore: sinon.stub().returns({
           collection() {
             return {
               onSnapshot(onSuccess, onError) {
@@ -400,7 +400,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
               },
             };
           },
-        },
+        }),
       });
 
       try {
@@ -469,8 +469,8 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const modelId = 'user_a';
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('firestore', {
-        instance: {
+      adapter.set('firebase', {
+        firestore: sinon.stub().returns({
           collection() {
             return {
               doc() {
@@ -482,7 +482,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
               },
             };
           },
-        },
+        }),
       });
 
       try {
@@ -797,8 +797,8 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.set('firestore', {
-        instance: {
+      adapter.set('firebase', {
+        firestore: sinon.stub().returns({
           collection() {
             return {
               where() {
@@ -810,7 +810,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
               },
             };
           },
-        },
+        }),
       });
 
       try {
