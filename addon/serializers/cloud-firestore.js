@@ -17,7 +17,7 @@ export default JSONSerializer.extend({
   /**
    * @type {Ember.Service}
    */
-  firestore: inject(),
+  firebase: inject(),
 
   /**
    * Overriden to properly get the data of a `Reference` type relationship
@@ -97,7 +97,7 @@ export default JSONSerializer.extend({
       if (this.getAdapterOptionAttribute(snapshot, 'onServer')) {
         json[relationship.key] = path;
       } else {
-        json[relationship.key] = buildRefFromPath(this.get('firestore.instance'), path);
+        json[relationship.key] = buildRefFromPath(this.get('firebase').firestore(), path);
       }
     }
   },
@@ -118,7 +118,7 @@ export default JSONSerializer.extend({
         if (this.getAdapterOptionAttribute(snapshot, 'onServer')) {
           references.push(path);
         } else {
-          references.push(buildRefFromPath(this.get('firestore.instance'), path));
+          references.push(buildRefFromPath(this.get('firebase').firestore(), path));
         }
       });
 

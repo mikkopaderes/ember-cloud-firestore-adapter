@@ -1,6 +1,6 @@
 import { Promise } from 'rsvp';
 import { getOwner } from '@ember/application';
-import { inject } from '@ember/service';
+import { inject as service } from '@ember/service';
 import { run } from '@ember/runloop';
 import RESTAdapter from 'ember-data/adapters/rest';
 
@@ -19,7 +19,7 @@ export default RESTAdapter.extend({
   /**
    * @type {Ember.Service}
    */
-  firestore: inject(),
+  firebase: service(),
 
   /**
    * @type {string}
@@ -31,6 +31,11 @@ export default RESTAdapter.extend({
    * @override
    */
   defaultSerializer: 'cloud-firestore',
+
+  /**
+   * @type {Object}
+   */
+  firestoreSettings: { timestampsInSnapshots: true },
 
   /**
    * @override
@@ -45,8 +50,21 @@ export default RESTAdapter.extend({
   /**
    * @override
    */
+  init(...args) {
+    this._super(...args);
+
+    if (this.get('firestoreSettings')) {
+      const db = this.get('firebase').firestore();
+
+      db.settings(this.get('firestoreSettings'));
+    }
+  },
+
+  /**
+   * @override
+   */
   generateIdForRecord(store, type) {
-    const db = this.get('firestore.instance');
+    const db = this.get('firebase').firestore();
     const collectionName = buildCollectionName(type);
 
     return db.collection(collectionName).doc().id;
@@ -138,7 +156,7 @@ export default RESTAdapter.extend({
     }
 
     return new Promise((resolve, reject) => {
-      const db = this.get('firestore.instance');
+      const db = this.get('firebase').firestore();
       const docRef = db.collection(buildCollectionName(type.modelName)).doc(snapshot.id);
       const batch = this.buildWriteBatch(type, snapshot, docRef, true);
 
@@ -151,7 +169,7 @@ export default RESTAdapter.extend({
    */
   findAll(store, type) {
     return new Promise((resolve, reject) => {
-      const db = this.get('firestore.instance');
+      const db = this.get('firebase').firestore();
       const collectionName = buildCollectionName(type.modelName);
       const collectionRef = db.collection(collectionName);
       const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
@@ -174,7 +192,7 @@ export default RESTAdapter.extend({
    */
   findRecord(store, type, id, snapshot = {}) {
     return new Promise((resolve, reject) => {
-      const db = this.get('firestore.instance');
+      const db = this.get('firebase').firestore();
       const collectionRef = this.buildCollectionRef(type.modelName, snapshot.adapterOptions, db);
       const docRef = collectionRef.doc(id);
       const unsubscribe = docRef.onSnapshot((docSnapshot) => {
@@ -236,7 +254,7 @@ export default RESTAdapter.extend({
    */
   query(store, type, option = {}) {
     return new Promise((resolve, reject) => {
-      const db = this.get('firestore.instance');
+      const db = this.get('firebase').firestore();
       let collectionRef = this.buildCollectionRef(type.modelName, option, db);
 
       collectionRef = this.buildQuery(collectionRef, option);
@@ -307,7 +325,7 @@ export default RESTAdapter.extend({
    * @private
    */
   buildHasManyCollectionRef(store, snapshot, url, relationship) {
-    const db = this.get('firestore.instance');
+    const db = this.get('firebase').firestore();
     const cardinality = snapshot.type.determineRelationshipType(relationship, store);
     let collectionRef;
 
@@ -345,7 +363,7 @@ export default RESTAdapter.extend({
     return this.buildCollectionRef(
       type.modelName,
       snapshot.adapterOptions,
-      this.get('firestore.instance'),
+      this.get('firebase').firestore(),
     ).doc(snapshot.id);
   },
 
@@ -359,7 +377,7 @@ export default RESTAdapter.extend({
    * @private
    */
   buildWriteBatch(type, snapshot, docRef, isDeletingMainDoc) {
-    const db = this.get('firestore.instance');
+    const db = this.get('firebase').firestore();
     const payload = this.serialize(snapshot);
     const batch = db.batch();
 
