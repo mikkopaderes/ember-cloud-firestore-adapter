@@ -97,7 +97,7 @@ It'll be stored in Cloud Firestore like this
 >
 > - Notice that we don't have a `posts` subcollection in `groups/group_a` and `users/user_a`. This is because in one-to-many relationships, only the `belongsTo` side gets persisted.
 > - Relationships are saved as `Reference` [data type](https://firebase.google.com/docs/firestore/manage-data/data-types#data_types) instead of its ID of type string.
-> - `cloudFirestoreReference` is a **reserved** attribute to indicate that a document is a reference to another document. You can't change this as of now.
+> - `cloudFirestoreReference` is a **reserved** attribute to indicate that a document is a reference to another document. You can configure this to be named as something else.
 
 ---
 
