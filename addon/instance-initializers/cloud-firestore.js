@@ -246,7 +246,7 @@ function reopenStore(appInstance) {
     hasListenerForHasMany(modelName, id, field) {
       if (
         Object.prototype.hasOwnProperty.call(this.get('tracker'), modelName)
-        && Object.prototype.hasOwnProperty.call(this.get('tracker')[modelName], id)
+        && Object.prototype.hasOwnProperty.call(this.get('tracker')[modelName].document, id)
         && this.get('tracker')[modelName].document[id].relationship[field]
       ) {
         return true;
