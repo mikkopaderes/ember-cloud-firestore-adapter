@@ -13,7 +13,11 @@ export default Transform.extend({
    * @override
    */
   deserialize(serialized) {
-    return serialized.toDate();
+    if (typeOf(serialized) === 'object' && serialized.toDate) {
+      return serialized.toDate();
+    }
+
+    return serialized;
   },
 
   /**

@@ -1,5 +1,6 @@
 import { inject } from '@ember/service';
 import { pluralize } from 'ember-inflector';
+import { typeOf } from '@ember/utils';
 import JSONSerializer from 'ember-data/serializers/json';
 
 import {
@@ -25,11 +26,7 @@ export default JSONSerializer.extend({
    * @override
    */
   extractRelationship(relationshipModelName, relationshipHash) {
-    if (
-      relationshipHash !== null
-      && typeof relationshipHash === 'object'
-      && relationshipHash.firestore
-    ) {
+    if (typeOf(relationshipHash) === 'object' && relationshipHash.firestore) {
       const path = buildPathFromRef(relationshipHash);
       const pathNodes = path.split('/');
       const belongsToId = pathNodes[pathNodes.length - 1];
@@ -53,8 +50,7 @@ export default JSONSerializer.extend({
       if (descriptor.kind === 'belongsTo') {
         if (
           Object.prototype.hasOwnProperty.call(resourceHash, name)
-          && resourceHash[name] !== null
-          && typeof resourceHash[name] === 'object'
+          && typeOf(resourceHash[name]) === 'object'
           && resourceHash[name].firestore
         ) {
           const path = buildPathFromRef(resourceHash[name]);
@@ -153,7 +149,7 @@ export default JSONSerializer.extend({
   getAdapterOptionAttribute(snapshot, key) {
     if (
       snapshot.adapterOptions
-      && Object.prototype.hasOwnProperty.call(snapshot, key)
+      && Object.prototype.hasOwnProperty.call(snapshot.adapterOptions, key)
     ) {
       return snapshot.adapterOptions[key];
     }
