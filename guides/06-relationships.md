@@ -2,7 +2,7 @@
 
 ## `hasMany`
 
-### Using Filters
+### Using Filters & Limit
 
 Using `filter()` is a great way to control your `hasMany` relationships.
 
@@ -14,14 +14,38 @@ import attr from 'ember-data/attr';
 
 export default Model.extend({
   name: attr('string'),
-  posts: hasMany('post', {
+  approvedPosts: hasMany('post', {
+    limit: 4,
+
     // Use the record variable to access model props (e.g. record.get('name'))
     filter(reference, record) {
-      return reference.limit(5);
+      return reference.where('status', '==', 'approved');
     }
   })
 });
 ```
+
+#### Updating Filters & Limit During Runtime
+
+This is how you can update the `filter()` and `limit` dynamically.
+
+```javascript
+this.get('store').findRecord('group', 'group_a').then((group) => {
+  group.get('posts').then((posts) => {
+    posts.relationship.relationshipMeta.options.limit = 8;
+    posts.relationship.relationshipMeta.options.filter = (reference, record) => {
+      return reference.where('status', '==', 'rejected');
+    };
+
+    posts.reload();
+  });
+});
+```
+
+> Notes:
+>
+> - This is useful for cases such as infinite scrolling.
+> - I'm not sure if my example above is a public API in Ember Data. There may be a chance that this example won't work in the future.
 
 ### Under a specified collection
 
@@ -50,26 +74,6 @@ export default Model.extend({
 > Notes:
 >
 > - In the example above, if we don't override `buildReference()`, it'll look for the records under the `/groups/<group_id>/posts` sub-collection.
-
-#### Change Filters During Runtime
-
-This is how you can change the `filter()` and reload the relationship once it's been set
-
-```javascript
-this.get('store').findRecord('group', 'group_a').then((group) => {
-  group.get('posts').then((posts) => {
-    posts.relationship.relationshipMeta.options.filter = (reference, record) => {
-      return reference.limit(10);
-    };
-    posts.reload();
-  });
-});
-```
-
-> Notes:
->
-> - This is useful for cases such as infinite scrolling.
-> - I'm not sure if my example above is a public API in Ember Data. There may be a chance that this example won't work in the future.
 
 ---
 

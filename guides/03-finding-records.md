@@ -42,14 +42,16 @@ this.get('store').findAll('post');
 
 Queries use `buildReference()` and `filter()` options.
 
-### Using Filters
+### Using Filters & Limit
 
-This will retrieve all `post` documents under the `posts` collection that has an `author` with a `Reference` [data type](https://firebase.google.com/docs/firestore/manage-data/data-types#data_types) to `users/user_a` and a `createdOn` date greater than 2016-12-31.
+This will retrieve 4 `post` documents under the `posts` collection that has an `author` with a `Reference` [data type](https://firebase.google.com/docs/firestore/manage-data/data-types#data_types) to `users/user_a` and a `createdOn` date greater than 2016-12-31.
 
 ```javascript
 this.get('store').findRecord('user', 'user_a').then((user) => {
   // Assume that the `user` is stored under `users` collection
   this.get('store').query('post', {
+    limit: 4,
+
     filter(reference) {
       const db = reference.firestore;
       const userRef = db.collection('users').doc(user.get('id'));
@@ -59,6 +61,20 @@ this.get('store').findRecord('user', 'user_a').then((user) => {
         .where('createdOn', '>=', new Date('2016-12-31'));
     }
   });
+});
+```
+
+#### Updating Query
+
+This will update the original query that retrieves 4 `post` documents under the `posts` collection into retrieving 8 `post` documents in the same collection. This is useful for things like pagination and infinite scroll.
+
+```javascript
+this.get('store').query('post', {
+  limit: 4,
+}).then((records) => {
+  records.set('query.limit', 8);
+
+  records.update();
 });
 ```
 

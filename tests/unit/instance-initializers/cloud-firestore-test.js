@@ -271,8 +271,8 @@ module('Unit | Instance Initializer | store', function (hooks) {
       // Arrange
       initialize(this.owner);
 
-      const reloadStub = sinon.stub();
-      const hasManyStub = sinon.stub().returns({ reload: reloadStub });
+      const pushStub = sinon.stub();
+      const hasManyStub = sinon.stub().returns({ push: pushStub });
       const peekRecordStub = sinon.stub().returns({ hasMany: hasManyStub });
       const store = this.owner.lookup('service:store');
 
@@ -283,12 +283,13 @@ module('Unit | Instance Initializer | store', function (hooks) {
           },
         },
       });
+      store.set('findRecord', sinon.stub());
       store.set('peekRecord', peekRecordStub);
 
       // Act
-      store.listenForHasManyChanges('user', 'user_a', 'friends', {
+      store.listenForHasManyChanges('user', 'user_a', { type: 'user', key: 'friends' }, {
         onSnapshot(onSuccess) {
-          onSuccess();
+          onSuccess([{ id: 'foo' }]);
         },
       });
 
@@ -296,7 +297,11 @@ module('Unit | Instance Initializer | store', function (hooks) {
       next(() => {
         assert.ok(peekRecordStub.calledWithExactly('user', 'user_a'));
         assert.ok(hasManyStub.calledWithExactly('friends'));
-        assert.ok(reloadStub.calledOnce);
+        assert.ok(pushStub.calledWithExactly([
+          {
+            data: { type: 'user', id: 'foo' },
+          },
+        ]));
       });
     });
   });

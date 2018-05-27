@@ -243,7 +243,7 @@ export default RESTAdapter.extend({
           store.listenForHasManyChanges(
             snapshot.modelName,
             snapshot.id,
-            relationship.key,
+            relationship,
             collectionRef,
           );
 
@@ -406,11 +406,17 @@ export default RESTAdapter.extend({
    * @private
    */
   buildQuery(collectionRef, option = {}, record) {
+    let newRef = collectionRef;
+
     if (Object.prototype.hasOwnProperty.call(option, 'filter')) {
-      return option.filter(collectionRef, record);
+      newRef = option.filter(collectionRef, record);
     }
 
-    return collectionRef;
+    if (Object.prototype.hasOwnProperty.call(option, 'limit')) {
+      newRef = newRef.limit(option.limit);
+    }
+
+    return newRef;
   },
 
   /**
