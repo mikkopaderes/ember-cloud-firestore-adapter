@@ -31,7 +31,7 @@ This is how you can update the `filter()` and `limit` dynamically.
 
 ```javascript
 this.get('store').findRecord('group', 'group_a').then((group) => {
-  group.get('posts').then((posts) => {
+  group.get('approvedPosts').then((posts) => {
     posts.relationship.relationshipMeta.options.limit = 8;
     posts.relationship.relationshipMeta.options.filter = (reference, record) => {
       return reference.where('status', '==', 'rejected');
