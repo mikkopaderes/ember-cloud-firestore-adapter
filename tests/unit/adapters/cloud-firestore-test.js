@@ -552,9 +552,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const relationship = {
         key: 'posts',
         options: {
-          filter(reference) {
-            return reference.limit(1);
-          },
+          limit: 1,
         },
         type: 'post',
       };
@@ -587,9 +585,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const url = 'users/user_a/friends';
       const relationship = {
         options: {
-          filter(reference) {
-            return reference.limit(1);
-          },
+          limit: 1,
         },
         type: 'user',
       };
@@ -705,8 +701,10 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       // Arrange
       const modelClass = { modelName: 'user' };
       const option = {
+        limit: 1,
+
         filter(reference) {
-          return reference.where('age', '==', 15);
+          return reference.where('age', '>=', 15);
         },
       };
       const adapter = this.owner.lookup('adapter:cloud-firestore');

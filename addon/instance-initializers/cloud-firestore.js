@@ -147,20 +147,42 @@ function reopenStore(appInstance) {
     /**
      * @param {string} modelName
      * @param {string} id
-     * @param {string} field
+     * @param {Object} relationship
      * @param {firebase.firestore.CollectionReference} collectionRef
      * @function
      */
-    listenForHasManyChanges(modelName, id, field, collectionRef) {
-      if (
-        !this.isInFastBoot()
-        && !this.hasListenerForHasMany(modelName, id, field)
-      ) {
-        this.trackHasManyListener(modelName, id, field);
+    listenForHasManyChanges(modelName, id, relationship, collectionRef) {
+      if (!this.isInFastBoot()) {
+        const { type, key: field } = relationship;
+        let hasManyTracker;
 
-        collectionRef.onSnapshot(() => (
-          next(() => this.peekRecord(modelName, id).hasMany(field).reload())
-        ));
+        if (this.hasListenerForHasMany(modelName, id, field)) {
+          hasManyTracker = this.get('tracker')[modelName].document[id].relationship[field];
+
+          hasManyTracker.unsubscribe();
+        } else {
+          this.trackHasManyListener(modelName, id, field);
+
+          hasManyTracker = this.get('tracker')[modelName].document[id].relationship[field];
+        }
+
+        const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
+          const promises = [];
+          const records = [];
+
+          querySnapshot.forEach((docSnapshot) => {
+            promises.push(this.findRecord(type, docSnapshot.id));
+            records.push({
+              data: { type, id: docSnapshot.id },
+            });
+          });
+
+          Promise.all(promises).then(() => (
+            this.peekRecord(modelName, id).hasMany(field).push(records)
+          ));
+        });
+
+        hasManyTracker.unsubscribe = unsubscribe;
       }
     },
 
@@ -305,7 +327,7 @@ function reopenStore(appInstance) {
      * @private
      */
     trackHasManyListener(modelName, id, field) {
-      this.get('tracker')[modelName].document[id].relationship[field] = true;
+      this.get('tracker')[modelName].document[id].relationship[field] = {};
     },
 
     /**
