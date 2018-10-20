@@ -355,7 +355,7 @@ function reopenStore(appInstance) {
     findQueryRecords(modelName, option, querySnapshot) {
       return querySnapshot.docs.map((docSnapshot) => {
         const referenceKeyName = this.adapterFor(modelName).get('referenceKeyName');
-        const referenceTo = docSnapshot.get(referenceKeyName);
+        const referenceTo = docSnapshot.get(referenceKeyName) || docSnapshot.ref;
 
         if (referenceTo && referenceTo.firestore) {
           const request = this.findRecord(modelName, referenceTo.id, {
