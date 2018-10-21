@@ -1,25 +1,68 @@
 <table>
-  <tr>
+  <thead>
     <th>ID</th>
     <th>Name</th>
     <th>Age</th>
-  </tr>
+  </thead>
 
-  {{#each users as |user|}}
-    <tr>
-      <td data-test-id="{{user.id}}">{{user.id}}</td>
-      <td data-test-age="{{user.id}}">{{user.age}}</td>
-      <td data-test-username="{{user.id}}">{{user.username}}</td>
-    </tr>
-  {{/each}}
+  <tbody>
+    {{#each this.users as |user|}}
+      <tr>
+        <td data-test-id={{user.id}}>{{user.id}}</td>
+        <td data-test-age={{user.id}}>{{user.age}}</td>
+        <td data-test-username={{user.id}}>{{user.username}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
 </table>
 
-<button data-test-button="create-record" onclick={{action handleCreateRecordClick}}>Create record</button>
-<button data-test-button="update-record" onclick={{action handleUpdateRecordClick}}>Update record</button>
-<button data-test-button="delete-record" onclick={{action handleDeleteRecordClick}}>Delete record</button>
-<button data-test-button="find-all" onclick={{action handleFindAllClick}}>Find All</button>
-<button data-test-button="find-record" onclick={{action handleFindRecordClick}}>Find record</button>
-<button data-test-button="query-1" onclick={{action handleQuery1Click}}>Query 1</button>
-<button data-test-button="query-2" onclick={{action handleQuery2Click}}>Query 2</button>
+<button
+  data-test-button="create-record"
+  onclick={{action this.handleCreateRecordClick}}
+>
+  Create record
+</button>
+
+<button
+  data-test-button="update-record"
+  onclick={{action this.handleUpdateRecordClick}}
+>
+  Update record
+</button>
+
+<button
+  data-test-button="delete-record"
+  onclick={{action this.handleDeleteRecordClick}}
+>
+  Delete record
+</button>
+
+<button
+  data-test-button="find-all"
+  onclick={{action this.handleFindAllClick}}
+>
+  Find All
+</button>
+
+<button
+  data-test-button="find-record"
+  onclick={{action this.handleFindRecordClick}}
+>
+  Find record
+</button>
+
+<button
+  data-test-button="query-1"
+  onclick={{action this.handleQuery1Click}}
+>
+  Query 1
+</button>
+
+<button
+  data-test-button="query-2"
+  onclick={{action this.handleQuery2Click}}
+>
+  Query 2
+</button>
 
 {{outlet}}

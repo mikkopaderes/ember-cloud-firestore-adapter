@@ -1,4 +1,3 @@
-import { Promise } from 'rsvp';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import EmberObject from '@ember/object';
@@ -818,21 +817,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
         // Assert
         assert.ok(true);
       }
-    });
-  });
-
-  module('function: methodForRequest', function () {
-    test('should use PATCH when request type is updateRecord', function (assert) {
-      assert.expect(1);
-
-      // Arrange
-      const adapter = this.owner.lookup('adapter:cloud-firestore');
-
-      // Act
-      const result = adapter.methodForRequest({ requestType: 'updateRecord' });
-
-      // Assert
-      assert.equal(result, 'PATCH');
     });
   });
 });

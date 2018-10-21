@@ -287,19 +287,6 @@ export default RESTAdapter.extend({
   /**
    * @override
    */
-  methodForRequest(params) {
-    const method = this._super(params);
-
-    if (method === 'PUT') {
-      return 'PATCH';
-    }
-
-    return method;
-  },
-
-  /**
-   * @override
-   */
   shouldBackgroundReloadRecord() {
     return false;
   },
@@ -438,6 +425,7 @@ export default RESTAdapter.extend({
    * @param {DS.Store} store
    * @param {Object} relationship
    * @param {firebase.firestore.QuerySnapshot} querySnapshot
+   * @return {Array} Has many record requests
    */
   findHasManyRecords(store, relationship, querySnapshot) {
     return querySnapshot.docs.map((docSnapshot) => {
