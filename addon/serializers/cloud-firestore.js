@@ -19,7 +19,11 @@ export default JSONSerializer.extend({
    * @type {Ember.Service}
    */
   firebase: inject(),
-
+  
+  getNamespace(snapshot) {
+    return null;
+  },
+  
   /**
    * Overriden to properly get the data of a `Reference` type relationship
    *
@@ -48,12 +52,14 @@ export default JSONSerializer.extend({
 
     modelClass.eachRelationship((name, descriptor) => {
       if (descriptor.kind === 'belongsTo') {
+        const key = this.keyForRelationship(name, 'belongsTo', 'serialize');
+        
         if (
-          Object.prototype.hasOwnProperty.call(resourceHash, name)
-          && typeOf(resourceHash[name]) === 'object'
-          && resourceHash[name].firestore
+          Object.prototype.hasOwnProperty.call(resourceHash, key)
+          && typeOf(resourceHash[key]) === 'object'
+          && resourceHash[key].firestore
         ) {
-          const path = buildPathFromRef(resourceHash[name]);
+          const path = buildPathFromRef(resourceHash[key]);
 
           links[name] = path;
         }
@@ -67,7 +73,7 @@ export default JSONSerializer.extend({
           const collectionName = buildCollectionName(modelClass.modelName);
           const docId = resourceHash.id;
 
-          hasManyPath = `${collectionName}/${docId}/${name}`;
+          hasManyPath = [collectionName, docId, name].compact().join('/');
         }
 
         links[name] = hasManyPath;
@@ -84,16 +90,19 @@ export default JSONSerializer.extend({
    */
   serializeBelongsTo(snapshot, json, relationship) {
     this._super(snapshot, json, relationship);
-
-    if (json[relationship.key]) {
+    
+    const key = this.keyForRelationship(relationship.key, 'belongsTo', 'serialize');
+    
+    if (json[key]) {
+      const namespace = this.getNamespace(snapshot);
       const collectionName = buildCollectionName(relationship.type);
-      const docId = json[relationship.key];
-      const path = `${collectionName}/${docId}`;
+      const docId = json[key];
+      const path = [namespace, collectionName, docId].compact().join('/');
 
       if (this.getAdapterOptionAttribute(snapshot, 'onServer')) {
-        json[relationship.key] = path;
+        json[key] = path;
       } else {
-        json[relationship.key] = buildRefFromPath(this.get('firebase').firestore(), path);
+        json[key] = buildRefFromPath(this.get('firebase').firestore(), path);
       }
     }
   },
@@ -103,13 +112,16 @@ export default JSONSerializer.extend({
    */
   serializeHasMany(snapshot, json, relationship) {
     this._super(snapshot, json, relationship);
+    
+    const key = this.keyForRelationship(relationship.key, 'hasMany', 'serialize');
 
-    if (json[relationship.key]) {
+    if (json[key]) {
       const references = [];
 
-      json[relationship.key].forEach((id) => {
+      json[key].forEach((id) => {
+        const namespace = this.getNamespace(snapshot);
         const collectionName = buildCollectionName(relationship.type);
-        const path = `${collectionName}/${id}`;
+        const path = [namespace, collectionName, id].compact().join('/');
 
         if (this.getAdapterOptionAttribute(snapshot, 'onServer')) {
           references.push(path);
@@ -118,9 +130,9 @@ export default JSONSerializer.extend({
         }
       });
 
-      delete json[relationship.key];
+      delete json[key];
 
-      json[relationship.key] = references;
+      json[key] = references;
     }
   },
 

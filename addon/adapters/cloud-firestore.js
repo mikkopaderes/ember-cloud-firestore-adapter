@@ -359,12 +359,6 @@ export default RESTAdapter.extend({
   buildUpdateRecordDocRef(type, snapshot) {
     const isCreate = this.getAdapterOptionAttribute(snapshot, 'isCreate');
 
-    if (!isCreate) {
-      if (this.getAdapterOptionAttribute(snapshot, 'buildReference')) {
-        delete snapshot.adapterOptions.buildReference;
-      }
-    }
-
     return this.buildCollectionRef(
       type.modelName,
       snapshot.adapterOptions,
