@@ -162,7 +162,7 @@ export default RESTAdapter.extend({
 
     return new Promise((resolve, reject) => {
       const db = this.get('firebase').firestore();
-      const docRef = db.collection(buildCollectionName(type.modelName)).doc(snapshot.id);
+      const docRef = this.buildUpdateRecordDocRef(type, snapshot); //db.collection(buildCollectionName(type.modelName)).doc(snapshot.id);
       const batch = this.buildWriteBatch(type, snapshot, docRef, true);
 
       batch.commit().then(() => run(null, resolve)).catch(error => run(null, reject, error));
