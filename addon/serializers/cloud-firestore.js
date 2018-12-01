@@ -1,5 +1,4 @@
 import { inject } from '@ember/service';
-import { pluralize } from 'ember-inflector';
 import { typeOf } from '@ember/utils';
 import JSONSerializer from 'ember-data/serializers/json';
 
@@ -8,6 +7,14 @@ import {
   buildPathFromRef,
   buildRefFromPath,
 } from 'ember-cloud-firestore-adapter/utils/parser';
+
+/**
+ * @param {*} value
+ * @return {boolean} True if is a document reference. Otherwise, false.
+ */
+function isDocumentReference(value) {
+  return typeOf(value) === 'object' && value.firestore;
+}
 
 /**
  * @class CloudFirestore
@@ -21,12 +28,12 @@ export default JSONSerializer.extend({
   firebase: inject(),
 
   /**
-   * Overriden to properly get the data of a `Reference` type relationship
+   * Overriden to convert a DocumentReference into an JSON API relationship object
    *
    * @override
    */
   extractRelationship(relationshipModelName, relationshipHash) {
-    if (typeOf(relationshipHash) === 'object' && relationshipHash.firestore) {
+    if (isDocumentReference(relationshipHash)) {
       const path = buildPathFromRef(relationshipHash);
       const pathNodes = path.split('/');
       const belongsToId = pathNodes[pathNodes.length - 1];
@@ -38,8 +45,7 @@ export default JSONSerializer.extend({
   },
 
   /**
-   * Extended to add links for a relationship that's derived from its
-   * `Reference` value
+   * Extended to add links for all relationship
    *
    * @override
    */
@@ -50,19 +56,18 @@ export default JSONSerializer.extend({
       if (descriptor.kind === 'belongsTo') {
         if (
           Object.prototype.hasOwnProperty.call(resourceHash, name)
-          && typeOf(resourceHash[name]) === 'object'
-          && resourceHash[name].firestore
+          && isDocumentReference(resourceHash[name])
         ) {
           const path = buildPathFromRef(resourceHash[name]);
 
           links[name] = path;
         }
       } else {
-        const cardinality = modelClass.determineRelationshipType(descriptor, this.get('store'));
+        const cardinality = modelClass.determineRelationshipType(descriptor, this.store);
         let hasManyPath;
 
         if (cardinality === 'manyToOne') {
-          hasManyPath = pluralize(descriptor.type);
+          hasManyPath = buildCollectionName(descriptor.type);
         } else {
           const collectionName = buildCollectionName(modelClass.modelName);
           const docId = resourceHash.id;
@@ -80,6 +85,8 @@ export default JSONSerializer.extend({
   },
 
   /**
+   * Overriden to convert a belongs-to relationship to a DocumentReference
+   *
    * @override
    */
   serializeBelongsTo(snapshot, json, relationship) {
@@ -90,37 +97,7 @@ export default JSONSerializer.extend({
       const docId = json[relationship.key];
       const path = `${collectionName}/${docId}`;
 
-      if (this.getAdapterOptionAttribute(snapshot, 'onServer')) {
-        json[relationship.key] = path;
-      } else {
-        json[relationship.key] = buildRefFromPath(this.get('firebase').firestore(), path);
-      }
-    }
-  },
-
-  /**
-   * @override
-   */
-  serializeHasMany(snapshot, json, relationship) {
-    this._super(snapshot, json, relationship);
-
-    if (json[relationship.key]) {
-      const references = [];
-
-      json[relationship.key].forEach((id) => {
-        const collectionName = buildCollectionName(relationship.type);
-        const path = `${collectionName}/${id}`;
-
-        if (this.getAdapterOptionAttribute(snapshot, 'onServer')) {
-          references.push(path);
-        } else {
-          references.push(buildRefFromPath(this.get('firebase').firestore(), path));
-        }
-      });
-
-      delete json[relationship.key];
-
-      json[relationship.key] = references;
+      json[relationship.key] = buildRefFromPath(this.firebase.firestore(), path);
     }
   },
 
@@ -137,23 +114,5 @@ export default JSONSerializer.extend({
     });
 
     return json;
-  },
-
-  /**
-   * @param {Object} snapshot
-   * @param {string} key
-   * @return {*} Attribute value
-   * @function
-   * @private
-   */
-  getAdapterOptionAttribute(snapshot, key) {
-    if (
-      snapshot.adapterOptions
-      && Object.prototype.hasOwnProperty.call(snapshot.adapterOptions, key)
-    ) {
-      return snapshot.adapterOptions[key];
-    }
-
-    return null;
   },
 });

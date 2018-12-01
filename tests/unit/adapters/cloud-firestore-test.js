@@ -7,9 +7,9 @@ import sinon from 'sinon';
 import { mockFirebase } from 'ember-cloud-firestore-adapter/test-support';
 import getFixtureData from '../../helpers/fixture-data';
 
-let db;
-
 module('Unit | Adapter | cloud firestore', function (hooks) {
+  let db;
+
   setupTest(hooks);
 
   hooks.beforeEach(function () {
@@ -32,16 +32,11 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
   });
 
   module('function: createRecord', function () {
-    let store;
-
-    hooks.beforeEach(function () {
-      store = { listenForDocChanges: sinon.stub() };
-    });
-
-    test('should create record and resolve with the created resource', async function (assert) {
+    test('should create record and resolve with the created doc', async function (assert) {
       assert.expect(2);
 
       // Arrange
+      const store = {};
       const modelClass = { modelName: 'user' };
       const snapshot = { id: 'user_100', age: 30, username: 'user_100' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
@@ -52,17 +47,18 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const result = await adapter.createRecord(store, modelClass, snapshot);
 
       // Assert
-      assert.deepEqual(result, { id: 'user_100', age: 30, username: 'user_100' });
+      assert.deepEqual(result, { age: 30, username: 'user_100' });
 
       const user100 = await db.collection('users').doc('user_100').get();
 
       assert.deepEqual(user100.data(), { age: 30, username: 'user_100' });
     });
 
-    test('should create record while overriding buildReference hook and resolve with the created resource', async function (assert) {
+    test('should create record in a custom collection and resolve with the created doc', async function (assert) {
       assert.expect(2);
 
       // Arrange
+      const store = {};
       const modelClass = { modelName: 'user' };
       const snapshot = {
         id: 'user_100',
@@ -82,74 +78,20 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const result = await adapter.createRecord(store, modelClass, snapshot);
 
       // Assert
-      assert.deepEqual(result, { id: 'user_100', age: 30, username: 'user_100' });
+      assert.deepEqual(result, { age: 30, username: 'user_100' });
 
       const user100 = await db.collection('foobar').doc('user_100').get();
 
       assert.deepEqual(user100.data(), { age: 30, username: 'user_100' });
     });
-
-    test('should reject when unable to create record', async function (assert) {
-      assert.expect(1);
-
-      // Arrange
-      const modelClass = { modelName: 'user' };
-      const snapshot = { id: 'user_a' };
-      const updateRecordStub = sinon.stub().returns(Promise.reject(new Error('error')));
-      const adapter = this.owner.lookup('adapter:cloud-firestore');
-
-      adapter.updateRecord = updateRecordStub;
-
-      try {
-        // Act
-        await adapter.createRecord(store, modelClass, snapshot);
-      } catch (error) {
-        // Assert
-        assert.ok(true);
-      }
-    });
   });
 
   module('function: updateRecord', function () {
-    let store;
-
-    hooks.beforeEach(function () {
-      store = { listenForDocChanges() {} };
-    });
-
-    test('should update record and resolve with the updated resource', async function (assert) {
-      assert.expect(2);
+    test('should update record and resolve with the updated doc', async function (assert) {
+      assert.expect(1);
 
       // Arrange
-      const modelClass = { modelName: 'user' };
-      const snapshot = {
-        id: 'user_a',
-        age: 50,
-        adapterOptions: {
-          buildReference(firestore) {
-            return firestore.collection('foobar');
-          },
-        },
-      };
-      const adapter = this.owner.lookup('adapter:cloud-firestore');
-
-      adapter.serialize = sinon.stub().returns({ age: 50, username: 'user_a' });
-
-      // Act
-      const result = await adapter.updateRecord(store, modelClass, snapshot);
-
-      // Assert
-      assert.deepEqual(result, { id: 'user_a', age: 50, username: 'user_a' });
-
-      const userA = await db.collection('foobar').doc('user_a').get();
-
-      assert.notOk(userA.exists);
-    });
-
-    test('should update record while ignoring buildReference hook when function is not called from createRecord()', async function (assert) {
-      assert.expect(2);
-
-      // Arrange
+      const store = {};
       const modelClass = { modelName: 'user' };
       const snapshot = { id: 'user_a', age: 50 };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
@@ -160,17 +102,14 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const result = await adapter.updateRecord(store, modelClass, snapshot);
 
       // Assert
-      assert.deepEqual(result, { id: 'user_a', age: 50, username: 'user_a' });
-
-      const userA = await db.collection('users').doc('user_a').get();
-
-      assert.deepEqual(userA.data(), { age: 50, username: 'user_a' });
+      assert.deepEqual(result, { age: 50, username: 'user_a' });
     });
 
     test('should update record and process additional batched writes', async function (assert) {
       assert.expect(3);
 
       // Arrange
+      const store = {};
       const modelClass = { modelName: 'user' };
       const snapshot = {
         id: 'user_a',
@@ -190,7 +129,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const result = await adapter.updateRecord(store, modelClass, snapshot);
 
       // Assert
-      assert.deepEqual(result, { id: 'user_a', age: 50, username: 'user_a' });
+      assert.deepEqual(result, { age: 50, username: 'user_a' });
 
       const userA = await db.collection('users').doc('user_a').get();
 
@@ -200,51 +139,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
       assert.deepEqual(user100.data(), { age: 60 });
     });
-
-    test('should reject when failing to update record with ID', async function (assert) {
-      assert.expect(1);
-
-      // Arrange
-      const modelClass = { modelName: 'user' };
-      const snapshot = { id: 'user_a' };
-      const adapter = this.owner.lookup('adapter:cloud-firestore');
-
-      adapter.set('firebase', {
-        firestore: sinon.stub().returns({
-          batch() {
-            return {
-              set() {},
-
-              commit() {
-                return Promise.reject(new Error('error'));
-              },
-            };
-          },
-
-          collection() {
-            return {
-              doc() {
-                return {};
-              },
-            };
-          },
-        }),
-      });
-      adapter.set('serialize', () => [
-        {
-          path: 'users',
-          data: { id: 'ID', name: 'Name' },
-        },
-      ]);
-
-      try {
-        // Act
-        await adapter.updateRecord(store, modelClass, snapshot);
-      } catch (error) {
-        // Assert
-        assert.equal(error.message, 'error');
-      }
-    });
   });
 
   module('function: deleteRecord', function () {
@@ -252,6 +146,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       assert.expect(1);
 
       // Arrange
+      const store = {};
       const modelClass = { modelName: 'user' };
       const snapshot = { id: 'user_a' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
@@ -259,7 +154,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       adapter.serialize = sinon.stub().returns({ age: 15, username: 'user_a' });
 
       // Act
-      await adapter.deleteRecord({}, modelClass, snapshot);
+      await adapter.deleteRecord(store, modelClass, snapshot);
 
       // Assert
       const userA = await db.collection('users').doc('user_a').get();
@@ -271,6 +166,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       assert.expect(2);
 
       // Arrange
+      const store = {};
       const modelClass = { modelName: 'user' };
       const snapshot = {
         id: 'user_a',
@@ -285,7 +181,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       adapter.serialize = sinon.stub().returns({ age: 50, username: 'user_a' });
 
       // Act
-      await adapter.deleteRecord({}, modelClass, snapshot);
+      await adapter.deleteRecord(store, modelClass, snapshot);
 
       // Assert
       const userA = await db.collection('users').doc('user_a').get();
@@ -296,68 +192,14 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
       assert.notOk(userB.exists);
     });
-
-    test('should reject when failing to delete record', async function (assert) {
-      assert.expect(1);
-
-      // Arrange
-      const modelClass = { modelName: 'user' };
-      const snapshot = { id: 'user_a' };
-      const adapter = this.owner.lookup('adapter:cloud-firestore');
-
-      adapter.set('firebase', {
-        firestore: sinon.stub().returns({
-          batch() {
-            return {
-              commit() {
-                return Promise.reject(new Error('error'));
-              },
-
-              delete() {},
-            };
-          },
-
-          collection() {
-            return {
-              doc() {},
-            };
-          },
-        }),
-      });
-      adapter.set('serialize', () => [
-        {
-          id: 'ID',
-          path: 'users',
-          data: { name: 'Name' },
-        },
-      ]);
-
-      try {
-        // Act
-        await adapter.deleteRecord({}, modelClass, snapshot);
-      } catch (error) {
-        // Assert
-        assert.equal(error.message, 'error');
-      }
-    });
   });
 
   module('function: findAll', function () {
-    let store;
-
-    hooks.beforeEach(function () {
-      store = {
-        listenForCollectionChanges() {},
-        listenForDocChanges() {},
-        normalize() {},
-        push() {},
-      };
-    });
-
     test('should fetch all records for a model', async function (assert) {
       assert.expect(1);
 
       // Arrange
+      const store = {};
       const modelClass = { modelName: 'user' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
@@ -383,65 +225,31 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
         },
       ]);
     });
-
-    test('should reject when unable to fetch all records for a model', async function (assert) {
-      assert.expect(1);
-
-      // Arrange
-      const adapter = this.owner.lookup('adapter:cloud-firestore');
-
-      adapter.set('firebase', {
-        firestore: sinon.stub().returns({
-          collection() {
-            return {
-              onSnapshot(onSuccess, onError) {
-                onError();
-              },
-            };
-          },
-        }),
-      });
-
-      try {
-        // Act
-        await adapter.findAll(store, { modelName: 'post' });
-      } catch (error) {
-        // Assert
-        assert.ok(true);
-      }
-    });
   });
 
   module('function: findRecord', function () {
-    let store;
-
-    hooks.beforeEach(function () {
-      store = {
-        listenForDocChanges() {},
-        normalize() {},
-        push() {},
-      };
-    });
-
-    test('should fetch a record while not overriding buildReference hook', async function (assert) {
+    test('should fetch a record', async function (assert) {
       assert.expect(1);
 
       // Arrange
+      const store = {};
       const modelClass = { modelName: 'user' };
       const modelId = 'user_a';
+      const snapshot = {};
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       // Act
-      const result = await adapter.findRecord(store, modelClass, modelId);
+      const result = await adapter.findRecord(store, modelClass, modelId, snapshot);
 
       // Assert
       assert.deepEqual(result, { id: 'user_a', age: 15, username: 'user_a' });
     });
 
-    test('should fetch a record while overriding buildReference hook', async function (assert) {
+    test('should fetch a record in a custom collection', async function (assert) {
       assert.expect(1);
 
       // Arrange
+      const store = {};
       const modelClass = { modelName: 'user' };
       const modelId = 'user_a';
       const snapshot = {
@@ -459,56 +267,14 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       // Assert
       assert.deepEqual(result, { id: 'user_a', since: 2010 });
     });
-
-    test('should reject when unable to fetch a record', async function (assert) {
-      assert.expect(1);
-
-      // Arrange
-      const modelClass = { modelName: 'user' };
-      const modelId = 'user_a';
-      const adapter = this.owner.lookup('adapter:cloud-firestore');
-
-      adapter.set('firebase', {
-        firestore: sinon.stub().returns({
-          collection() {
-            return {
-              doc() {
-                return {
-                  onSnapshot(onSuccess, onError) {
-                    onError();
-                  },
-                };
-              },
-            };
-          },
-        }),
-      });
-
-      try {
-        // Act
-        await adapter.findRecord(store, modelClass, modelId);
-      } catch (error) {
-        // Assert
-        assert.ok(true);
-      }
-    });
   });
 
   module('function: findBelongsTo', function () {
-    let store;
-
-    hooks.beforeEach(function () {
-      store = {
-        listenForDocChanges() {},
-        normalize() {},
-        push() {},
-      };
-    });
-
     test('should fetch a belongs to record', async function (assert) {
       assert.expect(1);
 
       // Arrange
+      const store = {};
       const snapshot = {};
       const url = 'admins/user_a';
       const relationship = { type: 'user' };
@@ -523,19 +289,11 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
   });
 
   module('function: findHasMany', function () {
-    let store;
-
-    hooks.beforeEach(function () {
-      store = {
-        listenForDocChanges() {},
-        listenForHasManyChanges() {},
-      };
-    });
-
     test('should fetch many-to-one cardinality', async function (assert) {
       assert.expect(3);
 
       // Arrange
+      const store = {};
       const determineRelationshipTypeStub = sinon.stub().returns('manyToOne');
       const inverseForStub = sinon.stub().returns({ name: 'author' });
       const snapshot = {
@@ -551,7 +309,9 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const relationship = {
         key: 'posts',
         options: {
-          limit: 1,
+          filter(reference) {
+            return reference.limit(1);
+          },
         },
         type: 'post',
       };
@@ -572,6 +332,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       assert.expect(2);
 
       // Arrange
+      const store = {};
       const determineRelationshipTypeStub = sinon.stub().returns('manyToNone');
       const snapshot = {
         record: EmberObject.create({
@@ -584,7 +345,9 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const url = 'users/user_a/friends';
       const relationship = {
         options: {
-          limit: 1,
+          filter(reference) {
+            return reference.limit(1);
+          },
         },
         type: 'user',
       };
@@ -602,6 +365,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       assert.expect(3);
 
       // Arrange
+      const store = {};
       const determineRelationshipTypeStub = sinon.stub().returns('manyToOne');
       const inverseForStub = sinon.stub().returns({ name: 'author' });
       const snapshot = {
@@ -652,6 +416,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       assert.expect(2);
 
       // Arrange
+      const store = {};
       const determineRelationshipTypeStub = sinon.stub().returns('manyToNone');
       const snapshot = {
         record: EmberObject.create({ id: 'user_a' }),
@@ -685,42 +450,33 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
   });
 
   module('function: query', function () {
-    let store;
-
-    hooks.beforeEach(function () {
-      store = {
-        listenForDocChanges() {},
-        listenForQueryChanges() {},
-      };
-    });
-
-    test('should query while not overriding buildReference', async function (assert) {
+    test('should query for records', async function (assert) {
       assert.expect(1);
 
       // Arrange
+      const store = {};
       const modelClass = { modelName: 'user' };
-      const option = {
-        limit: 1,
-
+      const query = {
         filter(reference) {
-          return reference.where('age', '>=', 15);
+          return reference.where('age', '>=', 15).limit(1);
         },
       };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       // Act
-      const result = await adapter.query(store, modelClass, option);
+      const result = await adapter.query(store, modelClass, query);
 
       // Assert
       assert.deepEqual(result, [{ id: 'user_a', age: 15, username: 'user_a' }]);
     });
 
-    test('should query while overriding buildReference', async function (assert) {
+    test('should query for records in a custom collection', async function (assert) {
       assert.expect(1);
 
       // Arrange
+      const store = {};
       const modelClass = { modelName: 'user' };
-      const option = {
+      const query = {
         buildReference(firestore) {
           return firestore.collection('admins');
         },
@@ -732,91 +488,10 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       // Act
-      const result = await adapter.query(store, modelClass, option);
+      const result = await adapter.query(store, modelClass, query);
 
       // Assert
       assert.deepEqual(result, [{ id: 'user_b', since: 2015 }]);
-    });
-
-    test('should listen for query changes when queryId is passed in', async function (assert) {
-      assert.expect(1);
-
-      // Arrange
-      const modelClass = { modelName: 'user' };
-      const option = {
-        queryId: 'foobar',
-
-        filter(reference) {
-          return reference.where('since', '==', 2015);
-        },
-      };
-      const spy = sinon.spy(store, 'listenForQueryChanges');
-      const adapter = this.owner.lookup('adapter:cloud-firestore');
-
-      // Act
-      await adapter.query(store, modelClass, option);
-
-      // Assert
-      assert.ok(spy.calledOnce);
-    });
-
-    test('should not listen for query changes when queryId is not passed in', async function (assert) {
-      assert.expect(1);
-
-      // Arrange
-      const modelClass = { modelName: 'user' };
-      const option = {
-        queryId: 'foobar',
-
-        filter(reference) {
-          return reference.where('since', '==', 2015);
-        },
-      };
-      const spy = sinon.spy(store, 'listenForQueryChanges');
-      const adapter = this.owner.lookup('adapter:cloud-firestore');
-
-      // Act
-      adapter.query(store, modelClass, option);
-
-      // Assert
-      assert.ok(spy.notCalled);
-    });
-
-    test('should reject when unable to query', async function (assert) {
-      assert.expect(1);
-
-      // Arrange
-      const modelClass = { modelName: 'user' };
-      const option = {
-        filter(reference) {
-          return reference.where('since', '==', 2015);
-        },
-      };
-      const adapter = this.owner.lookup('adapter:cloud-firestore');
-
-      adapter.set('firebase', {
-        firestore: sinon.stub().returns({
-          collection() {
-            return {
-              where() {
-                return {
-                  onSnapshot(onSuccess, onError) {
-                    onError();
-                  },
-                };
-              },
-            };
-          },
-        }),
-      });
-
-      try {
-        // Act
-        await adapter.query(store, modelClass, option);
-      } catch (error) {
-        // Assert
-        assert.ok(true);
-      }
     });
   });
 });
