@@ -197,9 +197,15 @@ export default RESTAdapter.extend({
    */
   findRecord(store, type, id, snapshot = {}) {
     return new Promise((resolve, reject) => {
-      const db = this.get('firebase').firestore();
-      const collectionRef = this.buildCollectionRef(type.modelName, snapshot.adapterOptions, db);
-      const docRef = collectionRef.doc(id);
+      let docRef = snapshot._internalModel &&
+        snapshot._internalModel.getAttributeValue('docRef');
+
+      if (!docRef) {
+        const db = this.get('firebase').firestore();
+        const collectionRef = this.buildCollectionRef(type.modelName, snapshot.adapterOptions, db);
+        docRef = collectionRef.doc(id);
+      }
+
       const unsubscribe = docRef.onSnapshot((docSnapshot) => {
         if (docSnapshot.exists) {
           store.listenForDocChanges(type, docRef);

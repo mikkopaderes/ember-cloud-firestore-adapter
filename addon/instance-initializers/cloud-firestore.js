@@ -195,6 +195,17 @@ function reopenStore(appInstance) {
     buildModelName(collectionName) {
       return dasherize(singularize(collectionName));
     },
+    
+    /**
+     * @override
+     */
+    _pushResourceIdentifier(relationship, resourceIdentifier) {
+      if (Ember.isNone(resourceIdentifier)) return;
+      // this.assertRelationshipData(this, relationship.internalModel, resourceIdentifier, relationship.relationshipMeta);
+      let internalModel = this._internalModelsFor(resourceIdentifier.type).get(resourceIdentifier.id);
+      if (internalModel) return internalModel;
+      return this._buildInternalModel(resourceIdentifier.type, resourceIdentifier.id, resourceIdentifier.data);
+    },
 
     /**
      * @return {boolean} True if in FastBoot. Otherwise, false.
