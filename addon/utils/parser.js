@@ -3,59 +3,12 @@ import { camelize } from '@ember/string';
 import { pluralize } from 'ember-inflector';
 
 /**
- * Parses a document snapshot from Cloud Firestore
- *
- * e.g.
- *
- * For a post model of
- *
- * ```javascript
- * import { belongsTo, hasMany } from 'ember-data/relationships';
- * import Model from 'ember-data/model';
- * import attr from 'ember-data/attr';
- *
- * export default Model.extend({
- *   title: attr('string'),
- *   body: attr('string'),
- *   author: belongsTo('user'),
- *   comments: hasMany('comment'),
- * });
- * ```
- *
- * And a document snapshot that lives in `posts` collection and `post_a`
- * document
- *
- * ```javascript
- * docSnapshot = {
- *   id: 'post_a',
- *
- *   data() {
- *     return {
- *       title: 'Foo',
- *       body: 'Bar',
- *       author: <cloud firestore reference to users/user_a document>
- *     };
- *   }
- * }
- * ```
- *
- * Return would be
- *
- * ```javascript
- * parsed = {
- *   id: 'post_a',
- *   title: 'Foo',
- *   body: 'Bar',
- *   author: <cloud firestore reference to users/user_a document>,
- * }
- * ```
- *
- * @param {DS.Model} type
  * @param {firebase.firestore.DocumentSnapshot} docSnapshot
- * @return {Object} Parsed document snapshot
+ * @return {Object} Flattened doc snapshot data
  * @function
+ * @private
  */
-export function parseDocSnapshot(type, docSnapshot) {
+export function flattenDocSnapshotData(docSnapshot) {
   const { id } = docSnapshot;
   const data = docSnapshot.data();
 

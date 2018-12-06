@@ -199,7 +199,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       assert.expect(1);
 
       // Arrange
-      const store = {};
+      const store = { normalize: sinon.stub(), push: sinon.stub() };
       const modelClass = { modelName: 'user' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
@@ -232,7 +232,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       assert.expect(1);
 
       // Arrange
-      const store = {};
+      const store = { normalize: sinon.stub(), push: sinon.stub() };
       const modelClass = { modelName: 'user' };
       const modelId = 'user_a';
       const snapshot = {};
@@ -249,7 +249,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       assert.expect(1);
 
       // Arrange
-      const store = {};
+      const store = { normalize: sinon.stub(), push: sinon.stub() };
       const modelClass = { modelName: 'user' };
       const modelId = 'user_a';
       const snapshot = {
@@ -274,10 +274,10 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       assert.expect(1);
 
       // Arrange
-      const store = {};
+      const store = { normalize: sinon.stub(), push: sinon.stub() };
       const snapshot = {};
       const url = 'admins/user_a';
-      const relationship = { type: 'user' };
+      const relationship = { type: 'user', options: {} };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       // Act
@@ -293,7 +293,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       assert.expect(3);
 
       // Arrange
-      const store = {};
+      const store = { normalize: sinon.stub(), push: sinon.stub() };
       const determineRelationshipTypeStub = sinon.stub().returns('manyToOne');
       const inverseForStub = sinon.stub().returns({ name: 'author' });
       const snapshot = {
@@ -332,7 +332,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       assert.expect(2);
 
       // Arrange
-      const store = {};
+      const store = { normalize: sinon.stub(), push: sinon.stub() };
       const determineRelationshipTypeStub = sinon.stub().returns('manyToNone');
       const snapshot = {
         record: EmberObject.create({
@@ -365,7 +365,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       assert.expect(3);
 
       // Arrange
-      const store = {};
+      const store = { normalize: sinon.stub(), push: sinon.stub() };
       const determineRelationshipTypeStub = sinon.stub().returns('manyToOne');
       const inverseForStub = sinon.stub().returns({ name: 'author' });
       const snapshot = {
@@ -416,7 +416,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       assert.expect(2);
 
       // Arrange
-      const store = {};
+      const store = { normalize: sinon.stub(), push: sinon.stub() };
       const determineRelationshipTypeStub = sinon.stub().returns('manyToNone');
       const snapshot = {
         record: EmberObject.create({ id: 'user_a' }),

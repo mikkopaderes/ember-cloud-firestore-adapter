@@ -6,7 +6,7 @@ import {
   buildCollectionName,
   buildPathFromRef,
   buildRefFromPath,
-  parseDocSnapshot,
+  flattenDocSnapshotData,
 } from 'ember-cloud-firestore-adapter/utils/parser';
 
 module('Unit | Utility | parser', function () {
@@ -55,16 +55,12 @@ module('Unit | Utility | parser', function () {
     });
   });
 
-  module('function: parseDocSnapshot', function () {
-    test('should parse a document snapshot fit to be normalized by the serializer', function (assert) {
+  module('function: flattenDocSnapshotData', function () {
+    test('should flatten a document snapshot fit to be normalized by the serializer', function (assert) {
       assert.expect(1);
 
       // Act
-      const result = parseDocSnapshot({
-        eachRelationship(callback) {
-          callback('author', { kind: 'belongsTo', type: 'user' });
-        },
-      }, {
+      const result = flattenDocSnapshotData({
         id: 'post_a',
 
         data() {

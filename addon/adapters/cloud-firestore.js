@@ -1,8 +1,12 @@
-import { assign } from '@ember/polyfills';
 import { inject as service } from '@ember/service';
 import Adapter from 'ember-data/adapter';
 
-import { buildCollectionName, buildRefFromPath } from 'ember-cloud-firestore-adapter/utils/parser';
+import {
+  buildCollectionName,
+  buildRefFromPath,
+  flattenDocSnapshotData,
+} from 'ember-cloud-firestore-adapter/utils/parser';
+import RealtimeTracker from 'ember-cloud-firestore-adapter/utils/realtime-tracker';
 
 /**
  * @class CloudFirestore
@@ -41,6 +45,8 @@ export default Adapter.extend({
 
       db.settings(this.firestoreSettings);
     }
+
+    this.set('realtimeTracker', new RealtimeTracker());
   },
 
   /**
@@ -95,21 +101,41 @@ export default Adapter.extend({
   /**
    * @override
    */
-  async findAll(store, type) {
-    const db = this.firebase.firestore();
-    const collectionRef = db.collection(buildCollectionName(type.modelName));
-    const querySnapshot = await collectionRef.get();
+  async findRecord(store, type, id, snapshot = {}) {
+    return new Promise((resolve) => {
+      const docRef = this.buildCollectionRef(type, snapshot.adapterOptions).doc(id);
+      const unsubscribe = docRef.onSnapshot((docSnapshot) => {
+        if (this.getAdapterOptionConfig(snapshot, 'isRealTime')) {
+          this.realtimeTracker.trackFindRecordChanges(type.modelName, docRef, store);
+        }
 
-    return querySnapshot.docs.map(docSnapshot => this.flattenDocSnapshotData(docSnapshot));
+        unsubscribe();
+        resolve(flattenDocSnapshotData(docSnapshot));
+      });
+    });
   },
 
   /**
    * @override
    */
-  async findRecord(store, type, id, snapshot = {}) {
-    const docSnapshot = await this.buildCollectionRef(type, snapshot.adapterOptions).doc(id).get();
+  async findAll(store, type, sinceToken, snapshotRecordArray) {
+    return new Promise((resolve) => {
+      const db = this.firebase.firestore();
+      const collectionRef = db.collection(buildCollectionName(type.modelName));
+      const unsubscribe = collectionRef.onSnapshot(async (querySnapshot) => {
+        if (this.getAdapterOptionConfig(snapshotRecordArray, 'isRealTime')) {
+          this.realtimeTracker.trackFindAllChanges(type.modelName, collectionRef, store);
+        }
 
-    return this.flattenDocSnapshotData(docSnapshot);
+        unsubscribe();
+
+        const records = await Promise.all(querySnapshot.docs.map(docSnapshot => (
+          this.findRecord(store, type, docSnapshot.id)
+        )));
+
+        resolve(records);
+      });
+    });
   },
 
   /**
@@ -122,6 +148,8 @@ export default Adapter.extend({
 
     return this.findRecord(store, type, id, {
       adapterOptions: {
+        isRealTime: relationship.options.isRealTime,
+
         buildReference(db) {
           return buildRefFromPath(db, urlNodes.join('/'));
         },
@@ -133,22 +161,53 @@ export default Adapter.extend({
    * @override
    */
   async findHasMany(store, snapshot, url, relationship) {
-    const collectionRef = this.buildHasManyCollectionRef(store, snapshot, url, relationship);
-    const querySnapshot = await collectionRef.get();
-    const requests = this.findHasManyRecords(store, relationship, querySnapshot);
+    return new Promise((resolve) => {
+      const collectionRef = this.buildHasManyCollectionRef(store, snapshot, url, relationship);
+      const unsubscribe = collectionRef.onSnapshot(async (querySnapshot) => {
+        if (relationship.options.isRealTime) {
+          this.realtimeTracker.trackFindHasManyChanges(
+            snapshot.modelName,
+            snapshot.id,
+            relationship,
+            collectionRef,
+            store,
+          );
+        }
 
-    return Promise.all(requests);
+        unsubscribe();
+
+        const requests = this.findHasManyRecords(store, relationship, querySnapshot);
+        const records = await Promise.all(requests);
+
+        resolve(records);
+      });
+    });
   },
 
   /**
    * @override
    */
-  async query(store, type, query) {
-    const collectionRef = this.buildCollectionRef(type, query);
-    const firestoreQuery = this.buildQuery(collectionRef, query);
-    const querySnapshot = await firestoreQuery.get();
+  async query(store, type, query, recordArray) {
+    return new Promise((resolve) => {
+      const collectionRef = this.buildCollectionRef(type, query);
+      const firestoreQuery = this.buildQuery(collectionRef, query);
+      const unsubscribe = firestoreQuery.onSnapshot(async (querySnapshot) => {
+        if (this.getAdapterOptionConfig(query, 'isRealTime')) {
+          this.realtimeTracker.trackQueryChanges(firestoreQuery, recordArray, query.queryId);
+        }
 
-    return querySnapshot.docs.map(docSnapshot => this.flattenDocSnapshotData(docSnapshot));
+        unsubscribe();
+
+        const records = await Promise.all(this.findQueryRecords(
+          store,
+          type,
+          query,
+          querySnapshot,
+        ));
+
+        resolve(records);
+      });
+    });
   },
 
   /**
@@ -213,19 +272,6 @@ export default Adapter.extend({
   },
 
   /**
-   * @param {firebase.firestore.DocumentSnapshot} docSnapshot
-   * @return {Object} Flattened doc snapshot data
-   * @function
-   * @private
-   */
-  flattenDocSnapshotData(docSnapshot) {
-    const { id } = docSnapshot;
-    const data = docSnapshot.data();
-
-    return assign({}, data, { id });
-  },
-
-  /**
    * @param {firebase.firestore.CollectionReference} collectionRef
    * @param {Object} [option={}]
    * @param {Model.<*>} [record]
@@ -286,6 +332,8 @@ export default Adapter.extend({
       if (referenceTo && referenceTo.firestore) {
         return this.findRecord(store, type, referenceTo.id, {
           adapterOptions: {
+            isRealTime: relationship.options.isRealTime,
+
             buildReference() {
               return referenceTo.parent;
             },
@@ -293,7 +341,55 @@ export default Adapter.extend({
         });
       }
 
-      return this.findRecord(store, type, docSnapshot.id);
+      return this.findRecord(store, type, docSnapshot.id, {
+        adapterOptions: { isRealTime: relationship.options.isRealTime },
+      });
     });
+  },
+
+  /**
+   * @param {DS.Store} store
+   * @param {DS.Model} type
+   * @param {Object} option
+   * @param {firebase.firestore.QuerySnapshot} querySnapshot
+   * @return {Array.<Promise>} Find record promises
+   * @function
+   * @private
+   */
+  findQueryRecords(store, type, option, querySnapshot) {
+    return querySnapshot.docs.map((docSnapshot) => {
+      const referenceTo = docSnapshot.get(this.referenceKeyName);
+
+      if (referenceTo && referenceTo.firestore) {
+        const request = this.findRecord(store, type, referenceTo.id, {
+          adapterOptions: {
+            isRealTime: option.isRealTime,
+
+            buildReference() {
+              return referenceTo.parent;
+            },
+          },
+        });
+
+        return request;
+      }
+
+      return this.findRecord(store, type, docSnapshot.id, { adapterOptions: option });
+    });
+  },
+
+  /**
+   * @param {DS.Snapshot} snapshot
+   * @param {string} prop
+   * @return {*} Value of adapter option config
+   * @function
+   * @private
+   */
+  getAdapterOptionConfig(snapshot, prop) {
+    try {
+      return snapshot.adapterOptions[prop];
+    } catch (error) {
+      return null;
+    }
   },
 });
