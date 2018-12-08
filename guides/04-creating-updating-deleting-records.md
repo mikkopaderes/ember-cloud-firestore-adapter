@@ -132,4 +132,4 @@ Hook for providing additional documents to batch write
 
 ---
 
-[Next: Transforms »](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/05-transforms.md)
+[Next: Transforms »](05-transforms.md)

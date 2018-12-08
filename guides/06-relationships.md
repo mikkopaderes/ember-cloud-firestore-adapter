@@ -48,4 +48,4 @@ Hook for providing the query for the collection reference
 
 ---
 
-[Next: Testing »](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/07-testing.md)
+[Next: Testing »](07-testing.md)

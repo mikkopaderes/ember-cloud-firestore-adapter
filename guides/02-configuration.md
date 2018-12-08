@@ -51,4 +51,4 @@ These are the settings currently available
 
 ---
 
-[Next: Finding Records »](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/03-finding-records.md)
+[Next: Finding Records »](03-finding-records.md)

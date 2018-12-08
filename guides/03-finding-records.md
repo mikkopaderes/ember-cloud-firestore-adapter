@@ -119,4 +119,4 @@ Hook for providing the query for the collection reference
 
 ---
 
-[Next: Creating, Updating, and Deleting Records »](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/04-creating-updating-deleting-records.md)
+[Next: Creating, Updating, and Deleting Records »](04-creating-updating-deleting-records.md)

@@ -18,4 +18,4 @@ In the example above, whenever you save a record who's `createdOn` is not a `Dat
 
 ---
 
-[Next: Relationships »](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/06-relationships.md)
+[Next: Relationships »](06-relationships.md)

@@ -101,4 +101,4 @@ It'll be stored in Cloud Firestore like this
 
 ---
 
-[Next: Configuration »](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/02-configuration.md)
+[Next: Configuration »](02-configuration.md)
