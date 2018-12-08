@@ -53,37 +53,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
       assert.deepEqual(user100.data(), { age: 30, username: 'user_100' });
     });
-
-    test('should create record in a custom collection and resolve with the created doc', async function (assert) {
-      assert.expect(2);
-
-      // Arrange
-      const store = {};
-      const modelClass = { modelName: 'user' };
-      const snapshot = {
-        id: 'user_100',
-        age: 30,
-        username: 'user_100',
-        adapterOptions: {
-          buildReference(firestore) {
-            return firestore.collection('foobar');
-          },
-        },
-      };
-      const adapter = this.owner.lookup('adapter:cloud-firestore');
-
-      adapter.serialize = sinon.stub().returns({ age: 30, username: 'user_100' });
-
-      // Act
-      const result = await adapter.createRecord(store, modelClass, snapshot);
-
-      // Assert
-      assert.deepEqual(result, { age: 30, username: 'user_100' });
-
-      const user100 = await db.collection('foobar').doc('user_100').get();
-
-      assert.deepEqual(user100.data(), { age: 30, username: 'user_100' });
-    });
   });
 
   module('function: updateRecord', function () {

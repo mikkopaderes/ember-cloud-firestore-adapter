@@ -63,7 +63,8 @@ export default Adapter.extend({
    * @override
    */
   async createRecord(store, type, snapshot) {
-    const docRef = this.buildCollectionRef(type, snapshot.adapterOptions).doc(snapshot.id);
+    const db = this.firebase.firestore();
+    const docRef = db.collection(buildCollectionName(type.modelName)).doc(snapshot.id);
     const batch = this.buildWriteBatch(docRef, snapshot);
 
     await batch.commit();
