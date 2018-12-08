@@ -7,7 +7,7 @@ import MockFirebase from 'mock-cloud-firestore';
 
 import getFixtureData from '../helpers/fixture-data';
 
-module('Acceptance | chats', function (hooks) {
+module('Acceptance | features', function (hooks) {
   setupApplicationTest(hooks);
 
   hooks.beforeEach(function () {
