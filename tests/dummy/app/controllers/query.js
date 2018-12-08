@@ -2,10 +2,8 @@ import Controller from '@ember/controller';
 
 export default Controller.extend({
   loadMore() {
-    const model = this.get('model');
+    this.model.set('query.filter', reference => reference.orderBy('name').limit(5));
 
-    model.set('query.filter', reference => reference.orderBy('name').limit(5));
-
-    model.update();
+    this.model.update();
   },
 });

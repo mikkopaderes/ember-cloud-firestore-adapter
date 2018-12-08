@@ -4,7 +4,7 @@ export default Controller.extend({
   users: [],
 
   async handleCreateRecordClick() {
-    const user = await this.get('store').createRecord('user', {
+    const user = await this.store.createRecord('user', {
       id: 'new',
       username: 'new_user',
       age: 25,
@@ -16,7 +16,7 @@ export default Controller.extend({
   },
 
   async handleUpdateRecordClick() {
-    const user = await this.get('store').findRecord('user', 'user_a');
+    const user = await this.store.findRecord('user', 'user_a');
 
     user.set('username', 'updated_user');
 
@@ -27,7 +27,7 @@ export default Controller.extend({
   },
 
   async handleDeleteRecordClick() {
-    const users = await this.get('store').findAll('user');
+    const users = await this.store.findAll('user');
     const user = users.get('firstObject');
 
     await user.destroyRecord({
@@ -38,19 +38,19 @@ export default Controller.extend({
   },
 
   async handleFindAllClick() {
-    const users = await this.get('store').findAll('user');
+    const users = await this.store.findAll('user');
 
     this.set('users', users);
   },
 
   async handleFindRecordClick() {
-    const user = await this.get('store').findRecord('user', 'user_a');
+    const user = await this.store.findRecord('user', 'user_a');
 
     this.set('users', [user]);
   },
 
   async handleQuery1Click() {
-    const users = await this.get('store').query('user', {
+    const users = await this.store.query('user', {
       filter(reference) {
         return reference.where('age', '>=', '15');
       },
@@ -60,7 +60,7 @@ export default Controller.extend({
   },
 
   async handleQuery2Click() {
-    const users = await this.get('store').query('user', {
+    const users = await this.store.query('user', {
       buildReference(db) {
         return db.collection('users').doc('user_a').collection('foobar');
       },

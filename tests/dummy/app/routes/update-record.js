@@ -1,11 +1,12 @@
 import Route from '@ember/routing/route';
 
 export default Route.extend({
-  model(params) {
-    return this.get('store').findRecord('post', 'post_a').then((post) => {
-      post.set('title', params.title);
+  async model(params) {
+    const post = await this.store.findRecord('post', 'post_a');
 
-      return post.save().then(() => post);
-    });
+    post.set('title', params.title);
+    await post.save();
+
+    return post;
   },
 });

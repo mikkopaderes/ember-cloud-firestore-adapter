@@ -68,6 +68,10 @@ export default Adapter.extend({
 
     await batch.commit();
 
+    if (this.getAdapterOptionConfig(snapshot, 'isRealTime')) {
+      return this.findRecord(store, type, snapshot.id, snapshot);
+    }
+
     return this.serialize(snapshot, { includeId: true });
   },
 
