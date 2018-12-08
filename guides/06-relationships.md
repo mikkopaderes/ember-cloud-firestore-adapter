@@ -26,6 +26,7 @@ export default Model.extend({
 Hook for providing a custom collection reference
 
 **Type:** `function`
+
 **Params:**
 
 | Name   | Type               | Description       |
@@ -37,6 +38,7 @@ Hook for providing a custom collection reference
 Hook for providing the query for the collection reference
 
 **Type:** `function`
+
 **Params:**
 
 | Name      | Type                                   | Description                                                                                                     |

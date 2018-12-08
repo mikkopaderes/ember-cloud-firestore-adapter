@@ -33,6 +33,7 @@ Indicates if the record will update in realtime after creating it
 Hook for providing additional documents to batch write
 
 **Type:** `function`
+
 **Params:**
 
 | Name   | Type                          | Description |
@@ -62,6 +63,7 @@ user.save({
 Hook for providing additional documents to batch write
 
 **Type:** `function`
+
 **Params:**
 
 | Name   | Type                          | Description |
@@ -90,6 +92,7 @@ user.destroyRecord({
 Hook for providing additional documents to batch write
 
 **Type:** `function`
+
 **Params:**
 
 | Name   | Type                          | Description |
@@ -119,6 +122,7 @@ post.save({
 Hook for providing additional documents to batch write
 
 **Type:** `function`
+
 **Params:**
 
 | Name   | Type                          | Description |

@@ -31,6 +31,7 @@ Indicates if the record will update in realtime
 Hook for providing a custom collection reference
 
 **Type:** `function`
+
 **Params:**
 
 | Name   | Type               | Description       |
@@ -94,6 +95,7 @@ A unique ID that you'll provide yourself. When there's an already existing `quer
 Hook for providing a custom collection reference
 
 **Type:** `function`
+
 **Params:**
 
 | Name   | Type               | Description       |
@@ -105,6 +107,7 @@ Hook for providing a custom collection reference
 Hook for providing the query for the collection reference
 
 **Type:** `function`
+
 **Params:**
 
 | Name      | Type                                   | Description                                                                                                     |
