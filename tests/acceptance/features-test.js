@@ -1,25 +1,15 @@
 import { click, visit, waitFor } from '@ember/test-helpers';
 import { module, test } from 'qunit';
 import { setupApplicationTest } from 'ember-qunit';
-import Service from '@ember/service';
 
-import MockFirebase from 'mock-cloud-firestore';
-
+import { mockFirebase } from 'ember-cloud-firestore-adapter/test-support';
 import getFixtureData from '../helpers/fixture-data';
 
 module('Acceptance | features', function (hooks) {
   setupApplicationTest(hooks);
 
   hooks.beforeEach(function () {
-    const mockFirebase = new MockFirebase();
-    const mockFirebasePojo = {
-      _data: getFixtureData(),
-      initializeApp: mockFirebase.initializeApp,
-      firestore: mockFirebase.firestore,
-    };
-    const firebaseService = Service.extend(mockFirebasePojo);
-
-    this.owner.register('service:firebase', firebaseService);
+    mockFirebase(this.owner, getFixtureData());
   });
 
   test('should create record', async function (assert) {
