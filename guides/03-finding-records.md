@@ -67,6 +67,7 @@ e.g.
 ```javascript
 this.store.query('post', {
   isRealTime: true,
+  queryId: 'foobar',
 
   buildReference(db) {
     return db.collection('users').doc('user_a').collection('feeds');
@@ -87,6 +88,8 @@ Indicates if the record will update in realtime
 ### `queryId`
 
 A unique ID that you'll provide yourself. When there's an already existing `queryId`, `store.query` won't create another realtime listener to avoid duplication.
+
+This does nothing when `isRealTime` is false.
 
 **Type:** `string`
 
