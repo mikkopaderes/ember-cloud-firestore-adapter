@@ -1,116 +1,135 @@
 # Creating, Updating, and Deleting Records
 
-## Creating Records
+The adapter supports `store.createRecord`, `store.deleteRecord`, and, `store.destroyRecord`. However, there are some **optional** configs that you can make use of to support your needs.
 
-### Under a Root-level collection
+## `createRecord`
 
-This will create a new `post` document under the `posts` collection.
+The optional configs are available through the `adapterOptions` property in the `save` function.
 
-```javascript
-this.get('store').findRecord('user', 'user_a').then((user) => {
-  this.get('store').createRecord('post', {
-    body: 'New Post Body',
-    title: 'New Post Title',
-    author: user
-  }).save();
-});
-```
-
-### Under a Subcollection
-
-This will create a new `post` document under the `users/user_b/feeds` subcollection.
+e.g.
 
 ```javascript
-this.get('store').findRecord('user', 'user_a').then((user) => {
-  this.get('store').createRecord('post', {
-    body: 'New Post Body',
-    title: 'New Post Title',
-    author: user
-  }).save({
-    adapterOptions: {
-      buildReference(db) {
-        return db.collection('users').doc('user_b').collection('feeds');
-      }
+const newPost = this.store.createRecord('post', { title: 'Post A' });
+
+newPost.save({
+  adapterOptions: {
+    isRealTime: true,
+
+    include(batch, db) {
+      batch.set(db.collection('users').doc('user_b').collection('feeds'), { title: 'Post A' });
     }
-  });
+  }
 });
 ```
 
-### Batched Writes
+### `isRealTime`
 
-This will create a new `post` document under the `posts` collection and duplicates of it under the `users/user_a/feeds` and `users/user_b/feeds` subcollections. This is done atomically using [batched writes](https://firebase.google.com/docs/firestore/manage-data/transactions#batched-writes).
+Indicates if the record will update in realtime after creating it
+
+**Type:** `boolean`
+
+### `include`
+
+Hook for providing additional documents to batch write
+
+**Type:** `function`
+
+**Params:**
+
+| Name   | Type                          | Description |
+| -------| ----------------------------- | ------------|
+| batch  | firebase.firestore.WriteBatch |             |
+| db     | firebase.firestore            |             |
+
+## `deleteRecord`
+
+The optional configs are available through the `adapterOptions` property in the `save` function.
+
+e.g.
 
 ```javascript
-this.get('store').findRecord('user', 'user_a').then((user) => {
-  const post = this.get('store').createRecord('post', {
-    body: 'New Post Body',
-    title: 'New Post Title',
-    author: user
-  });
-
-  post.save({
-    adapterOptions: {
-      include(batch, db) {
-        batch.set(db.collection('users').doc('user_a').collection('feeds'), {
-          body: 'New Post Body',
-          title: 'New Post Title',
-          author: user
-        });
-        batch.set(db.collection('users').doc('user_b').collection('feeds'), {
-          body: 'New Post Body',
-          title: 'New Post Title',
-          author: user
-        });
-      }
+user.deleteRecord();
+user.save({
+  adapterOptions: {
+    include(batch, db) {
+      batch.delete(db.collection('usernames').doc(newUser.id));
     }
-  });
+  }
 });
 ```
 
-> Notes:
->
-> - The adapter doesn't handle saving many-to-many and many-to-none relationships. You'll have to manually persist them through batch writes. This is because unlike in other Ember Data Adapters, we allow loading only a subset of a `hasMany` relationship (see [here](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/06-relationships.md)). This prevents us from knowing whether a record in a `hasMany` has just been removed or just not yet loaded when we save it.
+### `include`
 
-### Using your Server APIs
+Hook for providing additional documents to batch write
 
-Batching writes can only get you so far. For intesive operations, you'll most likely want to offload it to your servers rather than in your user's device.
+**Type:** `function`
 
-This will make a `POST` request to your server instead of in Cloud Firestore.
+**Params:**
+
+| Name   | Type                          | Description |
+| -------| ----------------------------- | ------------|
+| batch  | firebase.firestore.WriteBatch |             |
+| db     | firebase.firestore            |             |
+
+## `destroyRecord`
+
+The optional configs are available through the `adapterOptions` property.
+
+e.g.
 
 ```javascript
-this.get('store').findRecord('user', 'user_a').then((user) => {
-  this.get('store').createRecord('post', {
-    body: 'New Post Body',
-    title: 'New Post Title',
-    author: user
-  }).save({
-    adapterOptions: {
-      onServer: true
+user.destroyRecord({
+  adapterOptions: {
+    include(batch, db) {
+      batch.delete(db.collection('usernames').doc(newUser.id));
     }
-  });
+  }
 });
 ```
 
-The payload to your server will look like this.
+### `include`
 
-```json
-{
-  "id": "<client side generated id>",
-  "body": "New Post Body",
-  "title": "New Post Title",
-  "author": "users/user_a"
-}
+Hook for providing additional documents to batch write
+
+**Type:** `function`
+
+**Params:**
+
+| Name   | Type                          | Description |
+| -------| ----------------------------- | ------------|
+| batch  | firebase.firestore.WriteBatch |             |
+| db     | firebase.firestore            |             |
+
+## Updating a record
+
+The optional configs are available through the `adapterOptions` property in the `save` function.
+
+e.g.
+
+```javascript
+post.set('title', 'New Title');
+post.save({
+  adapterOptions: {
+    include(batch, db) {
+      batch.update(db.collection('users').doc('user_b').collection('feeds'), { title: 'New Title' });
+    }
+  }
+});
 ```
 
-> Notes:
->
-> - Under the hood, this will use the `DS.RESTAdapter`. This means that any configurations available to that class are also available in Cloud Firestore Adapter.
-> - Once `adapterOptions.onServer` is set to true, all other `adapterOptions` settings will be ignored.
+### `include`
 
-## Updating and Deleting Records
+Hook for providing additional documents to batch write
 
-There's nothing special about updating and deleting records. They're similar with the conventional [Ember Data API](https://guides.emberjs.com/v2.17.0/models/creating-updating-and-deleting-records/) except that they also support batched writes and using your server's API as shown above.
+**Type:** `function`
+
+**Params:**
+
+| Name   | Type                          | Description |
+| -------| ----------------------------- | ------------|
+| batch  | firebase.firestore.WriteBatch |             |
+| db     | firebase.firestore            |             |
 
 ---
 
-[Next: Transforms »](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/05-transforms.md)
+[Next: Transforms »](05-transforms.md)

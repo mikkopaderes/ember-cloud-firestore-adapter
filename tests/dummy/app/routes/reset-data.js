@@ -2,19 +2,19 @@ import { Promise } from 'rsvp';
 import Route from '@ember/routing/route';
 
 export default Route.extend({
-  model() {
-    return this.get('store').findAll('user').then((users) => {
-      const requests = [];
+  async model() {
+    const users = await this.store.findAll('user');
 
-      users.forEach((user) => {
-        if (user.get('id') !== 'user_a') {
-          const request = user.destroyRecord();
+    const requests = [];
 
-          requests.push(request);
-        }
-      });
+    users.forEach((user) => {
+      if (user.get('id') !== 'user_a') {
+        const request = user.destroyRecord();
 
-      return Promise.all(requests);
+        requests.push(request);
+      }
     });
+
+    await Promise.all(requests);
   },
 });

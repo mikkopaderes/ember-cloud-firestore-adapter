@@ -14,7 +14,7 @@ ember install ember-cloud-firestore-adapter
 Usage
 ------------------------------------------------------------------------------
 
-Checkout the guides [here](https://github.com/rmmmp/ember-cloud-firestore-adapter/tree/master/guides).
+Checkout the guides [here](https://github.com/mikkopaderes/ember-cloud-firestore-adapter/tree/master/guides).
 
 Contributing
 ------------------------------------------------------------------------------

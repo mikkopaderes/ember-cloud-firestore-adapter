@@ -29,12 +29,17 @@ Create an `application` adapter by running
 ember generate adapter application
 ```
 
-Inside the generated Adapter, set it up like this
+Inside the generated Adapter, set it up to look something like this
 
 ```javascript
 import CloudFirestoreAdapter from 'ember-cloud-firestore-adapter/adapters/cloud-firestore';
 
-export default CloudFirestoreAdapter.extend();
+export default CloudFirestoreAdapter.extend({
+  referenceKeyName: 'foobar',
+
+  ...
+  ...
+});
 ```
 
 ### Settings
@@ -42,9 +47,8 @@ export default CloudFirestoreAdapter.extend();
 These are the settings currently available
 
 - `firestoreSettings` - Specifies custom configurations for your Cloud Firestore instance. See [here](https://firebase.google.com/docs/reference/js/firebase.firestore.Settings). Defaults to `{ timestampsInSnapshots: true }`.
-- `referenceKeyName` - Name of the field that will indicate whether a document is a reference to another one. Defaults to `cloudFirestoreReference`.
-- `willUnloadRecordOnListenError` - Unloads a record whenever a listener for a document fails (e.g. sudden permission denied). Defaults to `true`.
+- `referenceKeyName` - Name of the field that will indicate whether a document is a reference to another one. Defaults to `referenceTo`.
 
 ---
 
-[Next: Finding Records »](https://github.com/rmmmp/ember-cloud-firestore-adapter/blob/master/guides/03-finding-records.md)
+[Next: Finding Records »](03-finding-records.md)
