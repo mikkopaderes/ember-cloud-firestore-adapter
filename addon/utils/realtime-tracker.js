@@ -82,29 +82,16 @@ export default class RealtimeTracker {
    * @function
    */
   trackFindHasManyChanges(modelName, id, relationship, collectionRef, store) {
-    const { type, key: field } = relationship;
-    const queryId = Math.random().toString(32).slice(2).substr(0, 5);
+    const { key: field } = relationship;
+    const queryId = `${modelName}_${id}_${field}`;
 
-    collectionRef.onSnapshot(async (querySnapshot) => {
-      const requests = [];
-      const records = [];
+    if (!this.isQueryTracked(queryId)) {
+      collectionRef.onSnapshot(() => (
+        store.peekRecord(modelName, id).hasMany(field).reload()
+      ), () => delete this.query[queryId]);
 
-      querySnapshot.forEach((docSnapshot) => {
-        const request = store.findRecord(type, docSnapshot.id, {
-          adapterOptions: { isRealTime: true },
-        });
-
-        requests.push(request);
-        records.push({
-          data: { type, id: docSnapshot.id },
-        });
-      });
-
-      await Promise.all(requests);
-      store.peekRecord(modelName, id).hasMany(field).push(records);
-    }, () => delete this.query[queryId]);
-
-    this.query[queryId] = true;
+      this.query[queryId] = true;
+    }
   }
 
   /**

@@ -59,12 +59,9 @@ module('Unit | Utility | realtime-tracker', function () {
       const relationship = { type: 'post', key: 'posts' };
       const collectionRef = db.collection('users');
       const store = {
-        findRecord: sinon.stub(),
-        normalize: sinon.stub(),
         peekRecord: sinon.stub().returns({
-          hasMany: sinon.stub().returns({ push: sinon.stub() }),
+          hasMany: sinon.stub().returns({ reload: sinon.stub() }),
         }),
-        push: sinon.stub(),
       };
       const realtimeTracker = new RealtimeTracker();
 

@@ -1,3 +1,4 @@
+import { assign } from '@ember/polyfills';
 import { inject as service } from '@ember/service';
 import Adapter from 'ember-data/adapter';
 
@@ -197,7 +198,7 @@ export default Adapter.extend({
       const collectionRef = this.buildCollectionRef(type, query);
       const firestoreQuery = this.buildQuery(collectionRef, query);
       const unsubscribe = firestoreQuery.onSnapshot(async (querySnapshot) => {
-        if (this.getAdapterOptionConfig(query, 'isRealTime')) {
+        if (this.getAdapterOptionConfig({ adapterOptions: query }, 'isRealTime')) {
           this.realtimeTracker.trackQueryChanges(firestoreQuery, recordArray, query.queryId);
         }
 
@@ -224,7 +225,6 @@ export default Adapter.extend({
    */
   buildCollectionRef(type, adapterOptions = {}) {
     const db = this.firebase.firestore();
-
     if (Object.prototype.hasOwnProperty.call(adapterOptions, 'buildReference')) {
       return adapterOptions.buildReference(db);
     }
@@ -346,9 +346,13 @@ export default Adapter.extend({
         });
       }
 
-      return this.findRecord(store, type, docSnapshot.id, {
-        adapterOptions: { isRealTime: relationship.options.isRealTime },
+      const adapterOptions = assign({}, relationship.options, {
+        buildReference() {
+          return docSnapshot.ref.parent;
+        },
       });
+
+      return this.findRecord(store, type, docSnapshot.id, { adapterOptions });
     });
   },
 
@@ -379,7 +383,13 @@ export default Adapter.extend({
         return request;
       }
 
-      return this.findRecord(store, type, docSnapshot.id, { adapterOptions: option });
+      const adapterOptions = assign({}, option, {
+        buildReference() {
+          return docSnapshot.ref.parent;
+        },
+      });
+
+      return this.findRecord(store, type, docSnapshot.id, { adapterOptions });
     });
   },
 

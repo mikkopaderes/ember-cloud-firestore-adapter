@@ -79,6 +79,8 @@ this.store.query('post', {
 });
 ```
 
+If the document contains a field that matches your [`referenceKeyName`](02-configuration.md#settings), it'll fetch that one instead.
+
 ### `isRealTime`
 
 Indicates if the record will update in realtime
