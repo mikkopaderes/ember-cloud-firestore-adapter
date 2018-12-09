@@ -56,11 +56,11 @@ export default function getFixtureData() {
               friends: {
                 __doc__: {
                   user_b: {
-                    cloudFirestoreReference: '__ref__:users/user_b',
+                    referenceTo: '__ref__:users/user_b',
                   },
 
                   user_c: {
-                    cloudFirestoreReference: '__ref__:users/user_c',
+                    referenceTo: '__ref__:users/user_c',
                   },
                 },
               },
@@ -89,7 +89,7 @@ export default function getFixtureData() {
               friends: {
                 __doc__: {
                   user_a: {
-                    cloudFirestoreReference: '__ref__:users/user_a',
+                    referenceTo: '__ref__:users/user_a',
                   },
                 },
               },
@@ -118,7 +118,7 @@ export default function getFixtureData() {
               friends: {
                 __doc__: {
                   user_a: {
-                    cloudFirestoreReference: '__ref__:users/user_a',
+                    referenceTo: '__ref__:users/user_a',
                   },
                 },
               },

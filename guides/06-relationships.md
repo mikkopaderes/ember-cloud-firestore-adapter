@@ -21,9 +21,13 @@ export default Model.extend({
 });
 ```
 
+If the document contains a field that matches your [`referenceKeyName`](02-configuration.md#settings), it'll fetch that one instead.
+
 ### `buildReference`
 
-Hook for providing a custom collection reference
+Hook for providing a custom collection reference.
+
+This is ignored when the relationship is a many-to-one type.
 
 **Type:** `function`
 

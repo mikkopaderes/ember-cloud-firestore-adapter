@@ -305,7 +305,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const determineRelationshipTypeStub = sinon.stub().returns('manyToNone');
       const snapshot = {
         record: EmberObject.create({
-          cloudFirestoreReference: db.collection('users').doc('user_a'),
+          referenceTo: db.collection('users').doc('user_a'),
         }),
         type: {
           determineRelationshipType: determineRelationshipTypeStub,
