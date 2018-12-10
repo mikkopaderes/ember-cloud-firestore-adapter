@@ -147,8 +147,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const snapshot = { id: 'user_a' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.serialize = sinon.stub().returns({ age: 15, username: 'user_a' });
-
       // Act
       await adapter.deleteRecord(store, modelClass, snapshot);
 
@@ -156,6 +154,32 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const userA = await db.collection('users').doc('user_a').get();
 
       assert.notOk(userA.exists);
+    });
+
+    test('should delete record in a custom collection', async function (assert) {
+      assert.expect(1);
+
+      // Arrange
+      const store = {};
+      const modelClass = { modelName: 'post' };
+      const snapshot = {
+        id: 'post_b',
+
+        adapterOptions: {
+          buildReference(firestore) {
+            return firestore.collection('users').doc('user_a').collection('feeds');
+          },
+        },
+      };
+      const adapter = this.owner.lookup('adapter:cloud-firestore');
+
+      // Act
+      await adapter.deleteRecord(store, modelClass, snapshot);
+
+      // Assert
+      const postB = await db.doc('users/user_a/feeds/post_b').get();
+
+      assert.notOk(postB.exists);
     });
 
     test('should delete record and process additional batched writes', async function (assert) {

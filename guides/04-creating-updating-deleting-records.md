@@ -70,6 +70,18 @@ user.save({
 });
 ```
 
+### `buildReference`
+
+Hook for providing a custom collection reference
+
+**Type:** `function`
+
+**Params:**
+
+| Name   | Type               | Description       |
+| ------ | ------------------ | ----------------- |
+| db     | firebase.firestore |                   |
+
 ### `include`
 
 Hook for providing additional documents to batch write
@@ -98,6 +110,18 @@ user.destroyRecord({
   }
 });
 ```
+
+### `buildReference`
+
+Hook for providing a custom collection reference
+
+**Type:** `function`
+
+**Params:**
+
+| Name   | Type               | Description       |
+| ------ | ------------------ | ----------------- |
+| db     | firebase.firestore |                   |
 
 ### `include`
 
