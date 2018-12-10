@@ -88,7 +88,7 @@ export default Adapter.extend({
    */
   async deleteRecord(store, type, snapshot) {
     const db = this.firebase.firestore();
-    const docRef = db.collection(buildCollectionName(type.modelName)).doc(snapshot.id);
+    const docRef = this.buildCollectionRef(type, snapshot.adapterOptions).doc(snapshot.id);
     const batch = db.batch();
 
     batch.delete(docRef);
