@@ -13,7 +13,7 @@ const newPost = this.store.createRecord('post', { title: 'Post A' });
 
 newPost.save({
   adapterOptions: {
-    isRealTime: true,
+    isRealtime: true,
 
     include(batch, db) {
       batch.set(db.collection('users').doc('user_b').collection('feeds'), { title: 'Post A' });
@@ -22,7 +22,7 @@ newPost.save({
 });
 ```
 
-### `isRealTime`
+### `isRealtime`
 
 Indicates if the record will update in realtime after creating it
 
@@ -122,7 +122,7 @@ e.g.
 post.set('title', 'New Title');
 post.save({
   adapterOptions: {
-    isRealTime: true,
+    isRealtime: true,
 
     include(batch, db) {
       batch.update(db.collection('users').doc('user_b').collection('feeds'), { title: 'New Title' });
@@ -131,7 +131,7 @@ post.save({
 });
 ```
 
-### `isRealTime`
+### `isRealtime`
 
 Indicates if the record will update in realtime after updating it
 
