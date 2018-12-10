@@ -28,6 +28,18 @@ Indicates if the record will update in realtime after creating it
 
 **Type:** `boolean`
 
+### `buildReference`
+
+Hook for providing a custom collection reference
+
+**Type:** `function`
+
+**Params:**
+
+| Name   | Type               | Description       |
+| ------ | ------------------ | ----------------- |
+| db     | firebase.firestore |                   |
+
 ### `include`
 
 Hook for providing additional documents to batch write
@@ -110,12 +122,30 @@ e.g.
 post.set('title', 'New Title');
 post.save({
   adapterOptions: {
+    isRealTime: true,
+
     include(batch, db) {
       batch.update(db.collection('users').doc('user_b').collection('feeds'), { title: 'New Title' });
     }
   }
 });
 ```
+
+### `isRealTime`
+
+Indicates if the record will update in realtime after updating it
+
+### `buildReference`
+
+Hook for providing a custom collection reference
+
+**Type:** `function`
+
+**Params:**
+
+| Name   | Type               | Description       |
+| ------ | ------------------ | ----------------- |
+| db     | firebase.firestore |                   |
 
 ### `include`
 
