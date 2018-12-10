@@ -61,7 +61,7 @@ export default class RealtimeTracker {
       collectionRef.onSnapshot((querySnapshot) => {
         querySnapshot.forEach(docSnapshot => (
           store.findRecord(modelName, docSnapshot.id, {
-            adapterOptions: { isRealTime: true },
+            adapterOptions: { isRealtime: true },
           })
         ));
       }, () => {

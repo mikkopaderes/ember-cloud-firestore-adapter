@@ -11,7 +11,7 @@ e.g.
 ```javascript
 this.store.findRecord('post', 'post_a', {
   adapterOptions: {
-    isRealTime: true,
+    isRealtime: true,
 
     buildReference(db) {
       return db.collection('users').doc('user_a').collection('feeds');
@@ -20,7 +20,7 @@ this.store.findRecord('post', 'post_a', {
 });
 ```
 
-### `isRealTime`
+### `isRealtime`
 
 Indicates if the record will update in realtime
 
@@ -47,12 +47,12 @@ e.g.
 ```javascript
 this.store.findAll('post', {
   adapterOptions: {
-    isRealTime: true
+    isRealtime: true
   }
 });
 ```
 
-### `isRealTime`
+### `isRealtime`
 
 Indicates if the record will update in realtime
 
@@ -66,7 +66,7 @@ e.g.
 
 ```javascript
 this.store.query('post', {
-  isRealTime: true,
+  isRealtime: true,
   queryId: 'foobar',
 
   buildReference(db) {
@@ -81,7 +81,7 @@ this.store.query('post', {
 
 If the document contains a field that matches your [`referenceKeyName`](02-configuration.md#settings), it'll fetch that one instead.
 
-### `isRealTime`
+### `isRealtime`
 
 Indicates if the record will update in realtime
 
@@ -91,7 +91,7 @@ Indicates if the record will update in realtime
 
 A unique ID that you'll provide yourself. When there's an already existing `queryId`, `store.query` won't create another realtime listener to avoid duplication.
 
-This does nothing when `isRealTime` is false.
+This does nothing when `isRealtime` is false.
 
 **Type:** `string`
 

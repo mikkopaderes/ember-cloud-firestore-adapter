@@ -76,7 +76,7 @@ export default Adapter.extend({
 
     await batch.commit();
 
-    if (this.getAdapterOptionConfig(snapshot, 'isRealTime')) {
+    if (this.getAdapterOptionConfig(snapshot, 'isRealtime')) {
       return this.findRecord(store, type, snapshot.id, snapshot);
     }
 
@@ -104,7 +104,7 @@ export default Adapter.extend({
     return new Promise((resolve) => {
       const docRef = this.buildCollectionRef(type, snapshot.adapterOptions).doc(id);
       const unsubscribe = docRef.onSnapshot((docSnapshot) => {
-        if (this.getAdapterOptionConfig(snapshot, 'isRealTime')) {
+        if (this.getAdapterOptionConfig(snapshot, 'isRealtime')) {
           this.realtimeTracker.trackFindRecordChanges(type.modelName, docRef, store);
         }
 
@@ -122,7 +122,7 @@ export default Adapter.extend({
       const db = this.firebase.firestore();
       const collectionRef = db.collection(buildCollectionName(type.modelName));
       const unsubscribe = collectionRef.onSnapshot(async (querySnapshot) => {
-        if (this.getAdapterOptionConfig(snapshotRecordArray, 'isRealTime')) {
+        if (this.getAdapterOptionConfig(snapshotRecordArray, 'isRealtime')) {
           this.realtimeTracker.trackFindAllChanges(type.modelName, collectionRef, store);
         }
 
@@ -147,7 +147,7 @@ export default Adapter.extend({
 
     return this.findRecord(store, type, id, {
       adapterOptions: {
-        isRealTime: relationship.options.isRealTime,
+        isRealtime: relationship.options.isRealtime,
 
         buildReference(db) {
           return buildRefFromPath(db, urlNodes.join('/'));
@@ -163,7 +163,7 @@ export default Adapter.extend({
     return new Promise((resolve) => {
       const collectionRef = this.buildHasManyCollectionRef(store, snapshot, url, relationship);
       const unsubscribe = collectionRef.onSnapshot(async (querySnapshot) => {
-        if (relationship.options.isRealTime) {
+        if (relationship.options.isRealtime) {
           this.realtimeTracker.trackFindHasManyChanges(
             snapshot.modelName,
             snapshot.id,
@@ -191,7 +191,7 @@ export default Adapter.extend({
       const collectionRef = this.buildCollectionRef(type, query);
       const firestoreQuery = this.buildQuery(collectionRef, query);
       const unsubscribe = firestoreQuery.onSnapshot(async (querySnapshot) => {
-        if (this.getAdapterOptionConfig({ adapterOptions: query }, 'isRealTime')) {
+        if (this.getAdapterOptionConfig({ adapterOptions: query }, 'isRealtime')) {
           this.realtimeTracker.trackQueryChanges(firestoreQuery, recordArray, query.queryId);
         }
 
@@ -330,7 +330,7 @@ export default Adapter.extend({
       if (referenceTo && referenceTo.firestore) {
         return this.findRecord(store, type, referenceTo.id, {
           adapterOptions: {
-            isRealTime: relationship.options.isRealTime,
+            isRealtime: relationship.options.isRealtime,
 
             buildReference() {
               return referenceTo.parent;
@@ -365,7 +365,7 @@ export default Adapter.extend({
       if (referenceTo && referenceTo.firestore) {
         const request = this.findRecord(store, type, referenceTo.id, {
           adapterOptions: {
-            isRealTime: option.isRealTime,
+            isRealtime: option.isRealtime,
 
             buildReference() {
               return referenceTo.parent;
