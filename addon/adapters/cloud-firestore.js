@@ -63,9 +63,15 @@ export default Adapter.extend({
   /**
    * @override
    */
-  async createRecord(store, type, snapshot) {
-    const db = this.firebase.firestore();
-    const docRef = db.collection(buildCollectionName(type.modelName)).doc(snapshot.id);
+  async createRecord(...args) {
+    return this.updateRecord(...args);
+  },
+
+  /**
+   * @override
+   */
+  async updateRecord(store, type, snapshot) {
+    const docRef = this.buildCollectionRef(type, snapshot.adapterOptions).doc(snapshot.id);
     const batch = this.buildWriteBatch(docRef, snapshot);
 
     await batch.commit();
@@ -73,19 +79,6 @@ export default Adapter.extend({
     if (this.getAdapterOptionConfig(snapshot, 'isRealTime')) {
       return this.findRecord(store, type, snapshot.id, snapshot);
     }
-
-    return this.serialize(snapshot, { includeId: true });
-  },
-
-  /**
-   * @override
-   */
-  async updateRecord(store, type, snapshot) {
-    const db = this.firebase.firestore();
-    const docRef = db.collection(buildCollectionName(type.modelName)).doc(snapshot.id);
-    const batch = this.buildWriteBatch(docRef, snapshot);
-
-    await batch.commit();
 
     return this.serialize(snapshot, { includeId: true });
   },
