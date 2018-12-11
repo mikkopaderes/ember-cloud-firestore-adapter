@@ -1,6 +1,29 @@
 # Relationships
 
-The adapter supports `hasMany` and `belongsTo`. However, there are some **optional** configs that you can make use of to support your needs for `hasMany`.
+The adapter supports `hasMany` and `belongsTo`. However, there are some **optional** configs that you can make use of to support your needs.
+
+## `belongsTo`
+
+The optional configs are available by passing it as a param.
+
+```javascript
+import { belongsTo } from 'ember-data/relationships';
+import Model from 'ember-data/model';
+import attr from 'ember-data/attr';
+
+export default Model.extend({
+  name: attr('string'),
+  country: belongsTo('country', {
+    isRealtime: true
+  })
+});
+```
+
+### `isRealtime`
+
+Indicates if the record will update in realtime after creating it
+
+**Type:** `boolean`
 
 ## `hasMany`
 
@@ -14,6 +37,8 @@ import attr from 'ember-data/attr';
 export default Model.extend({
   name: attr('string'),
   approvedPosts: hasMany('post', {
+    isRealtime: true,
+
     filter(reference) {
       return reference.where('status', '==', 'approved');
     }
@@ -22,6 +47,12 @@ export default Model.extend({
 ```
 
 If the document contains a field that matches your [`referenceKeyName`](02-configuration.md#settings), it'll fetch that one instead.
+
+### `isRealtime`
+
+Indicates if the record will update in realtime after creating it
+
+**Type:** `boolean`
 
 ### `buildReference`
 
