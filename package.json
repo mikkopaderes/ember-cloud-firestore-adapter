@@ -7,7 +7,7 @@
     "firebase",
     "firestore"
   ],
-  "repository": "https://github.com/rmmmp/ember-cloud-firestore-adapter",
+  "repository": "https://github.com/mikkopaderes/ember-cloud-firestore-adapter",
   "license": "MIT",
   "author": "Mikko Paderes",
   "directories": {
