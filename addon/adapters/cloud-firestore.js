@@ -427,10 +427,11 @@ export default RESTAdapter.extend({
    * @private
    */
   addIncludesToBatch(batch, db, snapshot) {
+    const meta = this.getAdapterOptionAttribute(snapshot, 'meta');
     const include = this.getAdapterOptionAttribute(snapshot, 'include');
 
     if (include) {
-      include(batch, db);
+      include(batch, db, meta);
     }
   },
 
