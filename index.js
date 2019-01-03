@@ -10,7 +10,7 @@ module.exports = {
   treeForVendor(defaultTree) {
     const browserVendorLib = new Funnel('node_modules', {
       destDir: 'fastboot-shims',
-      files: ['firebase/firebase-firestore.js'],
+      files: ['firebase/firebase-auth.js', 'firebase/firebase-firestore.js'],
     });
 
     return new MergeTrees([defaultTree, fastbootTransform(browserVendorLib)]);
@@ -19,7 +19,9 @@ module.exports = {
   included(app) {
     this._super.included.apply(this, arguments);
 
+    app.import('vendor/fastboot-shims/firebase/firebase-auth.js');
     app.import('vendor/fastboot-shims/firebase/firebase-firestore.js');
+    app.import('vendor/fastboot/firebase-auth.js');
     app.import('vendor/fastboot/firebase-firestore.js');
 
     if (app.env !== 'production') {

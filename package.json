@@ -25,6 +25,7 @@
   "dependencies": {
     "ember-cli-babel": "^6.16.0",
     "ember-firebase-service": "^5.0.0",
+    "ember-simple-auth": "^1.8.0",
     "fastboot-transform": "^0.1.3",
     "mock-cloud-firestore": "^0.6.0"
   },
@@ -68,6 +69,7 @@
     "configPath": "tests/dummy/config",
     "fastbootDependencies": [
       "firebase/app",
+      "firebase/auth",
       "firebase/firestore"
     ]
   }
