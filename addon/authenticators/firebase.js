@@ -4,7 +4,7 @@ import Base from 'ember-simple-auth/authenticators/base';
 
 /**
  * @class Firebase
- * @namespace Authenticators
+ * @namespace Authenticator
  * @extends Base
  */
 export default Base.extend({
