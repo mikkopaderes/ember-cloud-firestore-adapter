@@ -1,6 +1,6 @@
 # Testing
 
-We use [mock-cloud-firestore](https://github.com/mikkopaderes/mock-cloud-firestore) for testing Cloud Firestore while [`ember-simple-auth`](https://github.com/simplabs/ember-simple-auth#testing) provides a set of test helpers for authentication.
+We use [mock-cloud-firestore](https://github.com/mikkopaderes/mock-cloud-firestore) for testing Cloud Firestore while [ember-simple-auth](https://github.com/simplabs/ember-simple-auth#testing) provides a set of test helpers for authentication.
 
 ## Setup Cloud Firestore testing
 
