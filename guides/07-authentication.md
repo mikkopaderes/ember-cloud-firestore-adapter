@@ -16,7 +16,7 @@ this.session.authenticate('authenticator:firebase', (auth) => {
 
 ## Signing out
 
-Also using the `session` service provided by ember-simple-auth, we just call the `invalidate()`.
+Also using the `session` service provided by ember-simple-auth, we just call `invalidate()`.
 
 ```javascript
 this.session.invalidate();
