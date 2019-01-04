@@ -83,4 +83,4 @@ Hook for providing the query for the collection reference
 
 ---
 
-[Next: Testing »](07-testing.md)
+[Next: Authentication »](07-authentication.md)

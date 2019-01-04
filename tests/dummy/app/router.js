@@ -15,6 +15,8 @@ Router.map(function() {
   this.route('delete-record');
   this.route('reset-data');
   this.route('features');
+  this.route('login');
+  this.route('logout');
 });
 
 export default Router;
