@@ -36,9 +36,9 @@ Hook for providing a custom collection reference
 
 **Params:**
 
-| Name   | Type               | Description       |
-| ------ | ------------------ | ----------------- |
-| db     | firebase.firestore |                   |
+| Name | Type                                                                                                         | Description |
+| ---- | ------------------------------------------------------------------------------------------------------------ | ----------- |
+| db   | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore) |             |
 
 ### `include`
 
@@ -48,10 +48,10 @@ Hook for providing additional documents to batch write
 
 **Params:**
 
-| Name   | Type                          | Description |
-| -------| ----------------------------- | ------------|
-| batch  | firebase.firestore.WriteBatch |             |
-| db     | firebase.firestore            |             |
+| Name  | Type                                                                                                           | Description |
+| ----- | -------------------------------------------------------------------------------------------------------------- | ----------- |
+| batch | [`firebase.firestore.WriteBatch`](https://firebase.google.com/docs/reference/js/firebase.firestore.WriteBatch) |             |
+| db    | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore)   |             |
 
 ## `deleteRecord`
 
@@ -78,9 +78,9 @@ Hook for providing a custom collection reference
 
 **Params:**
 
-| Name   | Type               | Description       |
-| ------ | ------------------ | ----------------- |
-| db     | firebase.firestore |                   |
+| Name | Type                                                                                                         | Description |
+| ---- | ------------------------------------------------------------------------------------------------------------ | ----------- |
+| db   | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore) |             |
 
 ### `include`
 
@@ -90,10 +90,10 @@ Hook for providing additional documents to batch write
 
 **Params:**
 
-| Name   | Type                          | Description |
-| -------| ----------------------------- | ------------|
-| batch  | firebase.firestore.WriteBatch |             |
-| db     | firebase.firestore            |             |
+| Name  | Type                                                                                                           | Description |
+| ----- | -------------------------------------------------------------------------------------------------------------- | ----------- |
+| batch | [`firebase.firestore.WriteBatch`](https://firebase.google.com/docs/reference/js/firebase.firestore.WriteBatch) |             |
+| db    | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore)   |             |
 
 ## `destroyRecord`
 
@@ -119,9 +119,9 @@ Hook for providing a custom collection reference
 
 **Params:**
 
-| Name   | Type               | Description       |
-| ------ | ------------------ | ----------------- |
-| db     | firebase.firestore |                   |
+| Name | Type                                                                                                         | Description |
+| ---- | ------------------------------------------------------------------------------------------------------------ | ----------- |
+| db   | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore) |             |
 
 ### `include`
 
@@ -131,10 +131,10 @@ Hook for providing additional documents to batch write
 
 **Params:**
 
-| Name   | Type                          | Description |
-| -------| ----------------------------- | ------------|
-| batch  | firebase.firestore.WriteBatch |             |
-| db     | firebase.firestore            |             |
+| Name  | Type                                                                                                           | Description |
+| ----- | -------------------------------------------------------------------------------------------------------------- | ----------- |
+| batch | [`firebase.firestore.WriteBatch`](https://firebase.google.com/docs/reference/js/firebase.firestore.WriteBatch) |             |
+| db    | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore)   |             |
 
 ## Updating a record
 
@@ -167,9 +167,9 @@ Hook for providing a custom collection reference
 
 **Params:**
 
-| Name   | Type               | Description       |
-| ------ | ------------------ | ----------------- |
-| db     | firebase.firestore |                   |
+| Name | Type                                                                                                         | Description |
+| ---- | ------------------------------------------------------------------------------------------------------------ | ----------- |
+| db   | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore) |             |
 
 ### `include`
 
@@ -179,10 +179,10 @@ Hook for providing additional documents to batch write
 
 **Params:**
 
-| Name   | Type                          | Description |
-| -------| ----------------------------- | ------------|
-| batch  | firebase.firestore.WriteBatch |             |
-| db     | firebase.firestore            |             |
+| Name  | Type                                                                                                           | Description |
+| ----- | -------------------------------------------------------------------------------------------------------------- | ----------- |
+| batch | [`firebase.firestore.WriteBatch`](https://firebase.google.com/docs/reference/js/firebase.firestore.WriteBatch) |             |
+| db    | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore)   |             |
 
 ---
 

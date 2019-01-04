@@ -34,9 +34,9 @@ Hook for providing a custom collection reference
 
 **Params:**
 
-| Name   | Type               | Description       |
-| -------| ------------------ | ----------------- |
-| db     | firebase.firestore |                   |
+| Name | Type                                                                                                         | Description |
+| ---- | ------------------------------------------------------------------------------------------------------------ | ----------- |
+| db   | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore) |             |
 
 ## `findAll`
 
@@ -103,9 +103,9 @@ Hook for providing a custom collection reference
 
 **Params:**
 
-| Name   | Type               | Description       |
-| ------ | ------------------ | ----------------- |
-| db     | firebase.firestore |                   |
+| Name | Type                                                                                                         | Description |
+| ---- | ------------------------------------------------------------------------------------------------------------ | ----------- |
+| db   | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore) |             |
 
 ### `filter`
 
@@ -115,9 +115,9 @@ Hook for providing the query for the collection reference
 
 **Params:**
 
-| Name      | Type                                   | Description                                                                                                     |
-| --------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| reference | firebase.firestore.CollectionReference | Will contain the return of `buildReference` when overriden. Otherwise, it'll be provided by the adapter itself. |
+| Name      | Type                                                                                                                             | Description                                                                                                     |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| reference | [`firebase.firestore.CollectionReference`](https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference) | Will contain the return of `buildReference` when overriden. Otherwise, it'll be provided by the adapter itself. |
 
 ---
 
