@@ -190,12 +190,15 @@ There are 3 types of relationships to take note of: one-to-many, many-to-many, a
 
 When saving a one-to-many relationship, the reference will be persisted on the belongs-to side automatically. For many-to-many and many-to-none however, you'll need to manually save them through the `include` hook on the `adapterOptions`. This is because Ember Data currently doesn't provide a way to track relationship changes. This means that we can never be sure if the has-many being saved contains all the related data. So if we remove a related record, we wouldn't know if it was removed or just not yet downloaded because we used a `limit` query.
 
-e.g.
+### Saving many-to-many
 
 In this scenario, `User` model has a many-to-many relationship with `Group` model through the `groups` and `members` field name respectively.
 
 ```javascript
-// Assume that someGroup is a record for the Group model
+// Assume that a someGroup variable already exists
+
+...
+
 const newUser = this.store.createRecord('user', {
   name: 'Foo',
   groups: [someGroup]
@@ -218,7 +221,39 @@ newUser.save({
 });
 ```
 
-Note that many-to-none would be similar except that you're only batch writing to one side of the relationship only.
+### Saving many-to-none
+
+Saving many-to-none is similar with many-to-many except that you'll only batch write to one side of the relationship only.
+
+Another case for many-to-none relationship is to save the record itself in the sub-collection rather than using a reference field. To do so, just simply save the record to the appropriate sub-collection and then push it to the has-many array.
+
+e.g.
+
+In this scenario, the `User` model has a many-to-none relationship with `Reminder` model.
+
+```javascript
+// Assume that a someUser variable already exists
+
+...
+
+const reminder = this.store.createRecord('reminder', {
+  title: 'Foo'
+});
+
+reminder.save({
+  adapterOptions: {
+    buildReference(db) {
+      return db.collection('users').doc(someUser.get('id')).collection('reminders');
+    }
+  }
+}).then(() => {
+  // Update hasMany without flagging someUser as "dirty" or unsaved
+  someUser.hasMany('reminders').push({
+    type: 'reminder',
+    id: reminder.get('id')
+  });
+});
+```
 
 ---
 
