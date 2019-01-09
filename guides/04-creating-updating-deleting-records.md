@@ -16,7 +16,7 @@ newPost.save({
     isRealtime: true,
 
     include(batch, db) {
-      batch.set(db.collection('users').doc('user_b').collection('feeds'), { title: 'Post A' });
+      batch.set(db.collection('users').doc('user_b').collection('feeds').doc('feed_a'), { title: 'Post A' });
     }
   }
 });
@@ -149,7 +149,7 @@ post.save({
     isRealtime: true,
 
     include(batch, db) {
-      batch.update(db.collection('users').doc('user_b').collection('feeds'), { title: 'New Title' });
+      batch.update(db.collection('users').doc('user_b').collection('feeds').doc('feed_a'), { title: 'New Title' });
     }
   }
 });
@@ -208,12 +208,12 @@ newUser.save({
   adapterOptions: {
     include(batch, db) {
       // Batch write to the users/<user_id>/groups sub-collection
-      batch.set(db.collection('users').doc(newUser.get('id')).collection('groups'), {
+      batch.set(db.collection('users').doc(newUser.get('id')).collection('groups').doc(someGroup.get('id')), {
         referenceTo: db.collection('groups').doc(someGroup.get('id'))
       });
 
       // Batch write to the groups/<group_id>/members sub-collection
-      batch.set(db.collection('groups').doc(someGroup.get('id')).collection('members'), {
+      batch.set(db.collection('groups').doc(someGroup.get('id')).collection('members').doc(newUser.get('id')), {
         referenceTo: db.collection('users').doc(newUser.get('id'))
       });
     }
