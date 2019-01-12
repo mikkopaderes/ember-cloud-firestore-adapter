@@ -2,8 +2,14 @@ import Route from '@ember/routing/route';
 
 export default Route.extend({
   async model() {
-    const user = await this.store.createRecord('user', { name: 'To be deleted' }).save();
+    return this.store.createRecord('user', { name: 'To be deleted' }).save({
+      adapterOptions: {
+        isRealtime: true,
+      },
+    });
+  },
 
-    await user.destroyRecord();
+  async afterModel(model) {
+    return model.destroyRecord();
   },
 });
