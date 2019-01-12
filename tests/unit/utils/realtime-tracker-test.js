@@ -16,7 +16,11 @@ module('Unit | Utility | realtime-tracker', function () {
       // Arrange
       const type = 'user';
       const docRef = db.doc('users/user_a');
-      const store = { normalize: sinon.stub(), push: sinon.stub() };
+      const store = {
+        normalize: sinon.stub(),
+        peekRecord: sinon.stub().returns({ isSaving: false }),
+        push: sinon.stub(),
+      };
       const realtimeTracker = new RealtimeTracker();
 
       // Act
