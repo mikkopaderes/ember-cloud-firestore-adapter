@@ -29,20 +29,15 @@ export default class RealtimeTracker {
         if (docSnapshot.exists) {
           const flatRecord = flattenDocSnapshotData(docSnapshot);
           const normalizedRecord = store.normalize(modelName, flatRecord);
-
-          store.push(normalizedRecord);
-        } else {
           const record = store.peekRecord(modelName, id);
 
-          store.unloadRecord(record);
-          delete this.model[modelName].record[id];
+          if (record && !record.isSaving) {
+            store.push(normalizedRecord);
+          }
+        } else {
+          this.unloadRecord(store, modelName, id);
         }
-      }, () => {
-        const record = store.peekRecord(modelName, id);
-
-        store.unloadRecord(record);
-        delete this.model[modelName].record[id];
-      });
+      }, () => this.unloadRecord(store, modelName, id));
 
       this.model[modelName].record[id] = true;
     }
@@ -157,5 +152,21 @@ export default class RealtimeTracker {
     if (!Object.prototype.hasOwnProperty.call(this.model, type)) {
       this.model[type] = { meta: {}, record: {} };
     }
+  }
+
+  /**
+   * @param {DS.Store} store
+   * @param {string} modelName
+   * @param {string} id
+   * @private
+   */
+  unloadRecord(store, modelName, id) {
+    const record = store.peekRecord(modelName, id);
+
+    if (record && !record.isSaving) {
+      store.unloadRecord(record);
+    }
+
+    delete this.model[modelName].record[id];
   }
 }
