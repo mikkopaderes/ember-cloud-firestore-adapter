@@ -7,8 +7,7 @@ Unofficial Ember Data Adapter and Serializer for Cloud Firestore
 Compatibility
 ------------------------------------------------------------------------------
 
-* Ember.js v2.18 or above
-* Ember CLI v2.13 or above
+* Ember.js v3.x or above
 
 
 Installation
