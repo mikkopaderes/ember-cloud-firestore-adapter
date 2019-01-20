@@ -1,5 +1,7 @@
 /* eslint global-require: off */
 
+'use strict';
+
 module.exports = {
   root: true,
   parserOptions: {
