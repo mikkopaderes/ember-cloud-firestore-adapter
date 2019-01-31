@@ -287,6 +287,25 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       // Assert
       assert.deepEqual(result, { id: 'user_a', since: 2010 });
     });
+
+    test('should throw an error when record does not exists', async function (assert) {
+      assert.expect(1);
+
+      // Arrange
+      const store = { normalize: sinon.stub(), push: sinon.stub() };
+      const modelClass = { modelName: 'user' };
+      const modelId = 'user_100';
+      const snapshot = {};
+      const adapter = this.owner.lookup('adapter:cloud-firestore');
+
+      try {
+        // Act
+        await adapter.findRecord(store, modelClass, modelId, snapshot);
+      } catch (error) {
+        // Assert
+        assert.equal(error.message, 'Record user_100 for model type user doesn\'t exist');
+      }
+    });
   });
 
   module('function: findBelongsTo', function () {

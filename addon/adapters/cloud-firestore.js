@@ -101,16 +101,21 @@ export default Adapter.extend({
    * @override
    */
   async findRecord(store, type, id, snapshot = {}) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const docRef = this.buildCollectionRef(type, snapshot.adapterOptions).doc(id);
       const unsubscribe = docRef.onSnapshot((docSnapshot) => {
-        if (this.getAdapterOptionConfig(snapshot, 'isRealtime')) {
-          this.realtimeTracker.trackFindRecordChanges(type.modelName, docRef, store);
+        if (docSnapshot.exists) {
+          if (this.getAdapterOptionConfig(snapshot, 'isRealtime')) {
+            this.realtimeTracker.trackFindRecordChanges(type.modelName, docRef, store);
+          }
+
+          resolve(flattenDocSnapshotData(docSnapshot));
+        } else {
+          reject(new Error(`Record ${id} for model type ${type.modelName} doesn't exist`));
         }
 
         unsubscribe();
-        resolve(flattenDocSnapshotData(docSnapshot));
-      });
+      }, error => reject(new Error(error.message)));
     });
   },
 
@@ -118,22 +123,24 @@ export default Adapter.extend({
    * @override
    */
   async findAll(store, type, sinceToken, snapshotRecordArray) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const db = this.firebase.firestore();
       const collectionRef = db.collection(buildCollectionName(type.modelName));
-      const unsubscribe = collectionRef.onSnapshot(async (querySnapshot) => {
+      const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
         if (this.getAdapterOptionConfig(snapshotRecordArray, 'isRealtime')) {
           this.realtimeTracker.trackFindAllChanges(type.modelName, collectionRef, store);
         }
 
-        unsubscribe();
-
-        const records = await Promise.all(querySnapshot.docs.map(docSnapshot => (
+        const requests = querySnapshot.docs.map(docSnapshot => (
           this.findRecord(store, type, docSnapshot.id)
-        )));
+        ));
 
-        resolve(records);
-      });
+        Promise.all(requests).then(records => resolve(records)).catch(error => (
+          reject(new Error(error.message))
+        ));
+
+        unsubscribe();
+      }, error => reject(new Error(error.message)));
     });
   },
 
@@ -160,9 +167,9 @@ export default Adapter.extend({
    * @override
    */
   async findHasMany(store, snapshot, url, relationship) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const collectionRef = this.buildHasManyCollectionRef(store, snapshot, url, relationship);
-      const unsubscribe = collectionRef.onSnapshot(async (querySnapshot) => {
+      const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
         if (relationship.options.isRealtime) {
           this.realtimeTracker.trackFindHasManyChanges(
             snapshot.modelName,
@@ -173,13 +180,14 @@ export default Adapter.extend({
           );
         }
 
-        unsubscribe();
-
         const requests = this.findHasManyRecords(store, relationship, querySnapshot);
-        const records = await Promise.all(requests);
 
-        resolve(records);
-      });
+        Promise.all(requests).then(records => resolve(records)).catch(error => (
+          reject(new Error(error.message))
+        ));
+
+        unsubscribe();
+      }, error => reject(new Error(error.message)));
     });
   },
 
@@ -187,25 +195,22 @@ export default Adapter.extend({
    * @override
    */
   async query(store, type, query, recordArray) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const collectionRef = this.buildCollectionRef(type, query);
       const firestoreQuery = this.buildQuery(collectionRef, query);
-      const unsubscribe = firestoreQuery.onSnapshot(async (querySnapshot) => {
+      const unsubscribe = firestoreQuery.onSnapshot((querySnapshot) => {
         if (this.getAdapterOptionConfig({ adapterOptions: query }, 'isRealtime')) {
           this.realtimeTracker.trackQueryChanges(firestoreQuery, recordArray, query.queryId);
         }
 
-        unsubscribe();
+        const requests = this.findQueryRecords(store, type, query, querySnapshot);
 
-        const records = await Promise.all(this.findQueryRecords(
-          store,
-          type,
-          query,
-          querySnapshot,
+        Promise.all(requests).then(records => resolve(records)).catch(error => (
+          reject(new Error(error.message))
         ));
 
-        resolve(records);
-      });
+        unsubscribe();
+      }, error => reject(new Error(error.message)));
     });
   },
 
