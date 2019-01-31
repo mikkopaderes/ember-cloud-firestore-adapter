@@ -37,7 +37,17 @@ export default class RealtimeTracker {
         } else {
           this.unloadRecord(store, modelName, id);
         }
-      }, () => this.unloadRecord(store, modelName, id));
+      }, (error) => {
+        const record = store.peekRecord(modelName, id);
+
+        if (record) {
+          record.set('isUnloaded', true);
+          record.set('unloadReason', error);
+          this.unloadRecord(store, modelName, id);
+        }
+
+        this.model[modelName].record[id] = false;
+      });
 
       this.model[modelName].record[id] = true;
     }
@@ -60,8 +70,7 @@ export default class RealtimeTracker {
           })
         ));
       }, () => {
-        store.unloadAll(modelName);
-        delete this.model[modelName];
+        this.model[modelName].meta.isAllRecords = false;
       });
 
       this.model[modelName].meta.isAllRecords = true;
