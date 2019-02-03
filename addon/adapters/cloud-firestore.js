@@ -197,8 +197,10 @@ export default RESTAdapter.extend({
    */
   findRecord(store, type, id, snapshot = {}) {
     return new Promise((resolve, reject) => {
-      let docRef = snapshot._internalModel &&
-        snapshot._internalModel.getAttributeValue('docRef');
+      let docRef =  snapshot._internalModel &&
+                    snapshot._internalModel.getAttributeValue('docRef') ||
+                    snapshot.adapterOptions &&
+                    snapshot.adapterOptions.docRef;
 
       if (!docRef) {
         const db = this.get('firebase').firestore();

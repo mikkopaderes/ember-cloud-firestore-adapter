@@ -171,9 +171,14 @@ function reopenStore(appInstance) {
           const records = [];
 
           querySnapshot.forEach((docSnapshot) => {
-            promises.push(this.findRecord(type, docSnapshot.id));
+            promises.push(this.findRecord(type, docSnapshot.id, {
+              adapterOptions: {
+                docRef: docSnapshot.ref
+              }
+            }));
+
             records.push({
-              data: { type, id: docSnapshot.id },
+              data: { type, id: docSnapshot.id }
             });
           });
 
