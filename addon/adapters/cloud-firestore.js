@@ -345,9 +345,11 @@ export default RESTAdapter.extend({
     if (cardinality === 'manyToOne') {
       const inverse = snapshot.type.inverseFor(relationship.key, store);
       const collectionName = buildCollectionName(snapshot.modelName);
-      const reference = db.collection(collectionName).doc(snapshot.id);
+      const namespacedCollectionName = this.prependResourceNamespace(collectionName, snapshot);
+      const reference = db.collection(namespacedCollectionName).doc(snapshot.id);
+      const namespacedUrl = this.prependResourceNamespace(url, snapshot);
 
-      collectionRef = db.collection(url).where(inverse.name, '==', reference);
+      collectionRef = db.collection(namespacedUrl).where(inverse.name, '==', reference);
     } else if (Object.prototype.hasOwnProperty.call(relationship.options, 'buildReference')) {
       collectionRef = relationship.options.buildReference(db, snapshot.record);
     } else {
@@ -511,4 +513,8 @@ export default RESTAdapter.extend({
 
     return null;
   },
+  
+  prependResourceNamespace(url, { record }) {
+    return '';
+  }
 });
