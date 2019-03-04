@@ -20,9 +20,13 @@ export default JSONSerializer.extend({
    */
   firebase: inject(),
   
-  getNamespace(snapshot) {
-    return null;
+  buildCollectionName(modelName) {
+    return buildCollectionName(modelName);
   },
+  
+  // getNamespace(snapshot) {
+  //   return null;
+  // },
   
   /**
    * Overriden to properly get the data of a `Reference` type relationship
@@ -85,7 +89,7 @@ export default JSONSerializer.extend({
           if (cardinality === 'manyToOne') {
             hasManyPath = pluralize(descriptor.type);
           } else {
-            const collectionName = buildCollectionName(modelClass.modelName);
+            const collectionName = this.buildCollectionName(modelClass.modelName);
             const docId = resourceHash.id;
             hasManyPath = [collectionName, docId, name].compact().join('/');
           }
@@ -109,10 +113,11 @@ export default JSONSerializer.extend({
     const key = this.keyForRelationship(relationship.key, 'belongsTo', 'serialize');
     
     if (json[key]) {
-      const collectionName = buildCollectionName(relationship.type);
-      const namespace = this.getNamespace(snapshot, collectionName);
+      const collectionName = this.buildCollectionName(relationship.type, snapshot, relationship);
+      // const namespace = this.getNamespace(snapshot, collectionName);
       const docId = json[key];
-      const path = [namespace, collectionName, docId].compact().join('/');
+      const path = [collectionName, docId].compact().join('/');
+      // const path = [namespace, collectionName, docId].compact().join('/');
 
       if (this.getAdapterOptionAttribute(snapshot, 'onServer')) {
         json[key] = path;
@@ -134,9 +139,10 @@ export default JSONSerializer.extend({
       const references = [];
 
       json[key].forEach((id) => {
-        const collectionName = buildCollectionName(relationship.type);
-        const namespace = this.getNamespace(snapshot, collectionName);
-        const path = [namespace, collectionName, id].compact().join('/');
+        const collectionName = this.buildCollectionName(relationship.type, snapshot, relationship);
+        // const namespace = this.getNamespace(snapshot, collectionName);
+        const path = [collectionName, id].compact().join('/');
+        // const path = [namespace, collectionName, id].compact().join('/');
 
         if (this.getAdapterOptionAttribute(snapshot, 'onServer')) {
           references.push(path);

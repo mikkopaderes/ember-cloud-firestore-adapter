@@ -65,12 +65,16 @@ export default RESTAdapter.extend({
     }
   },
 
+  buildCollectionName(modelName, relationship, snapshot) {
+    return buildCollectionName(modelName);
+  },
+
   /**
    * @override
    */
   generateIdForRecord(store, type) {
     const db = this.get('firebase').firestore();
-    const collectionName = buildCollectionName(type);
+    const collectionName = this.buildCollectionName(type);
 
     return db.collection(collectionName).doc().id;
   },
@@ -175,7 +179,7 @@ export default RESTAdapter.extend({
   findAll(store, type) {
     return new Promise((resolve, reject) => {
       const db = this.get('firebase').firestore();
-      const collectionName = buildCollectionName(type.modelName);
+      const collectionName = this.buildCollectionName(type.modelName);
       const collectionRef = db.collection(collectionName);
       const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
         store.listenForCollectionChanges(collectionRef);
@@ -197,15 +201,23 @@ export default RESTAdapter.extend({
    */
   findRecord(store, type, id, snapshot = {}) {
     return new Promise((resolve, reject) => {
+      const db = this.get('firebase').firestore();
+
       let docRef =  snapshot._internalModel &&
                     snapshot._internalModel.getAttributeValue('docRef') ||
                     snapshot.adapterOptions &&
-                    snapshot.adapterOptions.docRef;
+                    snapshot.adapterOptions.docRef ||
+                    snapshot.adapterOptions &&
+                    snapshot.adapterOptions.buildReference &&
+                    this.buildCollectionRef(type.modelName, snapshot.adapterOptions, db).doc(id);
 
       if (!docRef) {
-        const db = this.get('firebase').firestore();
-        const collectionRef = this.buildCollectionRef(type.modelName, snapshot.adapterOptions, db);
-        docRef = collectionRef.doc(id);
+        const collectionName = this.buildCollectionName(type.modelName, snapshot);
+        // const namespacedCollectionName = this.prependResourceNamespace(collectionName, snapshot.adapterOptions || {});
+        docRef = db.collection(collectionName).doc(id);
+
+        // const collectionRef = this.buildCollectionRef(type.modelName, snapshot.adapterOptions, db);
+        // docRef = collectionRef.doc(id);
       }
 
       const unsubscribe = docRef.onSnapshot((docSnapshot) => {
@@ -323,9 +335,11 @@ export default RESTAdapter.extend({
   buildCollectionRef(modelName, option = {}, db) {
     if (Object.prototype.hasOwnProperty.call(option, 'buildReference')) {
       return option.buildReference(db);
+    } else if (option.collectionPath) {
+      return db.collection(option.collectionPath);
     }
 
-    return db.collection(buildCollectionName(modelName));
+    return db.collection(this.buildCollectionName(modelName));
   },
 
   /**
@@ -344,12 +358,16 @@ export default RESTAdapter.extend({
 
     if (cardinality === 'manyToOne') {
       const inverse = snapshot.type.inverseFor(relationship.key, store);
-      const collectionName = buildCollectionName(snapshot.modelName);
-      const namespacedCollectionName = this.prependResourceNamespace(collectionName, snapshot);
-      const reference = db.collection(namespacedCollectionName).doc(snapshot.id);
-      const namespacedUrl = this.prependResourceNamespace(url, snapshot);
+      const collectionName = this.buildCollectionName(snapshot.modelName);
+      const reference = db.collection(collectionName).doc(snapshot.id);
 
-      collectionRef = db.collection(namespacedUrl).where(inverse.name, '==', reference);
+      if (relationship.options.collectionKey) {
+        const path = this.buildCollectionName(relationship.type, snapshot, relationship);
+        collectionRef = buildRefFromPath(db, path);
+      } else {
+        // const namespacedUrl = this.prependResourceNamespace(url, snapshot);
+        collectionRef = db.collection(url).where(inverse.name, '==', reference);
+      }
     } else if (Object.prototype.hasOwnProperty.call(relationship.options, 'buildReference')) {
       collectionRef = relationship.options.buildReference(db, snapshot.record);
     } else {
@@ -512,9 +530,5 @@ export default RESTAdapter.extend({
     }
 
     return null;
-  },
-  
-  prependResourceNamespace(url, { record }) {
-    return '';
   }
 });
