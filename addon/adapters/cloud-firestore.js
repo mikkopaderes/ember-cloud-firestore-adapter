@@ -356,15 +356,17 @@ export default RESTAdapter.extend({
     const cardinality = snapshot.type.determineRelationshipType(relationship, store);
     let collectionRef;
 
-    if (relationship.options.collectionKey) {
+    if (cardinality === 'manyToOne') {
       const path = this.buildCollectionName(relationship.type, snapshot, relationship);
-      collectionRef = buildRefFromPath(db, path);
-    } else if (cardinality === 'manyToOne') {
-      const inverse = snapshot.type.inverseFor(relationship.key, store);
-      const collectionName = this.buildCollectionName(snapshot.modelName);
-      const reference = db.collection(collectionName).doc(snapshot.id);
-
-      collectionRef = db.collection(url).where(inverse.name, '==', reference);
+      const inverseRelationship = snapshot.type.inverseFor(relationship.key, store);
+      const referencePath = this.buildCollectionName(snapshot.modelName, snapshot, inverseRelationship);
+      const reference = db.collection(referencePath).doc(snapshot.id);
+      
+      if (!inverseRelationship) {
+        collectionRef = buildRefFromPath(db, path);
+      } else {
+        collectionRef = db.collection(path).where(inverseRelationship.name, '==', reference);
+      }
     } else if (Object.prototype.hasOwnProperty.call(relationship.options, 'buildReference')) {
       collectionRef = relationship.options.buildReference(db, snapshot.record);
     } else {
