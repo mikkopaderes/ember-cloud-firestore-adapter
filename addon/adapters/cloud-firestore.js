@@ -2,6 +2,8 @@ import { assign } from '@ember/polyfills';
 import { inject as service } from '@ember/service';
 import Adapter from 'ember-data/adapter';
 
+import firebase from 'firebase';
+
 import {
   buildCollectionName,
   buildRefFromPath,
@@ -80,7 +82,15 @@ export default Adapter.extend({
       return this.findRecord(store, type, snapshot.id, snapshot);
     }
 
-    return this.serialize(snapshot, { includeId: true });
+    const data = this.serialize(snapshot, { includeId: true });
+
+    Object.keys(data).forEach((key) => {
+      if (data[key] === firebase.firestore.FieldValue.serverTimestamp()) {
+        data[key] = new Date();
+      }
+    });
+
+    return data;
   },
 
   /**

@@ -2,6 +2,7 @@ import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import EmberObject from '@ember/object';
 
+import firebase from 'firebase';
 import sinon from 'sinon';
 
 import { mockFirebase } from 'ember-cloud-firestore-adapter/test-support';
@@ -54,21 +55,35 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
   module('function: updateRecord', function () {
     test('should update record and resolve with the updated doc', async function (assert) {
-      assert.expect(1);
+      assert.expect(4);
 
       // Arrange
       const store = {};
       const modelClass = { modelName: 'user' };
-      const snapshot = { id: 'user_a', age: 50 };
+      const snapshot = {
+        id: 'user_a',
+        age: 50,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      adapter.serialize = sinon.stub().returns({ age: 50, username: 'user_a' });
+      adapter.serialize = sinon.stub().returns({
+        age: 50,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        username: 'user_a',
+      });
 
       // Act
       const result = await adapter.updateRecord(store, modelClass, snapshot);
 
       // Assert
-      assert.deepEqual(result, { age: 50, username: 'user_a' });
+      assert.deepEqual(result, { age: 50, timestamp: new Date(), username: 'user_a' });
+
+      const userA = await db.collection('users').doc('user_a').get();
+
+      assert.equal(userA.get('age'), 50);
+      assert.ok(userA.get('timestamp').toDate() instanceof Date);
+      assert.equal(userA.get('username'), 'user_a');
     });
 
     test('should update record in a custom collection and resolve with the updated resource', async function (assert) {
