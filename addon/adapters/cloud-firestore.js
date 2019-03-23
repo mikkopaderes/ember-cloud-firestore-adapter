@@ -25,7 +25,7 @@ export default Adapter.extend({
   /**
    * @type {Object}
    */
-  firestoreSettings: { timestampsInSnapshots: true },
+  firestoreSettings: null,
 
   /**
    * @type {string}
