@@ -88,14 +88,16 @@ export default class RealtimeTracker {
   trackFindHasManyChanges(modelName, id, relationship, collectionRef, store) {
     const { key: field } = relationship;
     const queryId = `${modelName}_${id}_${field}`;
+    const unsubscribe = collectionRef.onSnapshot(
+      () => store.peekRecord(modelName, id).hasMany(field).reload(),
+      () => delete this.query[queryId],
+    );
 
-    if (!this.isQueryTracked(queryId)) {
-      collectionRef.onSnapshot(() => (
-        store.peekRecord(modelName, id).hasMany(field).reload()
-      ), () => delete this.query[queryId]);
-
-      this.query[queryId] = true;
+    if (this.isQueryTracked(queryId)) {
+      this.query[queryId]();
     }
+
+    this.query[queryId] = unsubscribe;
   }
 
   /**
@@ -106,11 +108,16 @@ export default class RealtimeTracker {
    */
   trackQueryChanges(firestoreQuery, recordArray, queryId) {
     const finalQueryId = queryId || Math.random().toString(32).slice(2).substr(0, 5);
+    const unsubscribe = firestoreQuery.onSnapshot(
+      () => recordArray.update(),
+      () => delete this.query[finalQueryId],
+    );
 
-    if (!this.isQueryTracked(finalQueryId)) {
-      firestoreQuery.onSnapshot(() => recordArray.update(), () => delete this.query[finalQueryId]);
-      this.query[finalQueryId] = true;
+    if (this.isQueryTracked(finalQueryId)) {
+      this.query[finalQueryId]();
     }
+
+    this.query[finalQueryId] = unsubscribe;
   }
 
   /**
