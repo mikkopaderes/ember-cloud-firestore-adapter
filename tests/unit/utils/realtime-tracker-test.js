@@ -91,7 +91,7 @@ module('Unit | Utility | realtime-tracker', function () {
       realtimeTracker.trackQueryChanges(collectionRef, recordArray, queryId);
 
       // Assert
-      assert.equal(realtimeTracker.query.foo, true);
+      assert.equal(typeof realtimeTracker.query.foo, 'function');
     });
   });
 });
