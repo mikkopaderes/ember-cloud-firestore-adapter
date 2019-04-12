@@ -35,7 +35,7 @@ export default RESTAdapter.extend({
   /**
    * @type {Object}
    */
-  firestoreSettings: { timestampsInSnapshots: true },
+  firestoreSettings: {},
 
   /**
    * @override
