@@ -58,6 +58,8 @@ import { pluralize } from 'ember-inflector';
 export function parseDocSnapshot(type, docSnapshot) {
   const { id } = docSnapshot;
   const data = docSnapshot.data();
+  
+  data._docRef = docSnapshot.ref.path;
 
   return assign({}, data, { id });
 }

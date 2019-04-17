@@ -58,8 +58,8 @@ export default JSONSerializer.extend({
   extractRelationships(modelClass, resourceHash) {
     const links = {};
 
-    modelClass.eachRelationship((name, descriptor) => {
-      if (descriptor.kind === 'belongsTo') {
+    modelClass.eachRelationship((name, relationship) => {
+      if (relationship.kind === 'belongsTo') {
         const key = this.keyForRelationship(name, 'belongsTo', 'serialize');
         
         if (
@@ -84,10 +84,13 @@ export default JSONSerializer.extend({
           // hasManyPath = '';
           return;
         } else {
-          const cardinality = modelClass.determineRelationshipType(descriptor, this.get('store'));
+          const cardinality = modelClass.determineRelationshipType(relationship, this.get('store'));
 
           if (cardinality === 'manyToOne') {
-            hasManyPath = pluralize(descriptor.type);
+            resourceHash.modelName = modelClass.modelName;
+            const collectionName = this.buildCollectionName(modelClass.modelName, resourceHash, relationship.meta);
+            // hasManyPath = pluralize(relationship.type);
+            hasManyPath = collectionName;
           } else {
             const collectionName = this.buildCollectionName(modelClass.modelName);
             const docId = resourceHash.id;
@@ -113,7 +116,7 @@ export default JSONSerializer.extend({
     const key = this.keyForRelationship(relationship.key, 'belongsTo', 'serialize');
     
     if (json[key]) {
-      const collectionName = this.buildCollectionName(relationship.type, snapshot, relationship);
+      const collectionName = this.buildCollectionName(relationship.type, snapshot, relationship.meta);
       // const namespace = this.getNamespace(snapshot, collectionName);
       const docId = json[key];
       const path = [collectionName, docId].compact().join('/');
@@ -139,7 +142,7 @@ export default JSONSerializer.extend({
       const references = [];
 
       json[key].forEach((id) => {
-        const collectionName = this.buildCollectionName(relationship.type, snapshot, relationship);
+        const collectionName = this.buildCollectionName(relationship.type, snapshot, relationship.meta);
         // const namespace = this.getNamespace(snapshot, collectionName);
         const path = [collectionName, id].compact().join('/');
         // const path = [namespace, collectionName, id].compact().join('/');

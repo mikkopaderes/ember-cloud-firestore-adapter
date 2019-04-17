@@ -213,11 +213,7 @@ export default RESTAdapter.extend({
 
       if (!docRef) {
         const collectionName = this.buildCollectionName(type.modelName, snapshot);
-        // const namespacedCollectionName = this.prependResourceNamespace(collectionName, snapshot.adapterOptions || {});
         docRef = db.collection(collectionName).doc(id);
-
-        // const collectionRef = this.buildCollectionRef(type.modelName, snapshot.adapterOptions, db);
-        // docRef = collectionRef.doc(id);
       }
 
       const unsubscribe = docRef.onSnapshot((docSnapshot) => {
@@ -260,6 +256,8 @@ export default RESTAdapter.extend({
         const requests = this.findHasManyRecords(store, relationship, querySnapshot);
 
         Promise.all(requests).then((responses) => {
+          responses.map(payload => this._injectCollectionRef(payload, url));
+          
           store.listenForHasManyChanges(
             snapshot.modelName,
             snapshot.id,
@@ -357,7 +355,7 @@ export default RESTAdapter.extend({
     let collectionRef;
 
     if (cardinality === 'manyToOne') {
-      const path = this.buildCollectionName(relationship.type, snapshot, relationship);
+      const path = this.buildCollectionName(relationship.type, snapshot, relationship.meta);
       const inverseRelationship = snapshot.type.inverseFor(relationship.key, store);
       const referencePath = this.buildCollectionName(snapshot.modelName, snapshot, inverseRelationship);
       const reference = db.collection(referencePath).doc(snapshot.id);
