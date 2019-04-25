@@ -72,9 +72,9 @@ export default RESTAdapter.extend({
   /**
    * @override
    */
-  generateIdForRecord(store, type) {
+  generateIdForRecord(store, type, context) {
     const db = this.get('firebase').firestore();
-    const collectionName = this.buildCollectionName(type);
+    const collectionName = this.buildCollectionName(type, context);
 
     return db.collection(collectionName).doc().id;
   },
