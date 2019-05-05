@@ -11,22 +11,11 @@ module.exports = function() {
     return {
       scenarios: [
         {
-          name: 'ember-lts-2.18',
-          env: {
-            EMBER_OPTIONAL_FEATURES: JSON.stringify({ 'jquery-integration': true })
-          },
-          npm: {
-            devDependencies: {
-              '@ember/jquery': '^0.5.1',
-              'ember-source': '~2.18.0'
-            }
-          }
-        },
-        {
           name: 'ember-lts-3.4',
           npm: {
             devDependencies: {
-              'ember-source': '~3.4.0'
+              'ember-source': '~3.4.0',
+              'ember-data': 'emberjs/data#3.4.4'
             }
           }
         },
@@ -34,7 +23,8 @@ module.exports = function() {
           name: 'ember-release',
           npm: {
             devDependencies: {
-              'ember-source': urls[0]
+              'ember-source': urls[0],
+              'ember-data': 'emberjs/data#release'
             }
           }
         },
@@ -42,7 +32,8 @@ module.exports = function() {
           name: 'ember-beta',
           npm: {
             devDependencies: {
-              'ember-source': urls[1]
+              'ember-source': urls[1],
+              'ember-data': 'emberjs/data#beta'
             }
           }
         },
@@ -50,7 +41,8 @@ module.exports = function() {
           name: 'ember-canary',
           npm: {
             devDependencies: {
-              'ember-source': urls[2]
+              'ember-source': urls[2],
+              'ember-data': 'emberjs/data#master'
             }
           }
         },
@@ -77,39 +69,6 @@ module.exports = function() {
             }
           }
         },
-        {
-          name: 'ember-data-release',
-          npm: {
-            devDependencies: {
-              'ember-data': 'emberjs/data#release'
-            },
-            resolutions: {
-              'ember-data': 'release'
-            }
-          }
-        },
-        {
-          name: 'ember-data-beta',
-          npm: {
-            devDependencies: {
-              'ember-data': 'emberjs/data#beta'
-            },
-            resolutions: {
-              'ember-data': 'beta'
-            }
-          }
-        },
-        {
-          name: 'ember-data-canary',
-          npm: {
-            devDependencies: {
-              'ember-data': 'emberjs/data#master'
-            },
-            resolutions: {
-              'ember-data': 'canary'
-            }
-          }
-        }
       ]
     };
   });
