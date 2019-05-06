@@ -183,9 +183,11 @@ function reopenStore(appInstance) {
             });
           });
 
-          Promise.all(promises).then(() => (
-            this.peekRecord(modelName, id).hasMany(field).push(records)
-          ));
+          Promise.all(promises).then(() => {
+            const record = this.peekRecord(modelName, id);
+            if (!record) return;
+            record.hasMany(field).push(records)
+          });
         });
 
         hasManyTracker.unsubscribe = unsubscribe;
