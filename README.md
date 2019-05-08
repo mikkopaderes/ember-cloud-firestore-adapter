@@ -23,6 +23,12 @@ Usage
 
 Checkout the guides [here](https://github.com/mikkopaderes/ember-cloud-firestore-adapter/tree/master/guides).
 
+Contributing
+------------------------------------------------------------------------------
+
+See the [Contributing](CONTRIBUTING.md) guide for details.
+
+
 License
 ------------------------------------------------------------------------------
 

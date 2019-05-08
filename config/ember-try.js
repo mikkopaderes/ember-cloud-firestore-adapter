@@ -11,21 +11,10 @@ module.exports = function() {
     return {
       scenarios: [
         {
-          name: 'ember-lts-2.18',
-          env: {
-            EMBER_OPTIONAL_FEATURES: JSON.stringify({ 'jquery-integration': true })
-          },
-          npm: {
-            devDependencies: {
-              '@ember/jquery': '^0.5.1',
-              'ember-source': '~2.18.0'
-            }
-          }
-        },
-        {
           name: 'ember-lts-3.4',
           npm: {
             devDependencies: {
+              'ember-data': '~3.4.0',
               'ember-source': '~3.4.0'
             }
           }
@@ -34,6 +23,7 @@ module.exports = function() {
           name: 'ember-release',
           npm: {
             devDependencies: {
+              'ember-data': '',
               'ember-source': urls[0]
             }
           }
@@ -42,6 +32,7 @@ module.exports = function() {
           name: 'ember-beta',
           npm: {
             devDependencies: {
+              'ember-data': 'beta',
               'ember-source': urls[1]
             }
           }
@@ -50,6 +41,7 @@ module.exports = function() {
           name: 'ember-canary',
           npm: {
             devDependencies: {
+              'ember-data': 'canary',
               'ember-source': urls[2]
             }
           }
@@ -77,39 +69,6 @@ module.exports = function() {
             }
           }
         },
-        {
-          name: 'ember-data-release',
-          npm: {
-            devDependencies: {
-              'ember-data': 'emberjs/data#release'
-            },
-            resolutions: {
-              'ember-data': 'release'
-            }
-          }
-        },
-        {
-          name: 'ember-data-beta',
-          npm: {
-            devDependencies: {
-              'ember-data': 'emberjs/data#beta'
-            },
-            resolutions: {
-              'ember-data': 'beta'
-            }
-          }
-        },
-        {
-          name: 'ember-data-canary',
-          npm: {
-            devDependencies: {
-              'ember-data': 'emberjs/data#master'
-            },
-            resolutions: {
-              'ember-data': 'canary'
-            }
-          }
-        }
       ]
     };
   });

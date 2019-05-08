@@ -27,11 +27,12 @@ export default class RealtimeTracker {
 
       docRef.onSnapshot((docSnapshot) => {
         if (docSnapshot.exists) {
-          const flatRecord = flattenDocSnapshotData(docSnapshot);
-          const normalizedRecord = store.normalize(modelName, flatRecord);
           const record = store.peekRecord(modelName, id);
 
           if (record && !record.isSaving) {
+            const flatRecord = flattenDocSnapshotData(docSnapshot);
+            const normalizedRecord = store.normalize(modelName, flatRecord);
+
             store.push(normalizedRecord);
           }
         } else {
