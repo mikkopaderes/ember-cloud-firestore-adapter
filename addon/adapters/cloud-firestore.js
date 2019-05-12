@@ -142,7 +142,7 @@ export default Adapter.extend({
         }
 
         const requests = querySnapshot.docs.map(docSnapshot => (
-          this.findRecord(store, type, docSnapshot.id)
+          this.findRecord(store, type, docSnapshot.id, snapshotRecordArray)
         ));
 
         Promise.all(requests).then(records => resolve(records)).catch(error => (
@@ -233,6 +233,7 @@ export default Adapter.extend({
    */
   buildCollectionRef(type, adapterOptions = {}) {
     const db = this.firebase.firestore();
+
     if (Object.prototype.hasOwnProperty.call(adapterOptions, 'buildReference')) {
       return adapterOptions.buildReference(db);
     }
