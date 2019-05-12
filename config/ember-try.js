@@ -32,7 +32,7 @@ module.exports = function() {
           name: 'ember-beta',
           npm: {
             devDependencies: {
-              'ember-data': '3.10.0-beta.1',
+              'ember-data': 'beta',
               'ember-source': urls[1]
             }
           }
@@ -41,7 +41,7 @@ module.exports = function() {
           name: 'ember-canary',
           npm: {
             devDependencies: {
-              'ember-data': '3.11.1-canary.0',
+              'ember-data': 'canary',
               'ember-source': urls[2]
             }
           }

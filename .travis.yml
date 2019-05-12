@@ -29,6 +29,8 @@ branches:
 jobs:
   fail_fast: true
   allow_failures:
+    # TODO: Figure out why ember-data beta and canary fails with "no such file or directory". Remove ember-data once fixed.
+    - env: EMBER_TRY_SCENARIO=ember-beta
     - env: EMBER_TRY_SCENARIO=ember-canary
 
   include:
