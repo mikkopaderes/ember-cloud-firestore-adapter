@@ -27,7 +27,9 @@ module('Unit | Utility | realtime-tracker', function () {
       realtimeTracker.trackFindRecordChanges(type, docRef, store);
 
       // Assert
-      assert.equal(realtimeTracker.model.user.record.user_a, true);
+      assert.deepEqual(realtimeTracker.model.user.record.user_a, {
+        hasOnSnapshotRunAtLeastOnce: false,
+      });
     });
   });
 
@@ -49,7 +51,10 @@ module('Unit | Utility | realtime-tracker', function () {
       realtimeTracker.trackFindAllChanges(type, collectionRef, store);
 
       // Assert
-      assert.equal(realtimeTracker.model.user.meta.isAllRecords, true);
+      assert.deepEqual(realtimeTracker.model.user.meta, {
+        isAllRecordsTracked: true,
+        hasOnSnapshotRunAtLeastOnce: false,
+      });
     });
   });
 
@@ -79,7 +84,7 @@ module('Unit | Utility | realtime-tracker', function () {
 
   module('function: trackQueryChanges', function () {
     test('should track query changes', function (assert) {
-      assert.expect(1);
+      assert.expect(2);
 
       // Arrange
       const collectionRef = db.collection('users');
@@ -91,7 +96,8 @@ module('Unit | Utility | realtime-tracker', function () {
       realtimeTracker.trackQueryChanges(collectionRef, recordArray, queryId);
 
       // Assert
-      assert.equal(typeof realtimeTracker.query.foo, 'function');
+      assert.equal(realtimeTracker.query.foo.hasOnSnapshotRunAtLeastOnce, false);
+      assert.equal(typeof realtimeTracker.query.foo.unsubscribe, 'function');
     });
   });
 });

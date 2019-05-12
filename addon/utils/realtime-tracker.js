@@ -1,3 +1,5 @@
+import { next } from '@ember/runloop';
+
 import { flattenDocSnapshotData } from 'ember-cloud-firestore-adapter/utils/parser';
 
 /**
@@ -23,34 +25,43 @@ export default class RealtimeTracker {
     const { id } = docRef;
 
     if (!this.isRecordForTypeTracked(modelName, id)) {
-      this.createModelNameForData(modelName);
+      this.trackModel(modelName);
 
       docRef.onSnapshot((docSnapshot) => {
-        if (docSnapshot.exists) {
-          const record = store.peekRecord(modelName, id);
+        if (this.model[modelName].record[id].hasOnSnapshotRunAtLeastOnce) {
+          if (docSnapshot.exists) {
+            const record = store.peekRecord(modelName, id);
 
-          if (record && !record.isSaving) {
-            const flatRecord = flattenDocSnapshotData(docSnapshot);
-            const normalizedRecord = store.normalize(modelName, flatRecord);
+            if (record && !record.isSaving) {
+              const flatRecord = flattenDocSnapshotData(docSnapshot);
+              const normalizedRecord = store.normalize(modelName, flatRecord);
 
-            store.push(normalizedRecord);
+              store.push(normalizedRecord);
+            }
+          } else {
+            this.unloadRecord(store, modelName, id);
           }
         } else {
-          this.unloadRecord(store, modelName, id);
+          this.model[modelName].record[id].hasOnSnapshotRunAtLeastOnce = true;
         }
       }, (error) => {
         const record = store.peekRecord(modelName, id);
 
         if (record) {
+          // When we lose permission to view the document, we unload it from the store. However,
+          // any template that has rendered the record will still be intact even if it no longer
+          // exists in store.
+          //
+          // We set a flag here to give us the opportunity to change what the template should show.
           record.set('isUnloaded', true);
           record.set('unloadReason', error);
           this.unloadRecord(store, modelName, id);
         }
 
-        this.model[modelName].record[id] = false;
+        delete this.model[modelName].record[id];
       });
 
-      this.model[modelName].record[id] = true;
+      this.model[modelName].record[id] = { hasOnSnapshotRunAtLeastOnce: false };
     }
   }
 
@@ -61,20 +72,25 @@ export default class RealtimeTracker {
    * @function
    */
   trackFindAllChanges(modelName, collectionRef, store) {
-    if (!this.isAllRecordForTypeTracked(modelName)) {
-      this.createModelNameForData(modelName);
+    if (!this.isAllRecordsForTypeTracked(modelName)) {
+      this.trackModel(modelName);
 
       collectionRef.onSnapshot((querySnapshot) => {
-        querySnapshot.forEach(docSnapshot => (
-          store.findRecord(modelName, docSnapshot.id, {
-            adapterOptions: { isRealtime: true },
-          })
-        ));
+        if (this.model[modelName].meta.hasOnSnapshotRunAtLeastOnce) {
+          querySnapshot.forEach(docSnapshot => (
+            store.findRecord(modelName, docSnapshot.id, {
+              adapterOptions: { isRealtime: true },
+            })
+          ));
+        } else {
+          this.model[modelName].meta.hasOnSnapshotRunAtLeastOnce = true;
+        }
       }, () => {
-        this.model[modelName].meta.isAllRecords = false;
+        this.model[modelName].meta.isAllRecordsTracked = false;
       });
 
-      this.model[modelName].meta.isAllRecords = true;
+      this.model[modelName].meta.isAllRecordsTracked = true;
+      this.model[modelName].meta.hasOnSnapshotRunAtLeastOnce = false;
     }
   }
 
@@ -89,16 +105,28 @@ export default class RealtimeTracker {
   trackFindHasManyChanges(modelName, id, relationship, collectionRef, store) {
     const { key: field } = relationship;
     const queryId = `${modelName}_${id}_${field}`;
-    const unsubscribe = collectionRef.onSnapshot(
-      () => store.peekRecord(modelName, id).hasMany(field).reload(),
-      () => delete this.query[queryId],
-    );
 
-    if (this.isQueryTracked(queryId)) {
-      this.query[queryId]();
+    if (!this.isQueryTracked(queryId)) {
+      this.trackQuery(queryId);
     }
 
-    this.query[queryId] = unsubscribe;
+    const unsubscribe = collectionRef.onSnapshot(() => {
+      if (this.query[queryId].hasOnSnapshotRunAtLeastOnce) {
+        // Schedule for next runloop to avoid race condition errors for when a record is unloaded
+        // in the find record tracker because it was deleted in the database. Basically, we should
+        // unload any deleted records first before refreshing the has-many array.
+        next(() => {
+          const hasManyRef = store.peekRecord(modelName, id).hasMany(field);
+
+          hasManyRef.reload().then(() => this.query[queryId].unsubscribe());
+        });
+      } else {
+        this.query[queryId].hasOnSnapshotRunAtLeastOnce = true;
+      }
+    }, () => delete this.query[queryId]);
+
+    this.query[queryId].hasOnSnapshotRunAtLeastOnce = false;
+    this.query[queryId].unsubscribe = unsubscribe;
   }
 
   /**
@@ -109,16 +137,26 @@ export default class RealtimeTracker {
    */
   trackQueryChanges(firestoreQuery, recordArray, queryId) {
     const finalQueryId = queryId || Math.random().toString(32).slice(2).substr(0, 5);
-    const unsubscribe = firestoreQuery.onSnapshot(
-      () => recordArray.update(),
-      () => delete this.query[finalQueryId],
-    );
 
-    if (this.isQueryTracked(finalQueryId)) {
-      this.query[finalQueryId]();
+    if (!this.isQueryTracked(finalQueryId)) {
+      this.trackQuery(finalQueryId);
     }
 
-    this.query[finalQueryId] = unsubscribe;
+    const unsubscribe = firestoreQuery.onSnapshot(() => {
+      if (this.query[finalQueryId].hasOnSnapshotRunAtLeastOnce) {
+        // Schedule for next runloop to avoid race condition errors for when a record is unloaded
+        // in the find record tracker because it was deleted in the database. Basically, we should
+        // unload any deleted records first before refreshing the query array.
+        next(() => (
+          recordArray.update().then(() => this.query[finalQueryId].unsubscribe())
+        ));
+      } else {
+        this.query[finalQueryId].hasOnSnapshotRunAtLeastOnce = true;
+      }
+    }, () => delete this.query[finalQueryId]);
+
+    this.query[finalQueryId].hasOnSnapshotRunAtLeastOnce = false;
+    this.query[finalQueryId].unsubscribe = unsubscribe;
   }
 
   /**
@@ -142,22 +180,22 @@ export default class RealtimeTracker {
    * @function
    * @private
    */
-  isAllRecordForTypeTracked(type) {
+  isAllRecordsForTypeTracked(type) {
     try {
-      return Object.prototype.hasOwnProperty.call(this.model[type].meta, 'isAllRecords');
+      return Object.prototype.hasOwnProperty.call(this.model[type].meta, 'isAllRecordsTracked');
     } catch (error) {
       return false;
     }
   }
 
   /**
-   * @param {string} queryId
-   * @return {boolean} True if queryId is being tracked for changes.
+   * @param {string} id
+   * @return {boolean} True if query ID is being tracked for changes.
    * @function
    * @private
    */
-  isQueryTracked(queryId) {
-    return Object.prototype.hasOwnProperty.call(this.query, queryId);
+  isQueryTracked(id) {
+    return Object.prototype.hasOwnProperty.call(this.query, id);
   }
 
   /**
@@ -165,9 +203,20 @@ export default class RealtimeTracker {
    * @function
    * @private
    */
-  createModelNameForData(type) {
+  trackModel(type) {
     if (!Object.prototype.hasOwnProperty.call(this.model, type)) {
       this.model[type] = { meta: {}, record: {} };
+    }
+  }
+
+  /**
+   * @param {string} id
+   * @function
+   * @private
+   */
+  trackQuery(id) {
+    if (!Object.prototype.hasOwnProperty.call(this.query, id)) {
+      this.query[id] = {};
     }
   }
 
