@@ -369,7 +369,8 @@ export default RESTAdapter.extend({
     } else if (Object.prototype.hasOwnProperty.call(relationship.options, 'buildReference')) {
       collectionRef = relationship.options.buildReference(db, snapshot.record);
     } else {
-      collectionRef = buildRefFromPath(db, url);
+      const path = this.buildCollectionName(relationship.type, snapshot, relationship.meta);
+      collectionRef = buildRefFromPath(db, path);
     }
 
     return this.buildQuery(collectionRef, relationship.options, snapshot.record);
