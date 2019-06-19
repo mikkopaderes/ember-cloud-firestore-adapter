@@ -14,7 +14,7 @@ Installation
 ------------------------------------------------------------------------------
 
 ```
-npm install firebase@5.x --save-dev
+npm install firebase@6.x --save-dev
 ember install ember-cloud-firestore-adapter
 ```
 
