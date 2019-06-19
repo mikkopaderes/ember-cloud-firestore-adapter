@@ -43,6 +43,41 @@ module('Unit | Authenticator | firebase', function (hooks) {
   });
 
   module('function: restore', function () {
+    test('should sign in using custom token when fastboot header contains authorization token', async function (assert) {
+      assert.expect(1);
+
+      // Arrange
+      const authenticator = this.owner.lookup('authenticator:firebase');
+      const fastboot = this.owner.lookup('service:fastboot');
+
+      fastboot.set('isFastBoot', true);
+      fastboot.set('request', {
+        headers: { Authorization: 'Bearer 123' },
+      });
+
+      const userCredential = {
+        user: { id: 'foo' },
+      };
+      const firebase = {
+        auth: sinon.stub().returns({
+          signInWithCustomToken: sinon
+            .stub()
+            .withArgs('123')
+            .returns(Promise.resolve(userCredential)),
+        }),
+      };
+
+      authenticator.set('firebase', firebase);
+
+      // Act
+      const result = await authenticator.restore();
+
+      // Assert
+      assert.deepEqual(result, {
+        user: { id: 'foo' },
+      });
+    });
+
     test('should return the authenticated user from auth state changed', async function (assert) {
       assert.expect(1);
 
