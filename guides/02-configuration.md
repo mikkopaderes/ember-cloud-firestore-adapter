@@ -46,7 +46,7 @@ export default CloudFirestoreAdapter.extend({
 
 These are the settings currently available
 
-- `firestoreSettings` - Specifies custom configurations for your Cloud Firestore instance. See [here](https://firebase.google.com/docs/reference/js/firebase.firestore.Settings). Defaults to `{ timestampsInSnapshots: true }`.
+- `firestoreSettings` - Specifies custom configurations for your Cloud Firestore instance. See [here](https://firebase.google.com/docs/reference/js/firebase.firestore.Settings). Defaults to `null`.
 - `referenceKeyName` - Name of the field that will indicate whether a document is a reference to another one. Defaults to `referenceTo`.
 
 ---
