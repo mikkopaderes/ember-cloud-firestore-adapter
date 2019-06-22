@@ -1,5 +1,3 @@
-import { computed } from '@ember/object';
-import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
 
 import Base from 'ember-simple-auth/authenticators/base';
@@ -14,15 +12,6 @@ export default Base.extend({
    * @type {Ember.Service}
    */
   firebase: service('firebase'),
-
-  /**
-   * @type {Ember.Service}
-   */
-  fastboot: computed({
-    get() {
-      return getOwner(this).lookup('service:fastboot');
-    },
-  }),
 
   /**
    * @callback authenticateCallback
@@ -56,36 +45,24 @@ export default Base.extend({
   restore() {
     return new Promise((resolve, reject) => {
       const auth = this.firebase.auth();
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        unsubscribe();
 
-      if (
-        this.fastboot
-        && this.fastboot.isFastBoot
-        && this.fastboot.request.headers.Authorization
-        && this.fastboot.request.headers.Authorization.startsWith('Bearer ')
-      ) {
-        const token = this.fastboot.request.headers.Authorization.split('Bearer ')[1];
-
-        auth.signInWithCustomToken(token).then(result => resolve({ user: result.user }));
-      } else {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-          unsubscribe();
-
-          if (user) {
-            resolve({ user });
-          } else {
-            auth.getRedirectResult().then((result) => {
-              if (result.user) {
-                resolve({ user: result.user });
-              } else {
-                reject();
-              }
-            }).catch(() => reject());
-          }
-        }, () => {
-          reject();
-          unsubscribe();
-        });
-      }
+        if (user) {
+          resolve({ user });
+        } else {
+          auth.getRedirectResult().then((result) => {
+            if (result.user) {
+              resolve({ user: result.user });
+            } else {
+              reject();
+            }
+          }).catch(() => reject());
+        }
+      }, () => {
+        reject();
+        unsubscribe();
+      });
     });
   },
 });
