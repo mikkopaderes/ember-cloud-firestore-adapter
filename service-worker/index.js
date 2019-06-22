@@ -4,17 +4,17 @@ import {
 } from 'ember-cloud-firestore-adapter/service-worker/config';
 
 importScripts(`https://www.gstatic.com/firebasejs/${firebaseVersion}/firebase-app.js`);
-importScripts(`https://www.gstatic.com/firebasejs/${firebaseVersion}/firebase-firestore.js`);
+importScripts(`https://www.gstatic.com/firebasejs/${firebaseVersion}/firebase-auth.js`);
 
 firebase.initializeApp(firebaseConfig);
 
 function getIdToken() {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
       unsubscribe();
 
       if (user) {
-        user.getIdToken().then(idToken => resolve(idToken), error => resolve(null));
+        user.getIdToken().then(idToken => resolve(idToken)).catch(() => resolve(null));
       } else {
         resolve(null);
       }
@@ -29,6 +29,8 @@ function cloneHeaderWithIdToken(headersToClone, idToken) {
     newHeaders.append(entry[0], entry[1]);
   }
 
+  newHeaders.append('Authorization', `Bearer ${idToken}`);
+
   return newHeaders;
 }
 
@@ -42,7 +44,6 @@ self.addEventListener('fetch', (event) => {
       && (self.location.protocol == 'https:' || self.location.hostname == 'localhost')
       && idToken
     ) {
-      // Clone headers as request headers are immutable.
       const headers = cloneHeaderWithIdToken(req.headers, idToken);
 
       try {
@@ -67,5 +68,5 @@ self.addEventListener('fetch', (event) => {
     return fetch(req);
   };
 
-  event.respondWith(getIdToken().then(requestProcessor, requestProcessor));
+  event.respondWith(getIdToken().then(requestProcessor).catch(requestProcessor));
 });
