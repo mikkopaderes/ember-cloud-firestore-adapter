@@ -25,8 +25,9 @@ function getIdToken() {
 function cloneHeaderWithIdToken(headersToClone, idToken) {
   const newHeaders = new Headers();
 
-  headersToClone.entries().forEach(entry => newHeaders.append(entry[0], entry[1]));
-  newHeaders.append('Authorization', `Bearer ${idToken}`);
+  for (let entry of headersToClone.entries()) {
+    newHeaders.append(entry[0], entry[1]);
+  }
 
   return newHeaders;
 }
