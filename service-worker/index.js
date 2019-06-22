@@ -1,4 +1,7 @@
-import { firebaseVersion, firebaseConfig } from '@cenchat/esw/service-worker/config';
+import {
+  firebaseVersion,
+  firebaseConfig,
+} from 'ember-cloud-firestore-adapter/service-worker/config';
 
 importScripts(`https://www.gstatic.com/firebasejs/${firebaseVersion}/firebase-app.js`);
 importScripts(`https://www.gstatic.com/firebasejs/${firebaseVersion}/firebase-firestore.js`);
