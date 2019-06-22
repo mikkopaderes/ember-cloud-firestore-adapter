@@ -11,9 +11,25 @@ module.exports = {
   included(app) {
     this._super.included.apply(this, arguments);
 
-    const { firebase: firebaseConfig } = this.project.config(app.env).firebase;
+    if (Object.prototype.hasOwnProperty.call(app.options, 'esw-ember-cloud-firestore-adapter')) {
+      this.serviceWorkerOption = app.options['esw-ember-cloud-firestore-adapter'];
+    } else {
+      this.serviceWorkerOption = {};
+    }
 
-    this.serviceWorkerOption = { firebaseConfig };
+    const { firebase: firebaseConfig } = this.project.config(app.env);
+
+    this.serviceWorkerOption = { ...this.serviceWorkerOption, firebaseConfig };
+
+    app.import('vendor/fastboot-shims/firebase/firebase-auth.js');
+    app.import('vendor/fastboot-shims/firebase/firebase-firestore.js');
+    app.import('vendor/fastboot/firebase-auth.js');
+    app.import('vendor/fastboot/firebase-firestore.js');
+
+    if (app.env !== 'production') {
+      app.import('node_modules/mock-cloud-firestore/dist/mock-cloud-firestore.js');
+      app.import('vendor/shims/mock-cloud-firestore.js');
+    }
   },
 
   treeForServiceWorker(swTree, appTree) {
@@ -29,19 +45,5 @@ module.exports = {
     });
 
     return new MergeTrees([defaultTree, fastbootTransform(browserVendorLib)]);
-  },
-
-  included(app) {
-    this._super.included.apply(this, arguments);
-
-    app.import('vendor/fastboot-shims/firebase/firebase-auth.js');
-    app.import('vendor/fastboot-shims/firebase/firebase-firestore.js');
-    app.import('vendor/fastboot/firebase-auth.js');
-    app.import('vendor/fastboot/firebase-firestore.js');
-
-    if (app.env !== 'production') {
-      app.import('node_modules/mock-cloud-firestore/dist/mock-cloud-firestore.js');
-      app.import('vendor/shims/mock-cloud-firestore.js');
-    }
   },
 };
