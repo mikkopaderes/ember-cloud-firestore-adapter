@@ -23,8 +23,6 @@ module.exports = {
 
     app.import('vendor/fastboot-shims/firebase/firebase-auth.js');
     app.import('vendor/fastboot-shims/firebase/firebase-firestore.js');
-    app.import('vendor/fastboot/firebase-auth.js');
-    app.import('vendor/fastboot/firebase-firestore.js');
 
     if (app.env !== 'production') {
       app.import('node_modules/mock-cloud-firestore/dist/mock-cloud-firestore.js');
