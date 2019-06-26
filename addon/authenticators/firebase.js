@@ -65,7 +65,9 @@ export default Base.extend({
       ) {
         const token = this.fastboot.request.headers.get('Authorization').split('Bearer ')[1];
 
-        auth.signInWithCustomToken(token).then(result => resolve({ user: result.user }));
+        auth.signInWithCustomToken(token)
+          .then(result => resolve({ user: result.user }))
+          .catch(() => reject());
       } else {
         const unsubscribe = auth.onAuthStateChanged((user) => {
           unsubscribe();
