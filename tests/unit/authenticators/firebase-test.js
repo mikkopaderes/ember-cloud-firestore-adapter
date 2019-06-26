@@ -52,7 +52,9 @@ module('Unit | Authenticator | firebase', function (hooks) {
 
       fastboot.set('isFastBoot', true);
       fastboot.set('request', {
-        headers: { Authorization: 'Bearer 123' },
+        headers: new Headers({
+          Authorization: 'Bearer 123',
+        }),
       });
 
       const userCredential = {
