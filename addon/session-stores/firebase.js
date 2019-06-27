@@ -20,15 +20,17 @@ export default LocalStorageStore.extend({
    * @override
    */
   restore(...args) {
-    if (
-      this.fastboot
-      && this.fastboot.isFastBoot
-      && this.fastboot.request.headers.get('Authorization')
-      && this.fastboot.request.headers.get('Authorization').startsWith('Bearer ')
-    ) {
-      return Promise.resolve({
-        authenticated: { authenticator: 'authenticator:firebase' },
-      });
+    if (this.fastboot && this.fastboot.isFastBoot) {
+      if (
+        this.fastboot.request.headers.get('Authorization')
+        && this.fastboot.request.headers.get('Authorization').startsWith('Bearer ')
+      ) {
+        return Promise.resolve({
+          authenticated: { authenticator: 'authenticator:firebase' },
+        });
+      }
+
+      return Promise.resolve({});
     }
 
     return this._super(...args);
