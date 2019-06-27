@@ -58,7 +58,7 @@ app.get('/*', async (req, res, next) => {
       const { uid } = decodedIdToken;
       const customToken = await auth.createCustomToken(uid);
 
-      req.headers.Authorization = `Bearer ${customToken}`;
+      req.headers.authorization = `Bearer ${customToken}`;
     } catch (error) {}
   }
 
