@@ -19,8 +19,6 @@ module('Unit | Session Store | firebase', function (hooks) {
         }),
       });
 
-      console.log(sessionStore);
-
       // Act
       const result = await sessionStore.restore();
 

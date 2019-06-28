@@ -21,6 +21,9 @@ module.exports = {
   env: {
     browser: true,
   },
+  globals: {
+    FastBoot: 'readonly',
+  },
   rules: {
     'no-param-reassign': ['error', { props: false }],
   },
