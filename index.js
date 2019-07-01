@@ -19,7 +19,7 @@ module.exports = {
 
     const { firebase: firebaseConfig } = this.project.config(app.env);
 
-    this.serviceWorkerOption = Object.assign({}, this.serviceWorkerOption, firebaseConfig);
+    this.serviceWorkerOption = Object.assign({}, this.serviceWorkerOption, { firebaseConfig });
 
     app.import('vendor/fastboot-shims/firebase/firebase-auth.js');
     app.import('vendor/fastboot-shims/firebase/firebase-firestore.js');
