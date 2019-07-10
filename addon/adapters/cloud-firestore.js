@@ -1,4 +1,6 @@
 import { assign } from '@ember/polyfills';
+import { computed } from '@ember/object';
+import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
 import Adapter from 'ember-data/adapter';
 
@@ -36,6 +38,17 @@ export default Adapter.extend({
    * @override
    */
   defaultSerializer: 'cloud-firestore',
+
+  /**
+   * @type {Ember.Service}
+   */
+  isFastBoot: computed({
+    get() {
+      const fastboot = getOwner(this).lookup('service:fastboot');
+
+      return fastboot && fastboot.isFastBoot;
+    },
+  }),
 
   /**
    * @override
@@ -78,7 +91,7 @@ export default Adapter.extend({
 
     await batch.commit();
 
-    if (this.getAdapterOptionConfig(snapshot, 'isRealtime')) {
+    if (this.getAdapterOptionConfig(snapshot, 'isRealtime') && !this.isFastBoot) {
       return this.findRecord(store, type, snapshot.id, snapshot);
     }
 
@@ -115,7 +128,7 @@ export default Adapter.extend({
       const docRef = this.buildCollectionRef(type, snapshot.adapterOptions).doc(id);
       const unsubscribe = docRef.onSnapshot((docSnapshot) => {
         if (docSnapshot.exists) {
-          if (this.getAdapterOptionConfig(snapshot, 'isRealtime')) {
+          if (this.getAdapterOptionConfig(snapshot, 'isRealtime') && !this.isFastBoot) {
             this.realtimeTracker.trackFindRecordChanges(type.modelName, docRef, store);
           }
 
@@ -137,7 +150,7 @@ export default Adapter.extend({
       const db = this.firebase.firestore();
       const collectionRef = db.collection(buildCollectionName(type.modelName));
       const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
-        if (this.getAdapterOptionConfig(snapshotRecordArray, 'isRealtime')) {
+        if (this.getAdapterOptionConfig(snapshotRecordArray, 'isRealtime') && !this.isFastBoot) {
           this.realtimeTracker.trackFindAllChanges(type.modelName, collectionRef, store);
         }
 
@@ -180,7 +193,7 @@ export default Adapter.extend({
     return new Promise((resolve, reject) => {
       const collectionRef = this.buildHasManyCollectionRef(store, snapshot, url, relationship);
       const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
-        if (relationship.options.isRealtime) {
+        if (relationship.options.isRealtime && !this.isFastBoot) {
           this.realtimeTracker.trackFindHasManyChanges(
             snapshot.modelName,
             snapshot.id,
@@ -209,7 +222,10 @@ export default Adapter.extend({
       const collectionRef = this.buildCollectionRef(type, query);
       const firestoreQuery = this.buildQuery(collectionRef, query);
       const unsubscribe = firestoreQuery.onSnapshot((querySnapshot) => {
-        if (this.getAdapterOptionConfig({ adapterOptions: query }, 'isRealtime')) {
+        if (
+          this.getAdapterOptionConfig({ adapterOptions: query }, 'isRealtime')
+          && !this.isFastBoot
+        ) {
           this.realtimeTracker.trackQueryChanges(firestoreQuery, recordArray, query.queryId);
         }
 
