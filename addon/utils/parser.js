@@ -59,7 +59,7 @@ export function parseDocSnapshot(type, docSnapshot) {
   const { id } = docSnapshot;
   const data = docSnapshot.data();
   
-  data._docRef = docSnapshot.ref.path;
+  data._docRef = docSnapshot.ref.path || buildPathFromRef(docSnapshot.ref);
 
   return assign({}, data, { id });
 }
