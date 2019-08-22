@@ -63,7 +63,8 @@ function reopenStore(appInstance) {
           next(() => {
             if (docSnapshot.exists) {
               const payload = parseDocSnapshot(type, docSnapshot);
-              payload._docRef = payload._docRef || docRef.path;
+              payload._docRef = payload._docRef || docRef;
+              payload._docRefPath = payload._docRefPath || docRef.path;
               const normalizedPayload = this.normalize(type.modelName, payload);
 
               this.push(normalizedPayload);
