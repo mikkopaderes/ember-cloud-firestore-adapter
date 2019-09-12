@@ -75,13 +75,7 @@ export default JSONSerializer.extend({
         const key = this.keyForRelationship(name, 'hasMany', 'serialize');
         let hasManyPath;
         
-        if (
-          Object.prototype.hasOwnProperty.call(resourceHash, key)
-          && typeOf(resourceHash[key]) === 'array'
-          && resourceHash[key].every(r => r.firestore)
-        ) {
-          // hasManyPath = resourceHash[key][0].path.split('/').slice(0,-1).join('/');
-          // hasManyPath = '';
+        if (relationship.meta.options.isReference) {
           return;
         } else {
           const cardinality = modelClass.determineRelationshipType(relationship, this.get('store'));
