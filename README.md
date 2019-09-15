@@ -7,14 +7,23 @@ Unofficial Ember Data Adapter and Serializer for Cloud Firestore
 Compatibility
 ------------------------------------------------------------------------------
 
-* Ember.js v3.x or above
+* Ember.js v3.4 or above
+* Ember CLI v2.13 or above
+* Node.js v8 or above
 
 
 Installation
 ------------------------------------------------------------------------------
 
+This addon requires some peer dependencies. Install the correct versions of each package, which are listed by the command:
+
 ```
-npm install firebase@6.x --save-dev
+npm info ember-cloud-firestore-adapter peerDependencies
+```
+
+Once you've installed it, you can now install the addon itself:
+
+```
 ember install ember-cloud-firestore-adapter
 ```
 
