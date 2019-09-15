@@ -54,4 +54,5 @@ jobs:
     - env: EMBER_TRY_SCENARIO=ember-default-with-jquery
 
 script:
+  - npm install
   - node_modules/.bin/ember try:one $EMBER_TRY_SCENARIO
