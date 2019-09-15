@@ -1,6 +1,6 @@
 {
   "name": "ember-cloud-firestore-adapter",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "description": "Unofficial Ember Data Adapter and Serializer for Cloud Firestore",
   "keywords": [
     "ember-addon",
