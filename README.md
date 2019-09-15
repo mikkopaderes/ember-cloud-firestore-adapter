@@ -13,8 +13,15 @@ Compatibility
 Installation
 ------------------------------------------------------------------------------
 
+This addon requires some peer dependencies. Install the correct versions of each package, which are listed by the command:
+
 ```
-npm install firebase@6.x --save-dev
+npm info ember-cloud-firestore-adapter peerDependencies
+```
+
+Once you've installed it, you can now install the addon itself:
+
+```
 ember install ember-cloud-firestore-adapter
 ```
 
