@@ -6,7 +6,7 @@ module.exports = {
   root: true,
   parserOptions: {
     ecmaVersion: 2018,
-    sourceType: 'module'
+    sourceType: 'module',
   },
   plugins: [
     'ember',
@@ -47,7 +47,7 @@ module.exports = {
         'tests/dummy/app/**',
       ],
       parserOptions: {
-        sourceType: 'script'
+        sourceType: 'script',
       },
       env: {
         browser: false,
