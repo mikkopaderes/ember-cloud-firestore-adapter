@@ -1,4 +1,4 @@
-import { Promise } from 'rsvp';
+import { Promise, all } from 'rsvp';
 import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
 import { run } from '@ember/runloop';
@@ -130,7 +130,34 @@ export default RESTAdapter.extend({
       const docRef = this.buildUpdateRecordDocRef(type, snapshot);
       const batch = this.buildWriteBatch(type, snapshot, docRef, false);
 
-      batch.commit().then(() => {
+      const batches = {
+        queue: [],
+
+        commit() {
+          const { queue } = this;
+          if (!queue.length) return null;
+          if (queue.length === 1) return queue[0].commit();
+          return all(queue.map(b => b.commit()));
+        },
+
+        push(b) {
+          this.queue.push(b);
+        },
+      };
+
+      if (batch._mutations && batch._mutations.length >= 500) {
+        const db = this.get('firebase').firestore();
+        while (batch._mutations.length > 0) {
+          const splitBatch = db.batch();
+          const mutations = batch._mutations.splice(0, 500);
+          splitBatch._mutations = mutations;
+          batches.push(splitBatch);
+        }
+      } else {
+        batches.push(batch);
+      }
+
+      batches.commit().then(() => {
         // Only relevant when used by `createRecord()` as this will
         // setup realtime changes to the newly created record.
         // On `updateRecord()`, this basically does nothing as
@@ -257,7 +284,7 @@ export default RESTAdapter.extend({
 
         Promise.all(requests).then((responses) => {
           responses.map(payload => this._injectCollectionRef(payload, url));
-          
+
           store.listenForHasManyChanges(
             snapshot.modelName,
             snapshot.id,
