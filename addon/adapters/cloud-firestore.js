@@ -247,6 +247,8 @@ export default RESTAdapter.extend({
         if (docSnapshot.exists) {
           store.listenForDocChanges(type, docRef);
           run(null, resolve, parseDocSnapshot(type, docSnapshot));
+        } else if (docSnapshot.metadata.fromCache) {
+          run(null, reject, new Error('Connection to Firestore unavailable'));
         } else {
           run(null, reject, new Error('Document doesn\'t exist'));
         }
