@@ -63,6 +63,7 @@ function reopenStore(appInstance) {
           next(() => {
             if (docSnapshot.exists) {
               const payload = parseDocSnapshot(type, docSnapshot);
+              payload._snapshot = docSnapshot;
               payload._docRef = payload._docRef || docRef;
               payload._docRefPath = payload._docRefPath || docRef.path;
               const normalizedPayload = this.normalize(type.modelName, payload);
@@ -204,7 +205,7 @@ function reopenStore(appInstance) {
     buildModelName(collectionName) {
       return dasherize(singularize(collectionName));
     },
-    
+
     /**
      * @override
      */
