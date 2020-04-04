@@ -19,15 +19,15 @@ export default JSONSerializer.extend({
    * @type {Ember.Service}
    */
   firebase: inject(),
-  
+
   buildCollectionName(modelName) {
     return buildCollectionName(modelName);
   },
-  
+
   // getNamespace(snapshot) {
   //   return null;
   // },
-  
+
   /**
    * Overriden to properly get the data of a `Reference` type relationship
    *
@@ -46,7 +46,7 @@ export default JSONSerializer.extend({
       };
     }
 
-    return null;
+    return this._super(...arguments);
   },
 
   /**
@@ -61,7 +61,7 @@ export default JSONSerializer.extend({
     modelClass.eachRelationship((name, relationship) => {
       if (relationship.kind === 'belongsTo') {
         const key = this.keyForRelationship(name, 'belongsTo', 'serialize');
-        
+
         if (
           Object.prototype.hasOwnProperty.call(resourceHash, key)
           && typeOf(resourceHash[key]) === 'object'
@@ -74,7 +74,7 @@ export default JSONSerializer.extend({
       } else {
         const key = this.keyForRelationship(name, 'hasMany', 'serialize');
         let hasManyPath;
-        
+
         if (relationship.meta.options.isReference) {
           return;
         } else {
@@ -106,9 +106,9 @@ export default JSONSerializer.extend({
    */
   serializeBelongsTo(snapshot, json, relationship) {
     this._super(snapshot, json, relationship);
-    
+
     const key = this.keyForRelationship(relationship.key, 'belongsTo', 'serialize');
-    
+
     if (json[key]) {
       const collectionName = this.buildCollectionName(relationship.type, snapshot, relationship.meta);
       // const namespace = this.getNamespace(snapshot, collectionName);
@@ -129,7 +129,7 @@ export default JSONSerializer.extend({
    */
   serializeHasMany(snapshot, json, relationship) {
     this._super(snapshot, json, relationship);
-    
+
     const key = this.keyForRelationship(relationship.key, 'hasMany', 'serialize');
 
     if (json[key]) {
