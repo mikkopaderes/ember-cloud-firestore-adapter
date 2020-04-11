@@ -3,12 +3,9 @@ import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
 import { run } from '@ember/runloop';
 import RESTAdapter from 'ember-data/adapters/rest';
+import { updatePaginationOfRelationship } from 'ember-cloud-firestore-adapter/utils/pagination';
+import { buildCollectionName, buildRefFromPath, parseDocSnapshot } from 'ember-cloud-firestore-adapter/utils/parser';
 
-import {
-  buildCollectionName,
-  buildRefFromPath,
-  parseDocSnapshot,
-} from 'ember-cloud-firestore-adapter/utils/parser';
 
 /**
  * @class CloudFirestore
@@ -285,6 +282,7 @@ export default RESTAdapter.extend({
         const requests = this.findHasManyRecords(store, relationship, querySnapshot);
 
         Promise.all(requests).then((responses) => {
+          updatePaginationOfRelationship(snapshot, relationship, responses);
           responses.map(payload => this._injectCollectionRef(payload, url));
 
           store.listenForHasManyChanges(
