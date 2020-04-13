@@ -4,11 +4,12 @@ import { set } from '@ember/object';
 export default function updatePaginationOfRelationship(snapshot, relationship, records) {
   const { pagination } = relationship.meta.options;
   if (!pagination) return;
-  if (records.length < pagination.size) {
-    const model = snapshot.record;
-    set(model, `${relationship.meta.key}PaginationAvailable`, false);
-    pagination.allLoaded = true;
-  }
+  // const existingRecords = snapshot.hasMany(relationship.key);
+  // if (existingRecords) records.existing = existingRecords;
+  const model = snapshot.record;
+  const allLoaded = records.length < pagination.size;
+  if (allLoaded) pagination.allLoaded = allLoaded;
+  set(model, `${relationship.meta.key}PaginationAvailable`, !allLoaded);
 }
 
 export { updatePaginationOfRelationship };

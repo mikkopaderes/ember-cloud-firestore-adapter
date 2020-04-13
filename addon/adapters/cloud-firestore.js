@@ -282,8 +282,8 @@ export default RESTAdapter.extend({
         const requests = this.findHasManyRecords(store, relationship, querySnapshot);
 
         Promise.all(requests).then((responses) => {
-          updatePaginationOfRelationship(snapshot, relationship, responses);
           responses.map(payload => this._injectCollectionRef(payload, url));
+          updatePaginationOfRelationship(snapshot, relationship, responses);
 
           store.listenForHasManyChanges(
             snapshot.modelName,
