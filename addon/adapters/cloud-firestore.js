@@ -3,7 +3,7 @@ import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
 import { run } from '@ember/runloop';
 import RESTAdapter from 'ember-data/adapters/rest';
-import { updatePaginationOfRelationship } from 'ember-cloud-firestore-adapter/utils/pagination';
+import { updatePagination, paginateQuery } from 'ember-cloud-firestore-adapter/utils/pagination';
 import { buildCollectionName, buildRefFromPath, parseDocSnapshot } from 'ember-cloud-firestore-adapter/utils/parser';
 
 
@@ -283,7 +283,7 @@ export default RESTAdapter.extend({
 
         Promise.all(requests).then((responses) => {
           responses.map(payload => this._injectCollectionRef(payload, url));
-          updatePaginationOfRelationship(snapshot, relationship, responses);
+          updatePagination(snapshot, relationship, responses);
 
           store.listenForHasManyChanges(
             snapshot.modelName,
@@ -400,7 +400,7 @@ export default RESTAdapter.extend({
       collectionRef = buildRefFromPath(db, path);
     }
 
-    return this.buildQuery(collectionRef, relationship.options, snapshot.record);
+    return this.buildQuery(collectionRef, relationship.options, snapshot);
   },
 
   /**
@@ -453,14 +453,17 @@ export default RESTAdapter.extend({
    * @function
    * @private
    */
-  buildQuery(collectionRef, option = {}, record) {
+  buildQuery(collectionRef, option = {}, snapshot = {}) {
+    const { record, adapterOptions = {} } = snapshot;
     let newRef = collectionRef;
 
     if (Object.prototype.hasOwnProperty.call(option, 'filter')) {
-      newRef = option.filter(collectionRef, record);
+      newRef = option.filter(newRef, record);
     }
 
-    if (Object.prototype.hasOwnProperty.call(option, 'limit')) {
+    if (Object.prototype.hasOwnProperty.call(option, 'pagination')) {
+      newRef = paginateQuery(newRef, option.pagination, adapterOptions);
+    } else if (Object.prototype.hasOwnProperty.call(option, 'limit')) {
       newRef = newRef.limit(option.limit);
     }
 
