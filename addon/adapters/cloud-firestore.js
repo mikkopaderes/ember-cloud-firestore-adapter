@@ -3,7 +3,7 @@ import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
 import { run } from '@ember/runloop';
 import RESTAdapter from 'ember-data/adapters/rest';
-import { updatePagination, paginateQuery } from 'ember-cloud-firestore-adapter/utils/pagination';
+import { updatePaginationMeta, paginateQuery, addPaginatedPayload } from 'ember-cloud-firestore-adapter/utils/pagination';
 import { buildCollectionName, buildRefFromPath, parseDocSnapshot } from 'ember-cloud-firestore-adapter/utils/parser';
 
 
@@ -283,7 +283,8 @@ export default RESTAdapter.extend({
 
         Promise.all(requests).then((responses) => {
           responses.map(payload => this._injectCollectionRef(payload, url));
-          updatePagination(snapshot, relationship, responses);
+          updatePaginationMeta(snapshot, relationship, responses);
+          addPaginatedPayload(snapshot, relationship, responses);
 
           store.listenForHasManyChanges(
             snapshot.modelName,

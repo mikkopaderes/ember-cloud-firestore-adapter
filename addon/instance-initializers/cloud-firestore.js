@@ -5,8 +5,8 @@ import { getOwner } from '@ember/application';
 import { inject } from '@ember/service';
 import { next } from '@ember/runloop';
 import { singularize } from 'ember-inflector';
-
 import { parseDocSnapshot } from 'ember-cloud-firestore-adapter/utils/parser';
+import { mergePaginatedRecords } from 'ember-cloud-firestore-adapter/utils/pagination';
 
 /**
  * @param {Application} appInstance
@@ -161,17 +161,15 @@ function reopenStore(appInstance) {
 
         if (this.hasListenerForHasMany(modelName, id, field)) {
           hasManyTracker = this.get('tracker')[modelName].document[id].relationship[field];
-
           hasManyTracker.unsubscribe();
         } else {
           this.trackHasManyListener(modelName, id, field);
-
           hasManyTracker = this.get('tracker')[modelName].document[id].relationship[field];
         }
 
         const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
           const promises = [];
-          const records = [];
+          let records = [];
 
           querySnapshot.forEach((docSnapshot) => {
             promises.push(this.findRecord(type, docSnapshot.id, {
@@ -188,7 +186,9 @@ function reopenStore(appInstance) {
           Promise.all(promises).then(() => {
             const record = this.peekRecord(modelName, id);
             if (!record) return;
-            record.hasMany(field).push(records)
+            const { pagination } = relationship.meta.options;
+            if (pagination) records = mergePaginatedRecords(records, record, relationship);
+            record.hasMany(field).push(records);
           });
         });
 
