@@ -283,7 +283,7 @@ export default RESTAdapter.extend({
 
         Promise.all(requests).then((responses) => {
           responses.map(payload => this._injectCollectionRef(payload, url));
-          updatePaginationMeta(snapshot, relationship, responses);
+          updatePaginationMeta(relationship, responses);
           addPaginatedPayload(snapshot, relationship, responses);
 
           store.listenForHasManyChanges(
