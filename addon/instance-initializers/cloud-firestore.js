@@ -97,7 +97,9 @@ function reopenStore(appInstance) {
 
         collectionRef.onSnapshot((querySnapshot) => {
           next(() => (
-            querySnapshot.forEach(docSnapshot => this.findRecord(modelName, docSnapshot.id))
+            querySnapshot
+              .docChanges()
+              .forEach(docSnapshot => this.findRecord(modelName, docSnapshot.id))
           ));
         });
       }
@@ -171,11 +173,11 @@ function reopenStore(appInstance) {
           const promises = [];
           let records = [];
 
-          querySnapshot.forEach((docSnapshot) => {
+          querySnapshot.docChanges().forEach((docSnapshot) => {
             promises.push(this.findRecord(type, docSnapshot.id, {
               adapterOptions: {
-                docRef: docSnapshot.ref
-              }
+                docRef: docSnapshot.ref,
+              },
             }));
 
             records.push({
