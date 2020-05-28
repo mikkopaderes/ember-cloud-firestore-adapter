@@ -51,7 +51,7 @@ function mergePaginatedRecords(loadedRecords, model, relationship) {
   const updatedRecords = existingRecords.reduce((prev, record) => {
     const hasRecord = prev.findBy('data.id', record.id);
     if (hasRecord) return prev;
-    prev.push({
+    prev.unshift({
       data: { type: relationship.type, id: record.id },
     });
     return prev;
@@ -70,7 +70,7 @@ function addPaginatedPayload(snapshot, relationship, records) {
     let serializedSnapshot = _snapshot.serialize({ includeId: true });
     const _fsProperties = getProperties(_snapshot.record, '_snapshot', '_docRef', '_docRefPath', '_collectionRefPath');
     serializedSnapshot = merge(serializedSnapshot, _fsProperties);
-    prev.push(serializedSnapshot);
+    prev.unshift(serializedSnapshot);
     return prev;
   }, []);
   return records.unshift(...serializedRecords);
