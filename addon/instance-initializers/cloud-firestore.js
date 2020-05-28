@@ -1,4 +1,6 @@
+/* eslint-disable consistent-return */
 import { Promise } from 'rsvp';
+import { isNone } from '@ember/utils';
 import { computed } from '@ember/object';
 import { dasherize } from '@ember/string';
 import { getOwner } from '@ember/application';
@@ -99,7 +101,10 @@ function reopenStore(appInstance) {
           next(() => (
             querySnapshot
               .docChanges()
-              .forEach(docSnapshot => this.findRecord(modelName, docSnapshot.id))
+              .forEach((change) => {
+                const { doc: docSnapshot } = change;
+                return this.findRecord(modelName, docSnapshot.id);
+              })
           ));
         });
       }
@@ -173,7 +178,9 @@ function reopenStore(appInstance) {
           const promises = [];
           let records = [];
 
-          querySnapshot.docChanges().forEach((docSnapshot) => {
+          querySnapshot.docChanges().forEach((change) => {
+            const { doc: docSnapshot } = change;
+
             promises.push(this.findRecord(type, docSnapshot.id, {
               adapterOptions: {
                 docRef: docSnapshot.ref,
@@ -181,7 +188,7 @@ function reopenStore(appInstance) {
             }));
 
             records.push({
-              data: { type, id: docSnapshot.id }
+              data: { type, id: docSnapshot.id, changeType: change.type },
             });
           });
 
@@ -212,11 +219,21 @@ function reopenStore(appInstance) {
      * @override
      */
     _pushResourceIdentifier(relationship, resourceIdentifier) {
-      if (Ember.isNone(resourceIdentifier)) return;
+      if (isNone(resourceIdentifier)) return;
+
       // this.assertRelationshipData(this, relationship.internalModel, resourceIdentifier, relationship.relationshipMeta);
-      let internalModel = this._internalModelsFor(resourceIdentifier.type).get(resourceIdentifier.id);
+
+      const internalModel = this
+        ._internalModelsFor(resourceIdentifier.type)
+        .get(resourceIdentifier.id);
+
       if (internalModel) return internalModel;
-      return this._buildInternalModel(resourceIdentifier.type, resourceIdentifier.id, resourceIdentifier.data);
+
+      return this._buildInternalModel(
+        resourceIdentifier.type,
+        resourceIdentifier.id,
+        resourceIdentifier.data,
+      );
     },
 
     /**
