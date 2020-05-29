@@ -177,9 +177,14 @@ function reopenStore(appInstance) {
         const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
           const promises = [];
           let records = [];
+          const involvedChangeTypes = [];
 
           querySnapshot.docChanges().forEach((change) => {
-            const { doc: docSnapshot } = change;
+            const { doc: docSnapshot, type: changeType } = change;
+
+            if (!involvedChangeTypes.includes(changeType)) {
+              involvedChangeTypes.push(changeType);
+            }
 
             promises.push(this.findRecord(type, docSnapshot.id, {
               adapterOptions: {
@@ -188,9 +193,11 @@ function reopenStore(appInstance) {
             }));
 
             records.push({
-              data: { type, id: docSnapshot.id, changeType: change.type },
+              data: { type, id: docSnapshot.id, changeType },
             });
           });
+
+          if (involvedChangeTypes.includes('modified')) return;
 
           Promise.all(promises).then(() => {
             const record = this.peekRecord(modelName, id);
