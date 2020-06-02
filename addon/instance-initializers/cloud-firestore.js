@@ -9,6 +9,7 @@ import { next } from '@ember/runloop';
 import { singularize } from 'ember-inflector';
 import { parseDocSnapshot } from 'ember-cloud-firestore-adapter/utils/parser';
 import { mergePaginatedRecords } from 'ember-cloud-firestore-adapter/utils/pagination';
+import config from 'ember-get-config';
 
 /**
  * @param {Application} appInstance
@@ -98,14 +99,18 @@ function reopenStore(appInstance) {
         this.trackCollectionListener(modelName);
 
         collectionRef.onSnapshot((querySnapshot) => {
-          next(() => (
-            querySnapshot
-              .docChanges()
-              .forEach((change) => {
-                const { doc: docSnapshot } = change;
-                return this.findRecord(modelName, docSnapshot.id);
-              })
-          ));
+          next(() => {
+            if (config.environment === 'test') {
+              querySnapshot.forEach(docSnapshot => this.findRecord(modelName, docSnapshot.id));
+            } else {
+              querySnapshot
+                .docChanges()
+                .forEach((change) => {
+                  const { doc: docSnapshot } = change;
+                  return this.findRecord(modelName, docSnapshot.id);
+                });
+            }
+          });
         });
       }
     },
@@ -175,41 +180,69 @@ function reopenStore(appInstance) {
         }
 
         const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
-          const promises = [];
-          let records = [];
-          const involvedChangeTypes = [];
-
-          querySnapshot.docChanges().forEach((change) => {
-            const { doc: docSnapshot, type: changeType } = change;
-
-            if (!involvedChangeTypes.includes(changeType)) {
-              involvedChangeTypes.push(changeType);
-            }
-
-            promises.push(this.findRecord(type, docSnapshot.id, {
-              adapterOptions: {
-                docRef: docSnapshot.ref,
-              },
-            }));
-
-            records.push({
-              data: { type, id: docSnapshot.id, changeType },
-            });
-          });
+          const processedChanges = this._handleDocChanges(type, querySnapshot);
+          const { records, promises, involvedChangeTypes } = processedChanges;
 
           if (involvedChangeTypes.includes('modified')) return;
 
           Promise.all(promises).then(() => {
+            const { pagination } = relationship.meta.options;
+            let initialRecords = records;
+
             const record = this.peekRecord(modelName, id);
             if (!record) return;
-            const { pagination } = relationship.meta.options;
-            if (pagination) records = mergePaginatedRecords(records, record, relationship);
-            record.hasMany(field).push(records);
+
+            if (pagination) {
+              initialRecords = mergePaginatedRecords(initialRecords, record, relationship);
+            }
+
+            record.hasMany(field).push(initialRecords);
           });
         });
 
         hasManyTracker.unsubscribe = unsubscribe;
       }
+    },
+
+    _handleDocChanges(type, querySnapshot) {
+      const promises = [];
+      const records = [];
+      const involvedChangeTypes = [];
+      const { environment } = config;
+
+      if (environment === 'test') {
+        querySnapshot.forEach((docSnapshot) => {
+          promises.push(this.findRecord(type, docSnapshot.id, {
+            adapterOptions: {
+              docRef: docSnapshot.ref,
+            },
+          }));
+
+          records.push({
+            data: { type, id: docSnapshot.id },
+          });
+        });
+      } else {
+        querySnapshot.docChanges().forEach((change) => {
+          const { doc: docSnapshot, type: changeType } = change;
+
+          if (!involvedChangeTypes.includes(changeType)) {
+            involvedChangeTypes.push(changeType);
+          }
+
+          promises.push(this.findRecord(type, docSnapshot.id, {
+            adapterOptions: {
+              docRef: docSnapshot.ref,
+            },
+          }));
+
+          records.push({
+            data: { type, id: docSnapshot.id, changeType },
+          });
+        });
+      }
+
+      return { records, promises, involvedChangeTypes };
     },
 
     /**
