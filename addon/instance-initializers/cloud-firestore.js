@@ -1,14 +1,13 @@
 /* eslint-disable consistent-return */
 import { Promise } from 'rsvp';
 import { isNone } from '@ember/utils';
-import { computed } from '@ember/object';
+import { computed, get } from '@ember/object';
 import { dasherize } from '@ember/string';
 import { getOwner } from '@ember/application';
 import { inject } from '@ember/service';
 import { next } from '@ember/runloop';
 import { singularize } from 'ember-inflector';
 import { parseDocSnapshot } from 'ember-cloud-firestore-adapter/utils/parser';
-import { mergePaginatedRecords } from 'ember-cloud-firestore-adapter/utils/pagination';
 import config from 'ember-get-config';
 
 /**
@@ -181,22 +180,21 @@ function reopenStore(appInstance) {
 
         const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
           const processedChanges = this._handleDocChanges(type, querySnapshot);
-          const { records, promises, involvedChangeTypes } = processedChanges;
+          const { changedRecords, promises } = processedChanges;
 
-          if (involvedChangeTypes.includes('modified')) return;
-
-          Promise.all(promises).then(() => {
-            const { pagination } = relationship.meta.options;
-            let initialRecords = records;
-
+          Promise.all(promises).then((updatedRecords) => {
             const record = this.peekRecord(modelName, id);
             if (!record) return;
 
-            if (pagination) {
-              initialRecords = mergePaginatedRecords(initialRecords, record, relationship);
-            }
+            const currentRecords = get(record, field);
 
-            record.hasMany(field).push(initialRecords);
+            changedRecords.forEach(({ data: { id: changeId, changeType } }) => {
+              const current = currentRecords.findBy('id', changeId);
+              const updated = updatedRecords.findBy('id', changeId);
+              if (current) currentRecords.removeObject(current);
+              if (changeType === 'removed') return;
+              currentRecords.addObject(updated);
+            });
           });
         });
 
@@ -206,7 +204,7 @@ function reopenStore(appInstance) {
 
     _handleDocChanges(type, querySnapshot) {
       const promises = [];
-      const records = [];
+      const changedRecords = [];
       const involvedChangeTypes = [];
       const { environment } = config;
 
@@ -218,31 +216,31 @@ function reopenStore(appInstance) {
             },
           }));
 
-          records.push({
+          changedRecords.push({
             data: { type, id: docSnapshot.id },
           });
         });
       } else {
-        querySnapshot.docChanges().forEach((change) => {
-          const { doc: docSnapshot, type: changeType } = change;
+        const changes = querySnapshot.docChanges();
 
-          if (!involvedChangeTypes.includes(changeType)) {
-            involvedChangeTypes.push(changeType);
+        changes.forEach((change) => {
+          const { type: changeType, doc: docSnapshot } = change;
+
+          if (changeType === 'added' || changeType === 'modified') {
+            promises.push(this.findRecord(type, docSnapshot.id, {
+              adapterOptions: {
+                docRef: docSnapshot.ref,
+              },
+            }));
           }
 
-          promises.push(this.findRecord(type, docSnapshot.id, {
-            adapterOptions: {
-              docRef: docSnapshot.ref,
-            },
-          }));
-
-          records.push({
+          changedRecords.push({
             data: { type, id: docSnapshot.id, changeType },
           });
         });
       }
 
-      return { records, promises, involvedChangeTypes };
+      return { changedRecords, promises, involvedChangeTypes };
     },
 
     /**

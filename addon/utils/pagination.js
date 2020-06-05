@@ -30,7 +30,7 @@ function paginateQuery(reference, paginationOptions, adapterOptions) {
 }
 
 function recordsAreTheSame(existingRecords, loadedRecords) {
- const loadedRecordIds = loadedRecords.mapBy('data.id');
+  const loadedRecordIds = loadedRecords.mapBy('data.id');
   const newIds = existingRecords
     .mapBy('id')
     .filter(id => !loadedRecordIds.includes(id));
@@ -39,6 +39,9 @@ function recordsAreTheSame(existingRecords, loadedRecords) {
 }
 
 function mergePaginatedRecords(loadedRecords, model, relationship) {
+  const { pagination } = relationship.meta.options;
+  if (!pagination) return loadedRecords;
+
   const existingRecords = model.get(relationship.key);
   const triggeredByInverseRelationship = recordsAreTheSame(existingRecords, loadedRecords);
 
