@@ -8,6 +8,7 @@ import { inject } from '@ember/service';
 import { next } from '@ember/runloop';
 import { singularize } from 'ember-inflector';
 import { parseDocSnapshot } from 'ember-cloud-firestore-adapter/utils/parser';
+import { updatePaginationMeta } from 'ember-cloud-firestore-adapter/utils/pagination';
 import config from 'ember-get-config';
 
 /**
@@ -195,6 +196,8 @@ function reopenStore(appInstance) {
               if (changeType === 'removed') return;
               currentRecords.addObject(updated);
             });
+
+            updatePaginationMeta(relationship, currentRecords);
           });
         });
 

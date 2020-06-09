@@ -39,8 +39,7 @@ function recordsAreTheSame(existingRecords, loadedRecords) {
 }
 
 function mergePaginatedRecords(loadedRecords, model, relationship) {
-  const { pagination } = relationship.meta.options;
-  if (!pagination) return loadedRecords;
+  if (!isPaginated(relationship)) return loadedRecords;
 
   const existingRecords = model.get(relationship.key);
   const triggeredByInverseRelationship = recordsAreTheSame(existingRecords, loadedRecords);
