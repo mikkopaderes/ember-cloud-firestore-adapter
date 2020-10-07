@@ -174,8 +174,7 @@ function reopenStore(appInstance) {
         if (this.hasListenerForHasMany(modelName, id, field)) {
           hasManyTracker = this.get('tracker')[modelName].document[id].relationship[field];
           hasManyTracker.unsubscribe();
-        } else {
-          this.trackHasManyListener(modelName, id, field);
+        } else if (this.trackHasManyListener(modelName, id, field)) {
           hasManyTracker = this.get('tracker')[modelName].document[id].relationship[field];
         }
 
@@ -201,7 +200,7 @@ function reopenStore(appInstance) {
           });
         });
 
-        hasManyTracker.unsubscribe = unsubscribe;
+        if (hasManyTracker) hasManyTracker.unsubscribe = unsubscribe;
       }
     },
 
@@ -408,7 +407,9 @@ function reopenStore(appInstance) {
      * @private
      */
     trackHasManyListener(modelName, id, field) {
+      if (!this.get('tracker')[modelName].document[id]) return;
       this.get('tracker')[modelName].document[id].relationship[field] = {};
+      return true;
     },
 
     /**
