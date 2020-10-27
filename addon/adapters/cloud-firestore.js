@@ -2,7 +2,7 @@ import { assign } from '@ember/polyfills';
 import { computed } from '@ember/object';
 import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
-import Adapter from 'ember-data/adapter';
+import Adapter from '@ember-data/adapter';
 
 import firebase from 'firebase';
 

@@ -1,22 +1,23 @@
-/* eslint global-require: off */
+/* eslint-disable */
 
 'use strict';
 
 module.exports = {
   root: true,
+  parser: 'babel-eslint',
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: 'module',
+    ecmaFeatures: {
+      legacyDecorators: true
+    }
   },
   plugins: [
     'ember',
   ],
   extends: [
-    'eslint:recommended',
-    'plugin:ember/recommended',
     'airbnb-base',
-    'rmmmp/base',
-    'rmmmp/ember',
+    'plugin:ember/recommended',
   ],
   env: {
     browser: true,
@@ -25,7 +26,16 @@ module.exports = {
     FastBoot: 'readonly',
   },
   rules: {
-    'no-param-reassign': ['error', { props: false }],
+    'import/no-unresolved': 'off',
+    'import/no-extraneous-dependencies': 'off',
+    'import/extensions': ['error', 'ignorePackages', {
+      js: 'never',
+      mjs: 'never',
+      jsx: 'never',
+    }],
+    'no-underscore-dangle': 'off',
+    'no-param-reassign': 'off',
+    'ember/avoid-leaking-state-in-ember-objects': 'off',
   },
   overrides: [
     // node files
@@ -54,9 +64,15 @@ module.exports = {
         node: true,
       },
       plugins: ['node'],
-      rules: Object.assign({}, require('eslint-plugin-node').configs.recommended.rules, {
-        // add your custom rules and overrides for node files here
-      }),
+      extends: ['plugin:node/recommended']
     },
-  ],
+    // test files
+    {
+      files: ['**/*-test.js'],
+      rules: {
+        'prefer-arrow-callback': 'off',
+        'func-names': 'off'
+      }
+    }
+  ]
 };

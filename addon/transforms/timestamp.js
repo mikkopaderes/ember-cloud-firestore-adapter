@@ -1,5 +1,5 @@
 import { typeOf } from '@ember/utils';
-import Transform from 'ember-data/transform';
+import Transform from '@ember-data/serializer/transform';
 
 import firebase from 'firebase';
 
