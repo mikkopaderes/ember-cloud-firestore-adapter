@@ -5,7 +5,7 @@ export default Route.extend({
   session: service('session'),
 
   beforeModel() {
-    return this.session.authenticate('authenticator:firebase', auth => (
+    return this.session.authenticate('authenticator:firebase', (auth) => (
       auth.signInWithEmailAndPassword('foo@gmail.com', 'foobar')
     ));
   },

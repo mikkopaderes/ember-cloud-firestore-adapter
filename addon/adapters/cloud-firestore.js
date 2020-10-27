@@ -35,11 +35,6 @@ export default Adapter.extend({
   referenceKeyName: 'referenceTo',
 
   /**
-   * @override
-   */
-  defaultSerializer: 'cloud-firestore',
-
-  /**
    * @type {Ember.Service}
    */
   isFastBoot: computed({
@@ -97,12 +92,6 @@ export default Adapter.extend({
 
     const data = this.serialize(snapshot, { includeId: true });
 
-    Object.keys(data).forEach((key) => {
-      if (data[key] === firebase.firestore.FieldValue.serverTimestamp()) {
-        data[key] = new Date();
-      }
-    });
-
     return data;
   },
 
@@ -138,7 +127,7 @@ export default Adapter.extend({
         }
 
         unsubscribe();
-      }, error => reject(new Error(error.message)));
+      }, (error) => reject(new Error(error.message)));
     });
   },
 
@@ -154,16 +143,16 @@ export default Adapter.extend({
           this.realtimeTracker.trackFindAllChanges(type.modelName, collectionRef, store);
         }
 
-        const requests = querySnapshot.docs.map(docSnapshot => (
+        const requests = querySnapshot.docs.map((docSnapshot) => (
           this.findRecord(store, type, docSnapshot.id, snapshotRecordArray)
         ));
 
-        Promise.all(requests).then(records => resolve(records)).catch(error => (
+        Promise.all(requests).then((records) => resolve(records)).catch((error) => (
           reject(new Error(error.message))
         ));
 
         unsubscribe();
-      }, error => reject(new Error(error.message)));
+      }, (error) => reject(new Error(error.message)));
     });
   },
 
@@ -205,12 +194,12 @@ export default Adapter.extend({
 
         const requests = this.findHasManyRecords(store, relationship, querySnapshot);
 
-        Promise.all(requests).then(records => resolve(records)).catch(error => (
+        Promise.all(requests).then((records) => resolve(records)).catch((error) => (
           reject(new Error(error.message))
         ));
 
         unsubscribe();
-      }, error => reject(new Error(error.message)));
+      }, (error) => reject(new Error(error.message)));
     });
   },
 
@@ -231,12 +220,12 @@ export default Adapter.extend({
 
         const requests = this.findQueryRecords(store, type, query, querySnapshot);
 
-        Promise.all(requests).then(records => resolve(records)).catch(error => (
+        Promise.all(requests).then((records) => resolve(records)).catch((error) => (
           reject(new Error(error.message))
         ));
 
         unsubscribe();
-      }, error => reject(new Error(error.message)));
+      }, (error) => reject(new Error(error.message)));
     });
   },
 

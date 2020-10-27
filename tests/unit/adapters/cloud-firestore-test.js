@@ -55,7 +55,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
   module('function: updateRecord', function () {
     test('should update record and resolve with the updated doc', async function (assert) {
-      assert.expect(4);
+      assert.expect(3);
 
       // Arrange
       const store = {};
@@ -63,13 +63,11 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const snapshot = {
         id: 'user_a',
         age: 50,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       adapter.serialize = sinon.stub().returns({
         age: 50,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         username: 'user_a',
       });
 
@@ -77,12 +75,11 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const result = await adapter.updateRecord(store, modelClass, snapshot);
 
       // Assert
-      assert.deepEqual(result, { age: 50, timestamp: new Date(), username: 'user_a' });
+      assert.deepEqual(result, { age: 50, username: 'user_a' });
 
       const userA = await db.collection('users').doc('user_a').get();
 
       assert.equal(userA.get('age'), 50);
-      assert.ok(userA.get('timestamp').toDate() instanceof Date);
       assert.equal(userA.get('username'), 'user_a');
     });
 
