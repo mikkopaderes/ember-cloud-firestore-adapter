@@ -38,7 +38,7 @@ export default Base.extend({
   authenticate(callback) {
     const auth = this.firebase.auth();
 
-    return callback(auth).then(result => ({ user: result.user }));
+    return callback(auth).then((result) => ({ user: result.user }));
   },
 
   /**
@@ -66,7 +66,7 @@ export default Base.extend({
         const token = this.fastboot.request.headers.get('Authorization').split('Bearer ')[1];
 
         auth.signInWithCustomToken(token)
-          .then(result => resolve({ user: result.user }))
+          .then((result) => resolve({ user: result.user }))
           .catch(() => reject());
       } else {
         const unsubscribe = auth.onAuthStateChanged((user) => {

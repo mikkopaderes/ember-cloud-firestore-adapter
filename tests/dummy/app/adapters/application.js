@@ -1,3 +1,1 @@
-import CloudFirestoreAdapter from 'ember-cloud-firestore-adapter/adapters/cloud-firestore';
-
-export default CloudFirestoreAdapter.extend();
+export { default } from 'ember-cloud-firestore-adapter/adapters/cloud-firestore';
