@@ -1,6 +1,6 @@
 import { inject } from '@ember/service';
 import { typeOf } from '@ember/utils';
-import JSONSerializer from 'ember-data/serializers/json';
+import JSONSerializer from '@ember-data/serializer/json';
 
 import {
   buildCollectionName,
