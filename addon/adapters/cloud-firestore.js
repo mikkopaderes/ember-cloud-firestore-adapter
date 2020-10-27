@@ -1,10 +1,7 @@
 import { assign } from '@ember/polyfills';
-import { computed } from '@ember/object';
 import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
 import Adapter from '@ember-data/adapter';
-
-import firebase from 'firebase';
 
 import {
   buildCollectionName,
@@ -13,43 +10,21 @@ import {
 } from 'ember-cloud-firestore-adapter/utils/parser';
 import RealtimeTracker from 'ember-cloud-firestore-adapter/utils/realtime-tracker';
 
-/**
- * @class CloudFirestore
- * @namespace Adapter
- * @extends DS.Adapter
- */
-export default Adapter.extend({
-  /**
-   * @type {Ember.Service}
-   */
-  firebase: service(),
+export default class CloudFirestoreAdapter extends Adapter {
+  @service firebase;
 
-  /**
-   * @type {Object}
-   */
-  firestoreSettings: null,
+  firestoreSettings = null;
 
-  /**
-   * @type {string}
-   */
-  referenceKeyName: 'referenceTo',
+  referenceKeyName = 'referenceTo';
 
-  /**
-   * @type {Ember.Service}
-   */
-  isFastBoot: computed({
-    get() {
-      const fastboot = getOwner(this).lookup('service:fastboot');
+  get isFasboot() {
+    const fastboot = getOwner(this).lookup('service:fastboot');
 
-      return fastboot && fastboot.isFastBoot;
-    },
-  }),
+    return fastboot && fastboot.isFastBoot;
+  }
 
-  /**
-   * @override
-   */
-  init(...args) {
-    this._super(...args);
+  constructor(...args) {
+    super(...args);
 
     if (this.firestoreSettings) {
       const db = this.firebase.firestore();
@@ -57,29 +32,20 @@ export default Adapter.extend({
       db.settings(this.firestoreSettings);
     }
 
-    this.set('realtimeTracker', new RealtimeTracker());
-  },
+    this.realtimeTracker = new RealtimeTracker();
+  }
 
-  /**
-   * @override
-   */
   generateIdForRecord(store, type) {
     const db = this.firebase.firestore();
     const collectionName = buildCollectionName(type);
 
     return db.collection(collectionName).doc().id;
-  },
+  }
 
-  /**
-   * @override
-   */
   async createRecord(...args) {
     return this.updateRecord(...args);
-  },
+  }
 
-  /**
-   * @override
-   */
   async updateRecord(store, type, snapshot) {
     const docRef = this.buildCollectionRef(type, snapshot.adapterOptions).doc(snapshot.id);
     const batch = this.buildWriteBatch(docRef, snapshot);
@@ -93,11 +59,8 @@ export default Adapter.extend({
     const data = this.serialize(snapshot, { includeId: true });
 
     return data;
-  },
+  }
 
-  /**
-   * @override
-   */
   async deleteRecord(store, type, snapshot) {
     const db = this.firebase.firestore();
     const docRef = this.buildCollectionRef(type, snapshot.adapterOptions).doc(snapshot.id);
@@ -107,11 +70,8 @@ export default Adapter.extend({
     this.addIncludeToWriteBatch(batch, snapshot.adapterOptions);
 
     return batch.commit();
-  },
+  }
 
-  /**
-   * @override
-   */
   async findRecord(store, type, id, snapshot = {}) {
     return new Promise((resolve, reject) => {
       const docRef = this.buildCollectionRef(type, snapshot.adapterOptions).doc(id);
@@ -129,11 +89,8 @@ export default Adapter.extend({
         unsubscribe();
       }, (error) => reject(new Error(error.message)));
     });
-  },
+  }
 
-  /**
-   * @override
-   */
   async findAll(store, type, sinceToken, snapshotRecordArray) {
     return new Promise((resolve, reject) => {
       const db = this.firebase.firestore();
@@ -154,11 +111,8 @@ export default Adapter.extend({
         unsubscribe();
       }, (error) => reject(new Error(error.message)));
     });
-  },
+  }
 
-  /**
-   * @override
-   */
   async findBelongsTo(store, snapshot, url, relationship) {
     const type = { modelName: relationship.type };
     const urlNodes = url.split('/');
@@ -173,11 +127,8 @@ export default Adapter.extend({
         },
       },
     });
-  },
+  }
 
-  /**
-   * @override
-   */
   async findHasMany(store, snapshot, url, relationship) {
     return new Promise((resolve, reject) => {
       const collectionRef = this.buildHasManyCollectionRef(store, snapshot, url, relationship);
@@ -201,11 +152,8 @@ export default Adapter.extend({
         unsubscribe();
       }, (error) => reject(new Error(error.message)));
     });
-  },
+  }
 
-  /**
-   * @override
-   */
   async query(store, type, query, recordArray) {
     return new Promise((resolve, reject) => {
       const collectionRef = this.buildCollectionRef(type, query);
@@ -227,15 +175,8 @@ export default Adapter.extend({
         unsubscribe();
       }, (error) => reject(new Error(error.message)));
     });
-  },
+  }
 
-  /**
-   * @param {DS.Model} type
-   * @param {Object} [adapterOptions={}]
-   * @return {firebase.firestore.CollectionReference} Collection reference
-   * @function
-   * @private
-   */
   buildCollectionRef(type, adapterOptions = {}) {
     const db = this.firebase.firestore();
 
@@ -244,42 +185,22 @@ export default Adapter.extend({
     }
 
     return db.collection(buildCollectionName(type.modelName));
-  },
+  }
 
-  /**
-   * @param {firebase.firestore.WriteBatch} batch
-   * @param {firebase.firestore.DocumentReference} docRef
-   * @param {DS.Snapshot} snapshot
-   * @function
-   * @private
-   */
   addDocRefToWriteBatch(batch, docRef, snapshot) {
     const data = this.serialize(snapshot);
 
     batch.set(docRef, data, { merge: true });
-  },
+  }
 
-  /**
-   * @param {firebase.firestore.WriteBatch} batch
-   * @param {Object} [adapterOptions={}]
-   * @function
-   * @private
-   */
   addIncludeToWriteBatch(batch, adapterOptions = {}) {
     const db = this.firebase.firestore();
 
     if (Object.prototype.hasOwnProperty.call(adapterOptions, 'include')) {
       adapterOptions.include(batch, db);
     }
-  },
+  }
 
-  /**
-   * @param {firebase.firestore.DocumentReference} docRef
-   * @param {DS.Snapshot} snapshot
-   * @return {firebase.firestore.WriteBatch} Batch instance
-   * @function
-   * @private
-   */
   buildWriteBatch(docRef, snapshot) {
     const db = this.firebase.firestore();
     const batch = db.batch();
@@ -288,33 +209,16 @@ export default Adapter.extend({
     this.addIncludeToWriteBatch(batch, snapshot.adapterOptions);
 
     return batch;
-  },
+  }
 
-  /**
-   * @param {firebase.firestore.CollectionReference} collectionRef
-   * @param {Object} [option={}]
-   * @param {Model.<*>} [record]
-   * @return {firebase.firestore.Query} Query
-   * @function
-   * @private
-   */
   buildQuery(collectionRef, option = {}, record) {
     if (Object.prototype.hasOwnProperty.call(option, 'filter')) {
       return option.filter(collectionRef, record);
     }
 
     return collectionRef;
-  },
+  }
 
-  /**
-   * @param {DS.Store} store
-   * @param {DS.Snapshot} snapshot
-   * @param {string} url
-   * @param {Object} relationship
-   * @return {firebase.firestore.CollectionReference|firebase.firestore.Query} Reference
-   * @function
-   * @private
-   */
   buildHasManyCollectionRef(store, snapshot, url, relationship) {
     const db = this.firebase.firestore();
     const cardinality = snapshot.type.determineRelationshipType(relationship, store);
@@ -333,16 +237,8 @@ export default Adapter.extend({
     }
 
     return this.buildQuery(collectionRef, relationship.options, snapshot.record);
-  },
+  }
 
-  /**
-   * @param {DS.Store} store
-   * @param {Object} relationship
-   * @param {firebase.firestore.QuerySnapshot} querySnapshot
-   * @return {Array} Has many record requests
-   * @function
-   * @private
-   */
   findHasManyRecords(store, relationship, querySnapshot) {
     return querySnapshot.docs.map((docSnapshot) => {
       const type = { modelName: relationship.type };
@@ -368,17 +264,8 @@ export default Adapter.extend({
 
       return this.findRecord(store, type, docSnapshot.id, { adapterOptions });
     });
-  },
+  }
 
-  /**
-   * @param {DS.Store} store
-   * @param {DS.Model} type
-   * @param {Object} option
-   * @param {firebase.firestore.QuerySnapshot} querySnapshot
-   * @return {Array.<Promise>} Find record promises
-   * @function
-   * @private
-   */
   findQueryRecords(store, type, option, querySnapshot) {
     return querySnapshot.docs.map((docSnapshot) => {
       const referenceTo = docSnapshot.get(this.referenceKeyName);
@@ -405,20 +292,13 @@ export default Adapter.extend({
 
       return this.findRecord(store, type, docSnapshot.id, { adapterOptions });
     });
-  },
+  }
 
-  /**
-   * @param {DS.Snapshot} snapshot
-   * @param {string} prop
-   * @return {*} Value of adapter option config
-   * @function
-   * @private
-   */
   getAdapterOptionConfig(snapshot, prop) {
     try {
       return snapshot.adapterOptions[prop];
     } catch (error) {
       return null;
     }
-  },
-});
+  }
+}

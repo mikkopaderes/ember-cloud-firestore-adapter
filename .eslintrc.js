@@ -36,6 +36,7 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'no-param-reassign': 'off',
     'ember/avoid-leaking-state-in-ember-objects': 'off',
+    'class-methods-use-this': 'off',
   },
   overrides: [
     // node files
