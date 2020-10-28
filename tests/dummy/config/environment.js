@@ -22,6 +22,10 @@ module.exports = function(environment) {
       // when it is created
     },
 
+    fastboot: {
+      hostWhitelist: [/^localhost:\d+$/],
+    },
+
     firebase: {
       apiKey: 'AIzaSyCmI9nP62JwpZbgGYbnJtLu7gyJDXdZkk8',
       authDomain: 'rmmmp-playground.firebaseapp.com',
