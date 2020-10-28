@@ -1,4 +1,4 @@
-import { inject } from '@ember/service';
+import { inject as service } from '@ember/service';
 import { typeOf } from '@ember/utils';
 import JSONSerializer from '@ember-data/serializer/json';
 
@@ -8,30 +8,13 @@ import {
   buildRefFromPath,
 } from 'ember-cloud-firestore-adapter/utils/parser';
 
-/**
- * @param {*} value
- * @return {boolean} True if is a document reference. Otherwise, false.
- */
 function isDocumentReference(value) {
   return typeOf(value) === 'object' && value.firestore;
 }
 
-/**
- * @class CloudFirestore
- * @namespace Serializer
- * @extends DS.JSONSerializer
- */
-export default JSONSerializer.extend({
-  /**
-   * @type {Ember.Service}
-   */
-  firebase: inject(),
+export default class CloudFirestoreSerializer extends JSONSerializer {
+  @service firebase;
 
-  /**
-   * Overriden to convert a DocumentReference into an JSON API relationship object
-   *
-   * @override
-   */
   extractRelationship(relationshipModelName, relationshipHash) {
     if (isDocumentReference(relationshipHash)) {
       const path = buildPathFromRef(relationshipHash);
@@ -42,13 +25,8 @@ export default JSONSerializer.extend({
     }
 
     return null;
-  },
+  }
 
-  /**
-   * Extended to add links for all relationship
-   *
-   * @override
-   */
   extractRelationships(modelClass, resourceHash) {
     const links = {};
 
@@ -81,16 +59,11 @@ export default JSONSerializer.extend({
 
     resourceHash.links = links;
 
-    return this._super(modelClass, resourceHash);
-  },
+    return super.extractRelationships(modelClass, resourceHash);
+  }
 
-  /**
-   * Overriden to convert a belongs-to relationship to a DocumentReference
-   *
-   * @override
-   */
   serializeBelongsTo(snapshot, json, relationship) {
-    this._super(snapshot, json, relationship);
+    super.serializeBelongsTo(snapshot, json, relationship);
 
     if (json[relationship.key]) {
       const collectionName = buildCollectionName(relationship.type);
@@ -99,13 +72,10 @@ export default JSONSerializer.extend({
 
       json[relationship.key] = buildRefFromPath(this.firebase.firestore(), path);
     }
-  },
+  }
 
-  /**
-   * @override
-   */
   serialize(snapshot, ...args) {
-    const json = this._super(snapshot, ...args);
+    const json = super.serialize(snapshot, ...args);
 
     snapshot.eachRelationship((name, relationship) => {
       if (relationship.kind === 'hasMany') {
@@ -114,5 +84,5 @@ export default JSONSerializer.extend({
     });
 
     return json;
-  },
-});
+  }
+}

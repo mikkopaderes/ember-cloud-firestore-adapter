@@ -2,7 +2,6 @@ import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import EmberObject from '@ember/object';
 
-import firebase from 'firebase';
 import sinon from 'sinon';
 
 import { mockFirebase } from 'ember-cloud-firestore-adapter/test-support';
