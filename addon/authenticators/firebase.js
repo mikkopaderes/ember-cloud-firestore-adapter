@@ -25,10 +25,8 @@ export default class FirebaseAuthenticator extends Base {
       const auth = this.firebase.auth();
 
       if (
-        this.fastboot
-        && this.fastboot.isFastBoot
-        && this.fastboot.request.headers.get('Authorization')
-        && this.fastboot.request.headers.get('Authorization').startsWith('Bearer ')
+        this.fastboot?.isFastBoot
+        && this.fastboot.request.headers.get('Authorization')?.startsWith('Bearer ')
       ) {
         const token = this.fastboot.request.headers.get('Authorization').split('Bearer ')[1];
 
