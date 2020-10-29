@@ -1,7 +1,7 @@
 import { Promise, all } from 'rsvp';
+import { run } from '@ember/runloop';
 import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
-import { run } from '@ember/runloop';
 import RESTAdapter from 'ember-data/adapters/rest';
 import { updatePaginationMeta, paginateQuery, addPaginatedPayload } from 'ember-cloud-firestore-adapter/utils/pagination';
 import { buildCollectionName, buildRefFromPath, parseDocSnapshot } from 'ember-cloud-firestore-adapter/utils/parser';
@@ -246,7 +246,10 @@ export default RESTAdapter.extend({
           run(null, resolve, parseDocSnapshot(type, docSnapshot));
         } else if (docSnapshot.metadata && docSnapshot.metadata.fromCache) {
           run(null, reject, new Error('Connection to Firestore unavailable'));
-        } else {
+        } else if (snapshot.fallbackRecord) {
+          const fallbackRecord = snapshot.fallbackRecord(this.store);
+          run(null, resolve, fallbackRecord.serialize({ includeId: true }));
+        } else if (!snapshot.failSilently) {
           run(null, reject, new Error('Document doesn\'t exist'));
         }
 
@@ -262,14 +265,15 @@ export default RESTAdapter.extend({
     const type = { modelName: relationship.type };
     const urlNodes = url.split('/');
     const id = urlNodes.pop();
+    const options = (relationship && relationship.meta && relationship.meta.options) || {};
 
-    return this.findRecord(store, type, id, {
+    return this.findRecord(store, type, id, Object.assign({
       adapterOptions: {
         buildReference(db) {
           return buildRefFromPath(db, urlNodes.join('/'));
         },
       },
-    });
+    }, options));
   },
 
   /**
@@ -498,13 +502,15 @@ export default RESTAdapter.extend({
       const referenceTo = docSnapshot.get(this.get('referenceKeyName')) || docSnapshot.ref;
 
       if (referenceTo && referenceTo.firestore) {
-        const request = this.findRecord(store, type, referenceTo.id, {
+        const options = (relationship && relationship.meta && relationship.meta.options) || {};
+
+        const request = this.findRecord(store, type, referenceTo.id, Object.assign({
           adapterOptions: {
             buildReference() {
               return referenceTo.parent;
             },
           },
-        });
+        }, options));
 
         return request;
       }
