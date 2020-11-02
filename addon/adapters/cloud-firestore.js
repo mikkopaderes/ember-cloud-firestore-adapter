@@ -15,6 +15,10 @@ export default class CloudFirestoreAdapter extends Adapter {
 
   firestoreSettings = null;
 
+  useEmulator = false;
+
+  emulatorSettings = {};
+
   referenceKeyName = 'referenceTo';
 
   get isFasboot() {
@@ -30,6 +34,13 @@ export default class CloudFirestoreAdapter extends Adapter {
       const db = this.firebase.firestore();
 
       db.settings(this.firestoreSettings);
+    }
+
+    if (this.useEmulator) {
+      const db = this.firebase.firestore();
+      const {host, port} = emulatorSettings;
+
+      db.useEmulator && db.useEmulator(host || 'localhost', Number(port) || 8080);
     }
 
     this.realtimeTracker = new RealtimeTracker();
