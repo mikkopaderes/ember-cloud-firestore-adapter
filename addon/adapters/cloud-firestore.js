@@ -13,14 +13,6 @@ import RealtimeTracker from 'ember-cloud-firestore-adapter/utils/realtime-tracke
 export default class CloudFirestoreAdapter extends Adapter {
   @service firebase;
 
-  firestoreSettings = null;
-
-  useEmulator = false;
-
-  emulatorSettings = {};
-
-  referenceKeyName = 'referenceTo';
-
   get isFasboot() {
     const fastboot = getOwner(this).lookup('service:fastboot');
 
@@ -38,9 +30,15 @@ export default class CloudFirestoreAdapter extends Adapter {
 
     if (this.useEmulator) {
       const db = this.firebase.firestore();
-      const {host, port} = emulatorSettings;
+      const { host, port } = this.emulatorSettings || { host: 'localhost', port: 8080 };
 
-      db.useEmulator && db.useEmulator(host || 'localhost', Number(port) || 8080);
+      if (db.useEmulator) {
+        db.useEmulator(host, Number(port));
+      }
+    }
+
+    if (!this.referenceKeyName) {
+      this.referenceKeyName = 'referenceTo';
     }
 
     this.realtimeTracker = new RealtimeTracker();
