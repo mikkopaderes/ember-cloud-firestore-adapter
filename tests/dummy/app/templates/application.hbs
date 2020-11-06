@@ -1,13 +1,13 @@
 <h2 id="title">Ember Cloud Firestore Dummy App</h2>
 
-{{#link-to "create-record"}}Create Record{{/link-to}}
-{{#link-to "update-record" updateRecordParam}}Update Record{{/link-to}}
-{{#link-to "delete-record"}}Delete Record{{/link-to}}
-{{#link-to "find-all"}}Find All{{/link-to}}
-{{#link-to "find-record"}}Find Record{{/link-to}}
-{{#link-to "query"}}Query{{/link-to}}
-{{#link-to "login"}}Login{{/link-to}}
-{{#link-to "logout"}}Logout{{/link-to}}
-{{#link-to "reset-data"}}Reset data{{/link-to}}
+<LinkTo @route="create-record">Create Record</LinkTo>
+<LinkTo @route="update-record" @model={{this.updateRecordParam}}>Update Record</LinkTo>
+<LinkTo @route="delete-record">Delete Record</LinkTo>
+<LinkTo @route="find-all">Find All</LinkTo>
+<LinkTo @route="find-record">Find Record</LinkTo>
+<LinkTo @route="query">Query</LinkTo>
+<LinkTo @route="login">Login</LinkTo>
+<LinkTo @route="logout">Logout</LinkTo>
+<LinkTo @route="reset-data">Reset data</LinkTo>
 
 {{outlet}}

@@ -2,10 +2,9 @@
   <h1>Groups</h1>
 
   <article>
-    <h2>{{model.name}}</h2>
-
-    {{group-posts group=model}}
-    {{group-members group=model}}
+    <h2>{{this.model.name}}</h2>
+    <GroupPosts @group={{this.model}} />
+    <GroupMembers @group={{this.model}} />
   </article>
 </section>
 

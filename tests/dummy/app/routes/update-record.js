@@ -1,6 +1,6 @@
 import Route from '@ember/routing/route';
 
-export default Route.extend({
+export default class UpdateRecordRoute extends Route {
   async model(params) {
     const post = await this.store.findRecord('post', 'post_a');
 
@@ -8,5 +8,5 @@ export default Route.extend({
     await post.save();
 
     return post;
-  },
-});
+  }
+}

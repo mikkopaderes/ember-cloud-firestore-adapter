@@ -1,6 +1,6 @@
 import Route from '@ember/routing/route';
 
-export default Route.extend({
+export default class CreateRecordRoute extends Route {
   async model() {
     const group = await this.store.findRecord('group', 'group_a');
     const author = await this.store.findRecord('user', 'user_a');
@@ -10,5 +10,5 @@ export default Route.extend({
       group,
       title: 'What does having it all mean to you? (By: Gabe Lewis)',
     }).save();
-  },
-});
+  }
+}

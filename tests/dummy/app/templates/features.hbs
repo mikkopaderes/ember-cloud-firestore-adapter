@@ -16,52 +16,31 @@
   </tbody>
 </table>
 
-<button
-  data-test-button="create-record"
-  onclick={{action this.handleCreateRecordClick}}
->
+<button type="button" data-test-button="create-record" {{on 'click' this.handleCreateRecordClick}}>
   Create record
 </button>
 
-<button
-  data-test-button="update-record"
-  onclick={{action this.handleUpdateRecordClick}}
->
+<button type="button" data-test-button="update-record" {{on 'click' this.handleUpdateRecordClick}}>
   Update record
 </button>
 
-<button
-  data-test-button="delete-record"
-  onclick={{action this.handleDeleteRecordClick}}
->
+<button type="button" data-test-button="delete-record" {{on 'click' this.handleDeleteRecordClick}}>
   Delete record
 </button>
 
-<button
-  data-test-button="find-all"
-  onclick={{action this.handleFindAllClick}}
->
+<button type="button" data-test-button="find-all" {{on 'click' this.handleFindAllClick}}>
   Find All
 </button>
 
-<button
-  data-test-button="find-record"
-  onclick={{action this.handleFindRecordClick}}
->
+<button type="button" data-test-button="find-record" {{on 'click' this.handleFindRecordClick}}>
   Find record
 </button>
 
-<button
-  data-test-button="query-1"
-  onclick={{action this.handleQuery1Click}}
->
+<button type="button" data-test-button="query-1" {{on 'click' this.handleQuery1Click}}>
   Query 1
 </button>
 
-<button
-  data-test-button="query-2"
-  onclick={{action this.handleQuery2Click}}
->
+<button type="button" data-test-button="query-2" {{on 'click' this.handleQuery2Click}}>
   Query 2
 </button>
 
