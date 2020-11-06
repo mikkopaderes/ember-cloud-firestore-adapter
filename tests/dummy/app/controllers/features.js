@@ -1,8 +1,12 @@
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 import Controller from '@ember/controller';
 
-export default Controller.extend({
-  users: [],
+export default class FeaturesController extends Controller {
+  @tracked
+  users = [];
 
+  @action
   async handleCreateRecordClick() {
     const user = await this.store.createRecord('user', {
       id: 'new',
@@ -12,20 +16,23 @@ export default Controller.extend({
       adapterOptions: { onServer: true },
     });
 
-    this.set('users', [user]);
-  },
+    this.users = [user];
+  }
 
+  @action
   async handleUpdateRecordClick() {
     const user = await this.store.findRecord('user', 'user_a');
 
-    user.set('username', 'updated_user');
+    user.username = 'updated_user';
 
     await user.save({
       adapterOptions: { onServer: true },
     });
-    this.set('users', [user]);
-  },
 
+    this.users = [user];
+  }
+
+  @action
   async handleDeleteRecordClick() {
     const users = await this.store.findAll('user');
     const user = users.get('firstObject');
@@ -34,21 +41,24 @@ export default Controller.extend({
       adapterOptions: { onServer: true },
     });
 
-    this.set('users', users);
-  },
+    this.users = users;
+  }
 
+  @action
   async handleFindAllClick() {
     const users = await this.store.findAll('user');
 
-    this.set('users', users);
-  },
+    this.users = users;
+  }
 
+  @action
   async handleFindRecordClick() {
     const user = await this.store.findRecord('user', 'user_a');
 
-    this.set('users', [user]);
-  },
+    this.users = [user];
+  }
 
+  @action
   async handleQuery1Click() {
     const users = await this.store.query('user', {
       filter(reference) {
@@ -56,9 +66,10 @@ export default Controller.extend({
       },
     });
 
-    this.set('users', users);
-  },
+    this.users = users;
+  }
 
+  @action
   async handleQuery2Click() {
     const users = await this.store.query('user', {
       buildReference(db) {
@@ -66,6 +77,6 @@ export default Controller.extend({
       },
     });
 
-    this.set('users', users);
-  },
-});
+    this.users = users;
+  }
+}

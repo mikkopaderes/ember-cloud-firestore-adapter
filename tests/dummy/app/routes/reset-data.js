@@ -1,10 +1,9 @@
 import { Promise } from 'rsvp';
 import Route from '@ember/routing/route';
 
-export default Route.extend({
+export default class ResetDataRoute extends Route {
   async model() {
     const users = await this.store.findAll('user');
-
     const requests = [];
 
     users.forEach((user) => {
@@ -16,5 +15,5 @@ export default Route.extend({
     });
 
     await Promise.all(requests);
-  },
-});
+  }
+}

@@ -1,3 +1,5 @@
+/* eslint ember/no-ember-super-in-es-classes: off */
+
 import { assign } from '@ember/polyfills';
 import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
@@ -23,8 +25,8 @@ export default class CloudFirestoreAdapter extends Adapter {
     return fastboot && fastboot.isFastBoot;
   }
 
-  constructor(...args) {
-    super(...args);
+  init(...args) {
+    this._super(...args);
 
     if (this.firestoreSettings) {
       const db = this.firebase.firestore();
