@@ -40,7 +40,7 @@ export default class CloudFirestoreAdapter extends Adapter {
   }
 
   setupConfigurations() {
-    const config = getOwner(this).resolveRegistration('config:environment')
+    const config = getOwner(this).resolveRegistration('config:environment');
 
     if (
       Object.prototype.hasOwnProperty.call(config, 'ember-cloud-firestore-adapter')
