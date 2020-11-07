@@ -44,10 +44,10 @@ export default class CloudFirestoreAdapter extends Adapter {
 
     if (
       Object.prototype.hasOwnProperty.call(config, 'ember-cloud-firestore-adapter')
-      && Object.prototype.hasOwnProperty.call(config['ember-cloud-firestore-adapter'], 'useEmulator')
+      && Object.prototype.hasOwnProperty.call(config['ember-cloud-firestore-adapter'], 'emulator')
     ) {
       const db = this.firebase.firestore();
-      const { hostname, port } = config['ember-cloud-firestore-adapter'].useEmulator;
+      const { hostname, port } = config['ember-cloud-firestore-adapter'].emulator;
 
       db.useEmulator(hostname, port);
     }

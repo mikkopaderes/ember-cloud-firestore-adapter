@@ -36,7 +36,7 @@ module.exports = function(environment) {
     },
 
     'ember-cloud-firestore-adapter': {
-      useEmulator: {
+      emulator: {
         hostname: 'localhost',
         port: 8080,
       },
