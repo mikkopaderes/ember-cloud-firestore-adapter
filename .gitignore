@@ -19,6 +19,8 @@
 /testem.log
 /yarn-error.log
 vim.exe.stackdump
+/firestore-debug.log
+/ui-debug.log
 
 # ember-try
 /.node_modules.ember-try/

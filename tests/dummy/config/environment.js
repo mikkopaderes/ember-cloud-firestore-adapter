@@ -27,12 +27,19 @@ module.exports = function(environment) {
     },
 
     firebase: {
-      apiKey: 'AIzaSyCmI9nP62JwpZbgGYbnJtLu7gyJDXdZkk8',
-      authDomain: 'rmmmp-playground.firebaseapp.com',
-      databaseURL: 'https://rmmmp-playground.firebaseio.com',
-      projectId: 'rmmmp-playground',
-      storageBucket: 'rmmmp-playground.appspot.com',
-      messagingSenderId: '183868689812',
+      apiKey: '123qweasd',
+      authDomain: 'ember-cloud-firestore-adapter-test-project.firebaseapp.com',
+      databaseURL: 'https://ember-cloud-firestore-adapter-test-project.firebaseio.com',
+      projectId: 'ember-cloud-firestore-adapter-test-project',
+      storageBucket: 'ember-cloud-firestore-adapter-test-project.appspot.com',
+      messagingSenderId: '123qweasd',
+    },
+
+    'ember-cloud-firestore-adapter': {
+      useEmulator: {
+        hostname: 'localhost',
+        port: 8080,
+      },
     },
   };
 

@@ -2,14 +2,15 @@ import { click, visit, waitFor } from '@ember/test-helpers';
 import { module, test } from 'qunit';
 import { setupApplicationTest } from 'ember-qunit';
 
-import { mockFirebase } from 'ember-cloud-firestore-adapter/test-support';
-import getFixtureData from '../helpers/fixture-data';
+import resetFixtureData from '../helpers/reset-fixture-data';
 
 module('Acceptance | features', function (hooks) {
   setupApplicationTest(hooks);
 
-  hooks.beforeEach(function () {
-    mockFirebase(this.owner, getFixtureData());
+  hooks.afterEach(async function () {
+    const db = this.owner.lookup('service:firebase').firestore();
+
+    await resetFixtureData(db);
   });
 
   test('should create record', async function (assert) {

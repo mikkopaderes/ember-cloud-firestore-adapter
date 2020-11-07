@@ -62,7 +62,7 @@ export default class FeaturesController extends Controller {
   async handleQuery1Click() {
     const users = await this.store.query('user', {
       filter(reference) {
-        return reference.where('age', '>=', '15');
+        return reference.where('age', '>=', 15);
       },
     });
 

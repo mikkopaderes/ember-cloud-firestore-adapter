@@ -28,13 +28,29 @@ export default class CloudFirestoreAdapter extends Adapter {
   init(...args) {
     this._super(...args);
 
-    if (this.firestoreSettings) {
-      const db = this.firebase.firestore();
+    const db = this.firebase.firestore();
 
+    if (this.firestoreSettings) {
       db.settings(this.firestoreSettings);
     }
 
+    this.setupConfigurations();
+
     this.realtimeTracker = new RealtimeTracker();
+  }
+
+  setupConfigurations() {
+    const config = getOwner(this).resolveRegistration('config:environment')
+
+    if (
+      Object.prototype.hasOwnProperty.call(config, 'ember-cloud-firestore-adapter')
+      && Object.prototype.hasOwnProperty.call(config['ember-cloud-firestore-adapter'], 'useEmulator')
+    ) {
+      const db = this.firebase.firestore();
+      const { hostname, port } = config['ember-cloud-firestore-adapter'].useEmulator;
+
+      db.useEmulator(hostname, port);
+    }
   }
 
   generateIdForRecord(store, type) {
