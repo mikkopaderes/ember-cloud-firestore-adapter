@@ -28,9 +28,9 @@ export default class CloudFirestoreAdapter extends Adapter {
   init(...args) {
     this._super(...args);
 
-    const db = this.firebase.firestore();
-
     if (this.firestoreSettings) {
+      const db = this.firebase.firestore();
+
       db.settings(this.firestoreSettings);
     }
 
