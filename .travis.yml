@@ -13,6 +13,7 @@ addons:
 cache:
   directories:
     - $HOME/.npm
+    - $HOME/.cache/firebase/emulators
 
 env:
   global:
