@@ -1,11 +1,9 @@
 ---
-language: java
-jdk:
-  - oraclejdk11
+language: node_js
 node_js:
   # we recommend testing addons with the same minimum supported node version as Ember CLI
   # so that your addon works for all apps
-  - "14"
+  - "10"
 
 dist: xenial
 
@@ -21,14 +19,12 @@ env:
   global:
     # See https://git.io/vdao3 for details.
     - JOBS=1
-    - NODE_VERSION=14
 
 branches:
   only:
     - master
     # npm version tags
     - /^v\d+\.\d+\.\d+/
-
 
 jobs:
   fast_finish: true
@@ -39,21 +35,15 @@ jobs:
     # runs linting and tests with current locked deps
     - stage: "Tests"
       name: "Tests"
-      install:
-        - nvm install $NODE_VERSION
-        - npm install
       script:
-        - nvm use $NODE_VERSION
         - npm run lint
         - npm run test:ember
 
     - stage: "Additional Tests"
       name: "Floating Dependencies"
       install:
-        - nvm install $NODE_VERSION
         - npm install --no-package-lock
       script:
-        - nvm use $NODE_VERSION
         - npm run test:ember
 
     # we recommend new addons test the current and previous LTS
