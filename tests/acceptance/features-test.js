@@ -23,7 +23,7 @@ module('Acceptance | features', function (hooks) {
     await click('[data-test-button="create-record"]');
 
     // Assert
-    await waitFor('[data-test-id]'); // FIXME: Shouldn't be necessary
+    await waitFor('[data-test-id]', { timeout: 5000 });
     assert.dom('[data-test-id="new"]').hasText('new');
     assert.dom('[data-test-username="new"]').hasText('new_user');
     assert.dom('[data-test-age="new"]').hasText('25');
@@ -39,7 +39,7 @@ module('Acceptance | features', function (hooks) {
     await click('[data-test-button="update-record"]');
 
     // Assert
-    await waitFor('[data-test-username]'); // FIXME: Shouldn't be necessary
+    await waitFor('[data-test-username]', { timeout: 5000 });
     assert.dom('[data-test-username="user_a"]').hasText('updated_user');
   });
 
@@ -53,7 +53,7 @@ module('Acceptance | features', function (hooks) {
     await click('[data-test-button="delete-record"]');
 
     // Assert
-    await waitFor('[data-test-id]'); // FIXME: Shouldn't be necessary
+    await waitFor('[data-test-id]', { timeout: 5000 });
     assert.dom('[data-test-id="user-a"]').doesNotExist();
   });
 
@@ -67,7 +67,7 @@ module('Acceptance | features', function (hooks) {
     await click('[data-test-button="find-all"]');
 
     // Assert
-    await waitFor('[data-test-id]'); // FIXME: Shouldn't be necessary
+    await waitFor('[data-test-id]', { timeout: 5000 });
     assert.dom('[data-test-id]').exists({ count: 3 });
   });
 
@@ -81,7 +81,7 @@ module('Acceptance | features', function (hooks) {
     await click('[data-test-button="find-record"]');
 
     // Assert
-    await waitFor('[data-test-id]'); // FIXME: Shouldn't be necessary
+    await waitFor('[data-test-id]', { timeout: 5000 });
     assert.dom('[data-test-id="user_a"]').hasText('user_a');
   });
 
@@ -95,7 +95,7 @@ module('Acceptance | features', function (hooks) {
     await click('[data-test-button="query-1"]');
 
     // Assert
-    await waitFor('[data-test-id]'); // FIXME: Shouldn't be necessary
+    await waitFor('[data-test-id]', { timeout: 5000 });
     assert.dom('[data-test-id]').exists({ count: 2 });
   });
 
@@ -110,7 +110,7 @@ module('Acceptance | features', function (hooks) {
 
     // Assert
     try {
-      await waitFor('[data-test-id]', { timeout: 5000 }); // FIXME: Shouldn't be necessary
+      await waitFor('[data-test-id]', { timeout: 5000 });
     } catch (e) {
       // Do nothing
     }

@@ -12,9 +12,7 @@ export default class FeaturesController extends Controller {
       id: 'new',
       username: 'new_user',
       age: 25,
-    }).save({
-      adapterOptions: { onServer: true },
-    });
+    }).save();
 
     this.users = [user];
   }
@@ -25,9 +23,7 @@ export default class FeaturesController extends Controller {
 
     user.username = 'updated_user';
 
-    await user.save({
-      adapterOptions: { onServer: true },
-    });
+    await user.save();
 
     this.users = [user];
   }
@@ -37,9 +33,7 @@ export default class FeaturesController extends Controller {
     const users = await this.store.findAll('user');
     const user = users.get('firstObject');
 
-    await user.destroyRecord({
-      adapterOptions: { onServer: true },
-    });
+    await user.destroyRecord();
 
     this.users = users;
   }
