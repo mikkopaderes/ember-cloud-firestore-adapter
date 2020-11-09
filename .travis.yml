@@ -22,7 +22,7 @@ env:
 
 branches:
   only:
-    - master
+    - use-firestore-emulator
     # npm version tags
     - /^v\d+\.\d+\.\d+/
 
