@@ -1,4 +1,5 @@
 ---
+os: windows
 language: node_js
 node_js:
   # we recommend testing addons with the same minimum supported node version as Ember CLI
