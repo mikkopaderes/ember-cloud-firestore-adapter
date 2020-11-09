@@ -42,6 +42,7 @@ jobs:
     - stage: "Additional Tests"
       name: "Floating Dependencies"
       install:
+        - npm install -g firebase-tools
         - npm install --no-package-lock
       script:
         - npm run test:ember
