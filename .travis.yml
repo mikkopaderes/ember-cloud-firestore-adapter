@@ -42,11 +42,9 @@ jobs:
     - stage: "Additional Tests"
       name: "Floating Dependencies"
       install:
-        - npm install -g firebase-tools
         - npm install --no-package-lock
       script:
         - npm run test:ember
-        - cat ./firebase-debug.log
 
     # we recommend new addons test the current and previous LTS
     # as well as latest stable release (bonus points to beta/canary)
