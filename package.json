@@ -22,7 +22,7 @@
     "lint:js": "eslint .",
     "start": "firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember serve\"",
     "test": "npm-run-all lint:* test:*",
-    "test:ember": "firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember test\"",
+    "test:ember": "firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"eslint .\"",
     "test:ember-compatibility": "firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember try:each\""
   },
   "dependencies": {
