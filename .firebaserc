@@ -1,1 +1,5 @@
-{}
+{
+  "projects": {
+    "default": "ember-cloud-firestore-adapter"
+  }
+}
