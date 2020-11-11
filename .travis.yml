@@ -13,6 +13,7 @@ addons:
 cache:
   directories:
     - $HOME/.npm
+    - $HOME/.cache/firebase/emulators
 
 env:
   global:
@@ -56,4 +57,4 @@ jobs:
     - env: EMBER_TRY_SCENARIO=ember-classic
 
 script:
-  - node_modules/.bin/ember try:one $EMBER_TRY_SCENARIO
+  - npx firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project "npx ember try:one $EMBER_TRY_SCENARIO"

@@ -1,13 +1,18 @@
 import { module, test } from 'qunit';
+import { setupTest } from 'ember-qunit';
 
-import MockFirebase from 'mock-cloud-firestore';
 import sinon from 'sinon';
 
 import RealtimeTracker from 'dummy/utils/realtime-tracker';
-import getFixtureData from '../../helpers/fixture-data';
 
-module('Unit | Utility | realtime-tracker', function () {
-  const db = new MockFirebase(getFixtureData()).firestore();
+module('Unit | Utility | realtime-tracker', function (hooks) {
+  let db;
+
+  setupTest(hooks);
+
+  hooks.beforeEach(function () {
+    db = this.owner.lookup('service:firebase').firestore();
+  });
 
   module('function: trackFindRecordChanges', function () {
     test('should track find record changes', function (assert) {
@@ -59,7 +64,7 @@ module('Unit | Utility | realtime-tracker', function () {
   });
 
   module('function: trackFindHasManyChanges', function () {
-    test('should track find has many changes', function (assert) {
+    test('should track find has many changes', async function (assert) {
       assert.expect(1);
 
       // Arrange
@@ -69,7 +74,7 @@ module('Unit | Utility | realtime-tracker', function () {
       const collectionRef = db.collection('users');
       const store = {
         peekRecord: sinon.stub().returns({
-          hasMany: sinon.stub().returns({ reload: sinon.stub() }),
+          hasMany: sinon.stub().returns({ reload: sinon.stub().returns(Promise.resolve()) }),
         }),
       };
       const realtimeTracker = new RealtimeTracker();
@@ -88,7 +93,7 @@ module('Unit | Utility | realtime-tracker', function () {
 
       // Arrange
       const collectionRef = db.collection('users');
-      const recordArray = { update: sinon.stub() };
+      const recordArray = { update: sinon.stub().returns(Promise.resolve()) };
       const queryId = 'foo';
       const realtimeTracker = new RealtimeTracker();
 
