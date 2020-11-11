@@ -57,4 +57,4 @@ jobs:
     - env: EMBER_TRY_SCENARIO=ember-classic
 
 script:
-  - npx firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember try:one $EMBER_TRY_SCENARIO\"
+  - npx firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project "npx ember try:one $EMBER_TRY_SCENARIO"
