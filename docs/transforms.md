@@ -17,4 +17,4 @@ In the example above, whenever you save a record who's `createdOn` is not of `Da
 
 ---
 
-[Next: Authentication »](authentication)
+[Next: Authentication »](authentication.md)

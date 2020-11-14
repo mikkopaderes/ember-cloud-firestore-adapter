@@ -121,4 +121,4 @@ Hook for providing the query for the collection reference
 
 ---
 
-[Next: Creating, Updating, and Deleting Records »](create-update-delete-records)
+[Next: Creating, Updating, and Deleting Records »](create-update-delete-records.md)

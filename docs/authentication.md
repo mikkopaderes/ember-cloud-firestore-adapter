@@ -89,4 +89,4 @@ exports.app = functions.https.onRequest(app);
 
 ---
 
-[Next: Testing »](testing)
+[Next: Testing »](testing.md)

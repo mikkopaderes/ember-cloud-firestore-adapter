@@ -65,4 +65,4 @@ These are the settings currently available:
 
 ---
 
-[Next: Data Structure »](data-structure)
+[Next: Data Structure »](data-structure.md)
