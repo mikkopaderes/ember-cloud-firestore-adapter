@@ -1,8 +1,23 @@
 ember-cloud-firestore-adapter
 ==============================================================================
 
-Unofficial Ember Data Adapter and Serializer for Cloud Firestore
+This is an unofficial Ember Data Adapter and Serializer for Cloud Firestore. It's completely unrelated to [EmberFire](https://github.com/firebase/emberfire) but it's purpose is of the same.
 
+Features
+------------------------------------------------------------------------------
+
+- **Customizable data structure** - There's an opinionated default on how your data will be structured but there's enough API to make it fit to your existing ones
+- **Realtime bindings** - Listen to realtime updates easily
+- **Authentication** - Integrate [Firebase Authentication](https://firebase.google.com/products/auth/) powered by [Ember Simple Auth](https://github.com/simplabs/ember-simple-auth)
+- **FastBoot support** - Perform server-side rendering to speed up your boot time
+- **Firebase Emulator** - Develop and test your app using the [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator-suite)
+
+Why Was This Built?
+------------------------------------------------------------------------------
+
+This was built becase EmberFire development is super slow or may even be abandoned by now.
+
+In order to continue development with Ember and Cloud Firestore, I had to build this addon and opted to make it generic enough to be used by other developers too.
 
 Compatibility
 ------------------------------------------------------------------------------
@@ -10,7 +25,6 @@ Compatibility
 * Ember.js v3.16 or above
 * Ember CLI v2.13 or above
 * Node.js v10 or above
-
 
 Installation
 ------------------------------------------------------------------------------
@@ -27,10 +41,10 @@ Once you've installed it, you can now install the addon itself:
 ember install ember-cloud-firestore-adapter
 ```
 
-Usage
+Getting Started
 ------------------------------------------------------------------------------
 
-Checkout the docs [here](https://mikkopaderes.github.io/ember-cloud-firestore-adapter).
+Checkout the docs [here](docs/getting-started.md).
 
 Contributing
 ------------------------------------------------------------------------------
