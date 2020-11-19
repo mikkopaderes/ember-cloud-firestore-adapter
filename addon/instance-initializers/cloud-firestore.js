@@ -191,9 +191,21 @@ function reopenStore(appInstance) {
             changedRecords.forEach(({ data: { id: changeId, changeType } }) => {
               const current = currentRecords.findBy('id', changeId);
               const updated = updatedRecords.findBy('id', changeId);
-              if (current) currentRecords.removeObject(current);
-              if (changeType === 'removed') return;
-              currentRecords.addObject(updated);
+
+              // Remove
+              if (changeType === 'removed') {
+                if (current) currentRecords.removeObject(current);
+                return;
+              }
+
+              // Update
+              if (current) {
+                const index = currentRecords.indexOf(current);
+                currentRecords.replace(index, 1, [updated]);
+              } else {
+                // Add
+                currentRecords.addObject(updated);
+              }
             });
 
             updatePaginationMeta(relationship, currentRecords);
