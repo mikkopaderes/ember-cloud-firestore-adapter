@@ -13,7 +13,7 @@ export default class Timestamp extends Transform {
   }
 
   serialize(deserialized) {
-    if (typeOf(deserialized) !== 'date') {
+    if (typeOf(deserialized) !== 'date' && typeOf(deserialized) !== 'null') {
       return firebase.firestore.FieldValue.serverTimestamp();
     }
 
