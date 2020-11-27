@@ -28,3 +28,8 @@ tests/*.js
 tests/dummy/*.js
 tests/dummy/app/*.js
 tests/dummy/config/*.js
+
+# ember-cli-typescript generated files
+tests/dummy/app/config/environment.d.ts
+types/dummy/index.d.ts
+types/global.d.ts
