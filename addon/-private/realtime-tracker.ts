@@ -148,7 +148,6 @@ export default class RealtimeTracker {
     this.query[queryId].unsubscribe = unsubscribe;
   }
 
-  // NOTE: Accepts any for recordArray because DS.AdapterPopulatedRecordArray is a private API
   public trackQueryChanges(
     firestoreQuery: firebase.firestore.Query,
     recordArray: DS.AdapterPopulatedRecordArray<unknown>,
