@@ -32,9 +32,10 @@ let ENV = {
 
 #### `ember-cloud-firestore-adapter` Configurations
 
-These are the configurations currently available:
+These are the configurations currently available that you may set per environment:
 
   - `emulator` - An object specifying the `hostname` and `port` to use when connecting to a Firebase Emulator.
+  - `firestoreSettings` - An object specifying the custom settings for your Cloud Firestore instance. See [here](https://firebase.google.com/docs/reference/js/firebase.firestore.Settings).
 
 At the moment, there are no required configuration in this addon so you may opt to not add any `ember-cloud-firestore-adapter` property in the `config/environment.js` file.
 
@@ -60,8 +61,9 @@ export default class ApplicationAdapter extends CloudFirestoreAdapter {
 
 These are the settings currently available:
 
-  - `firestoreSettings` - An object specifying the custom settings for your Cloud Firestore instance. See [here](https://firebase.google.com/docs/reference/js/firebase.firestore.Settings). (Defaults to null)
   - `referenceKeyName` - Name of the field that will indicate whether a document is a reference to another one. (Defaults to `'referenceTo'`)
+
+Note that these settings will be the same regardless of the environment.
 
 ---
 

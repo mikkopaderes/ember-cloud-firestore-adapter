@@ -65,8 +65,6 @@ export default class CloudFirestoreAdapter extends Adapter {
   @service
   private firebase!: FirebaseService;
 
-  private firestoreSettings: firebase.firestore.Settings = {};
-
   private referenceKeyName = 'referenceTo';
 
   private realtimeTracker: RealtimeTracker | null = null;
@@ -79,14 +77,6 @@ export default class CloudFirestoreAdapter extends Adapter {
 
   public init(...args: unknown[]): void {
     this._super(...args);
-
-    if (Object.keys(this.firestoreSettings).length !== 0) {
-      const db = this.firebase.firestore();
-
-      db.settings(this.firestoreSettings);
-    }
-
-    this.setupConfigurations();
 
     this.realtimeTracker = new RealtimeTracker(getOwner(this).lookup('service:store'));
   }
@@ -268,20 +258,6 @@ export default class CloudFirestoreAdapter extends Adapter {
         unsubscribe();
       }, (error) => reject(error));
     });
-  }
-
-  private setupConfigurations(): void {
-    const config = getOwner(this).resolveRegistration('config:environment');
-
-    if (
-      Object.prototype.hasOwnProperty.call(config, 'ember-cloud-firestore-adapter')
-      && Object.prototype.hasOwnProperty.call(config['ember-cloud-firestore-adapter'], 'emulator')
-    ) {
-      const db = this.firebase.firestore();
-      const { hostname, port } = config['ember-cloud-firestore-adapter'].emulator;
-
-      db.useEmulator(hostname, port);
-    }
   }
 
   private buildCollectionRef(
