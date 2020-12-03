@@ -2,12 +2,13 @@ import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import EmberObject from '@ember/object';
 
+import firebase from 'firebase';
 import sinon from 'sinon';
 
 import resetFixtureData from '../../helpers/reset-fixture-data';
 
 module('Unit | Adapter | cloud firestore', function (hooks) {
-  let db;
+  let db: firebase.firestore.Firestore;
 
   setupTest(hooks);
 
@@ -21,13 +22,11 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
   module('function: generateIdForRecord', function () {
     test('should generate ID for record', function (assert) {
-      assert.expect(1);
-
       // Arrange
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       // Act
-      const result = adapter.generateIdForRecord({}, 'foo');
+      const result = adapter.generateIdForRecord({}, { modelName: 'foo' });
 
       // Assert
       assert.ok(result);
@@ -36,8 +35,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
   module('function: createRecord', function () {
     test('should proxy a call to updateRecord and return with the created doc', async function (assert) {
-      assert.expect(2);
-
       // Arrange
       const store = {};
       const modelClass = { modelName: 'user' };
@@ -57,8 +54,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
   module('function: updateRecord', function () {
     test('should update record and resolve with the updated doc', async function (assert) {
-      assert.expect(3);
-
       // Arrange
       const store = {};
       const modelClass = { modelName: 'user' };
@@ -86,8 +81,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
     });
 
     test('should update record in a custom collection and resolve with the updated resource', async function (assert) {
-      assert.expect(2);
-
       // Arrange
       const store = {};
       const modelClass = { modelName: 'user' };
@@ -95,7 +88,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
         id: 'user_a',
         age: 50,
         adapterOptions: {
-          buildReference(firestore) {
+          buildReference(firestore: firebase.firestore.Firestore) {
             return firestore.collection('foobar');
           },
         },
@@ -116,8 +109,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
     });
 
     test('should update record and process additional batched writes', async function (assert) {
-      assert.expect(3);
-
       // Arrange
       const store = {};
       const modelClass = { modelName: 'user' };
@@ -125,7 +116,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
         id: 'user_a',
         age: 50,
         adapterOptions: {
-          include(batch, firestore) {
+          include(batch: firebase.firestore.WriteBatch, firestore: firebase.firestore.Firestore) {
             batch.set(firestore.collection('users').doc('user_100'), { age: 60 });
           },
         },
@@ -153,8 +144,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
   module('function: deleteRecord', function () {
     test('should delete record', async function (assert) {
-      assert.expect(1);
-
       // Arrange
       const store = {};
       const modelClass = { modelName: 'user' };
@@ -171,8 +160,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
     });
 
     test('should delete record in a custom collection', async function (assert) {
-      assert.expect(1);
-
       // Arrange
       const store = {};
       const modelClass = { modelName: 'post' };
@@ -180,7 +167,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
         id: 'post_b',
 
         adapterOptions: {
-          buildReference(firestore) {
+          buildReference(firestore: firebase.firestore.Firestore) {
             return firestore.collection('users').doc('user_a').collection('feeds');
           },
         },
@@ -197,15 +184,13 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
     });
 
     test('should delete record and process additional batched writes', async function (assert) {
-      assert.expect(2);
-
       // Arrange
       const store = {};
       const modelClass = { modelName: 'user' };
       const snapshot = {
         id: 'user_a',
         adapterOptions: {
-          include(batch, firestore) {
+          include(batch: firebase.firestore.WriteBatch, firestore: firebase.firestore.Firestore) {
             batch.delete(firestore.collection('users').doc('user_b'));
           },
         },
@@ -230,8 +215,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
   module('function: findAll', function () {
     test('should fetch all records for a model', async function (assert) {
-      assert.expect(1);
-
       // Arrange
       const store = { normalize: sinon.stub(), push: sinon.stub() };
       const modelClass = { modelName: 'user' };
@@ -266,8 +249,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
   module('function: findRecord', function () {
     test('should fetch a record', async function (assert) {
-      assert.expect(1);
-
       // Arrange
       const store = { normalize: sinon.stub(), push: sinon.stub() };
       const modelClass = { modelName: 'user' };
@@ -288,15 +269,13 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
     });
 
     test('should fetch a record in a custom collection', async function (assert) {
-      assert.expect(1);
-
       // Arrange
       const store = { normalize: sinon.stub(), push: sinon.stub() };
       const modelClass = { modelName: 'user' };
       const modelId = 'user_a';
       const snapshot = {
         adapterOptions: {
-          buildReference(firestore) {
+          buildReference(firestore: firebase.firestore.Firestore) {
             return firestore.collection('admins');
           },
         },
@@ -311,8 +290,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
     });
 
     test('should throw an error when record does not exists', async function (assert) {
-      assert.expect(1);
-
       // Arrange
       const store = { normalize: sinon.stub(), push: sinon.stub() };
       const modelClass = { modelName: 'user' };
@@ -332,8 +309,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
   module('function: findBelongsTo', function () {
     test('should fetch a belongs to record', async function (assert) {
-      assert.expect(1);
-
       // Arrange
       const store = { normalize: sinon.stub(), push: sinon.stub() };
       const snapshot = {};
@@ -356,8 +331,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
   module('function: findHasMany', function () {
     test('should fetch many-to-one cardinality', async function (assert) {
-      assert.expect(4);
-
       // Arrange
       const store = { normalize: sinon.stub(), push: sinon.stub() };
       const determineRelationshipTypeStub = sinon.stub().returns('manyToOne');
@@ -375,7 +348,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const relationship = {
         key: 'posts',
         options: {
-          filter(reference) {
+          filter(reference: firebase.firestore.CollectionReference) {
             return reference.limit(1);
           },
         },
@@ -394,8 +367,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
     });
 
     test('should fetch many-to-whatever cardinality', async function (assert) {
-      assert.expect(2);
-
       // Arrange
       const store = { normalize: sinon.stub(), push: sinon.stub() };
       const determineRelationshipTypeStub = sinon.stub().returns('manyToNone');
@@ -410,7 +381,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const url = 'users/user_a/friends';
       const relationship = {
         options: {
-          filter(reference) {
+          filter(reference: firebase.firestore.CollectionReference) {
             return reference.limit(1);
           },
         },
@@ -434,8 +405,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
     });
 
     test('should be able to fetch with filter using a record property', async function (assert) {
-      assert.expect(4);
-
       // Arrange
       const store = { normalize: sinon.stub(), push: sinon.stub() };
       const determineRelationshipTypeStub = sinon.stub().returns('manyToOne');
@@ -455,8 +424,8 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const relationship = {
         key: 'posts',
         options: {
-          filter(reference, record) {
-            return reference.where('approvedBy', '==', record.get('id'));
+          filter(reference: firebase.firestore.CollectionReference, record: { id: string }) {
+            return reference.where('approvedBy', '==', record.id);
           },
         },
         type: 'post',
@@ -474,8 +443,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
     });
 
     test('should be able to fetch with a custom reference when not a many-to-one cardinality', async function (assert) {
-      assert.expect(3);
-
       // Arrange
       const store = { normalize: sinon.stub(), push: sinon.stub() };
       const determineRelationshipTypeStub = sinon.stub().returns('manyToNone');
@@ -487,11 +454,11 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const relationship = {
         key: 'userBFeeds',
         options: {
-          buildReference(firestore, record) {
-            return firestore.collection('users').doc(record.get('id')).collection('feeds');
+          buildReference(firestore: firebase.firestore.Firestore, record: { id: string }) {
+            return firestore.collection(`users/${record.id}/feeds`);
           },
 
-          filter(reference) {
+          filter(reference: firebase.firestore.CollectionReference) {
             return reference.limit(1);
           },
         },
@@ -511,13 +478,11 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
   module('function: query', function () {
     test('should query for records', async function (assert) {
-      assert.expect(1);
-
       // Arrange
       const store = {};
       const modelClass = { modelName: 'user' };
       const query = {
-        filter(reference) {
+        filter(reference: firebase.firestore.CollectionReference) {
           return reference.where('age', '>=', 15).limit(1);
         },
       };
@@ -538,17 +503,15 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
     });
 
     test('should query for records in a custom collection', async function (assert) {
-      assert.expect(1);
-
       // Arrange
       const store = {};
       const modelClass = { modelName: 'user' };
       const query = {
-        buildReference(firestore) {
+        buildReference(firestore: firebase.firestore.Firestore) {
           return firestore.collection('admins');
         },
 
-        filter(reference) {
+        filter(reference: firebase.firestore.CollectionReference) {
           return reference.where('since', '==', 2015);
         },
       };

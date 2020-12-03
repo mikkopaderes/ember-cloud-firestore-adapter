@@ -1,4 +1,6 @@
-export default async function resetFixtureData(db) {
+import firebase from 'firebase';
+
+export default async function resetFixtureData(db: firebase.firestore.Firestore): Promise<void> {
   await fetch('http://localhost:8080/emulator/v1/projects/ember-cloud-firestore-adapter-test-project/databases/(default)/documents', {
     method: 'DELETE',
   });
@@ -50,9 +52,9 @@ export default async function resetFixtureData(db) {
     },
   };
 
-  Object.keys(testData).forEach((key) => {
-    batch.set(db.doc(key), testData[key]);
-  });
+  const keys = Object.keys(testData) as Array<keyof unknown>;
+
+  keys.forEach((key) => batch.set(db.doc(key), testData[key]));
 
   await batch.commit();
 }
