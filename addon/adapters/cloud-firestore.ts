@@ -363,8 +363,8 @@ export default class CloudFirestoreAdapter extends Adapter {
         return this.fetchRecord(type, referenceTo.id, {
           isRealtime: relationship.options.isRealtime,
 
-          buildReference() {
-            return referenceTo.parent;
+          buildReference(db: firebase.firestore.Firestore) {
+            return db.collection(referenceTo.parent.path);
           },
         });
       }
@@ -372,8 +372,8 @@ export default class CloudFirestoreAdapter extends Adapter {
       const adapterOptions = {
         isRealtime: relationship.options.isRealtime,
 
-        buildReference() {
-          return docSnapshot.ref.parent;
+        buildReference(db: firebase.firestore.Firestore) {
+          return db.collection(docSnapshot.ref.parent.path);
         },
       };
 

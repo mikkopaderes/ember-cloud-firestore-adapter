@@ -11,8 +11,6 @@ module('Unit | -Private | flatten-doc-snapshot-data', function (hooks) {
     const firebase = this.owner.lookup('service:firebase');
     const db = firebase.firestore();
 
-    db.useEmulator('localhost', 8080);
-
     const snapshot = await db.doc('users/user_a').get();
 
     // Act
