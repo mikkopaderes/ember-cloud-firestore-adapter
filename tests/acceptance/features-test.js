@@ -5,11 +5,17 @@ import { setupApplicationTest } from 'ember-qunit';
 import resetFixtureData from '../helpers/reset-fixture-data';
 
 module('Acceptance | features', function (hooks) {
+  let db;
+
   setupApplicationTest(hooks);
 
-  hooks.afterEach(async function () {
-    const db = this.owner.lookup('service:firebase').firestore();
+  hooks.beforeEach(async function () {
+    db = this.owner.lookup('service:firebase').firestore();
 
+    await resetFixtureData(db);
+  });
+
+  hooks.afterEach(async function () {
     await resetFixtureData(db);
   });
 

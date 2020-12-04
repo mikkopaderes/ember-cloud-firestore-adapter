@@ -21,7 +21,6 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
   hooks.beforeEach(async function () {
     db = this.owner.lookup('service:firebase').firestore();
 
-    db.useEmulator('localhost', 8080);
     await resetFixtureData(db);
   });
 

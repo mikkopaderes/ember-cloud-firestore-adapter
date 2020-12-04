@@ -12,8 +12,10 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
   setupTest(hooks);
 
-  hooks.beforeEach(function () {
+  hooks.beforeEach(async function () {
     db = this.owner.lookup('service:firebase').firestore();
+
+    await resetFixtureData(db);
   });
 
   hooks.afterEach(async function () {
