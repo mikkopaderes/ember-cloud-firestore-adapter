@@ -30,8 +30,7 @@
   "dependencies": {
     "ember-cli-babel": "^7.22.1",
     "ember-cli-htmlbars": "^5.3.1",
-    "ember-cli-typescript": "^4.0.0",
-    "mock-cloud-firestore": "^0.9.2"
+    "ember-cli-typescript": "^4.0.0"
   },
   "devDependencies": {
     "@ember/optional-features": "^2.0.0",
