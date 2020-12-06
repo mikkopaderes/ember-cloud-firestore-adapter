@@ -1,7 +1,9 @@
 import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
 
+import SessionService from 'ember-simple-auth/services/session';
+
 export default class LogoutController extends Controller {
   @service
-  session;
+  session!: SessionService;
 }

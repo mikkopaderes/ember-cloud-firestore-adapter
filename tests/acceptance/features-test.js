@@ -31,7 +31,7 @@ module('Acceptance | features', function (hooks) {
     // Assert
     await waitFor('[data-test-id]', { timeout: 5000 });
     assert.dom('[data-test-id="new"]').hasText('new');
-    assert.dom('[data-test-username="new"]').hasText('new_user');
+    assert.dom('[data-test-name="new"]').hasText('new_user');
     assert.dom('[data-test-age="new"]').hasText('25');
   });
 
@@ -45,8 +45,8 @@ module('Acceptance | features', function (hooks) {
     await click('[data-test-button="update-record"]');
 
     // Assert
-    await waitFor('[data-test-username]', { timeout: 5000 });
-    assert.dom('[data-test-username="user_a"]').hasText('updated_user');
+    await waitFor('[data-test-name]', { timeout: 5000 });
+    assert.dom('[data-test-name="user_a"]').hasText('updated_user');
   });
 
   test('should delete record', async function (assert) {
