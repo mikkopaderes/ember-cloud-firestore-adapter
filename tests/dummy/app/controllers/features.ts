@@ -1,16 +1,21 @@
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import Controller from '@ember/controller';
+import EmberArray from '@ember/array';
+
+import firebase from 'firebase/app';
+
+import UserModel from '../models/user';
 
 export default class FeaturesController extends Controller {
   @tracked
-  users = [];
+  users: UserModel[] | EmberArray<UserModel> = [];
 
   @action
-  async handleCreateRecordClick() {
+  async handleCreateRecordClick(): Promise<void> {
     const user = await this.store.createRecord('user', {
       id: 'new',
-      username: 'new_user',
+      name: 'new_user',
       age: 25,
     }).save();
 
@@ -18,10 +23,10 @@ export default class FeaturesController extends Controller {
   }
 
   @action
-  async handleUpdateRecordClick() {
+  async handleUpdateRecordClick(): Promise<void> {
     const user = await this.store.findRecord('user', 'user_a');
 
-    user.username = 'updated_user';
+    user.set('name', 'updated_user');
 
     await user.save();
 
@@ -29,33 +34,33 @@ export default class FeaturesController extends Controller {
   }
 
   @action
-  async handleDeleteRecordClick() {
+  async handleDeleteRecordClick(): Promise<void> {
     const users = await this.store.findAll('user');
     const user = users.get('firstObject');
 
-    await user.destroyRecord();
+    await user?.destroyRecord();
 
     this.users = users;
   }
 
   @action
-  async handleFindAllClick() {
+  async handleFindAllClick(): Promise<void> {
     const users = await this.store.findAll('user');
 
     this.users = users;
   }
 
   @action
-  async handleFindRecordClick() {
+  async handleFindRecordClick(): Promise<void> {
     const user = await this.store.findRecord('user', 'user_a');
 
     this.users = [user];
   }
 
   @action
-  async handleQuery1Click() {
+  async handleQuery1Click(): Promise<void> {
     const users = await this.store.query('user', {
-      filter(reference) {
+      filter(reference: firebase.firestore.Query) {
         return reference.where('age', '>=', 15);
       },
     });
@@ -64,9 +69,9 @@ export default class FeaturesController extends Controller {
   }
 
   @action
-  async handleQuery2Click() {
+  async handleQuery2Click(): Promise<void> {
     const users = await this.store.query('user', {
-      buildReference(db) {
+      buildReference(db: firebase.firestore.Firestore) {
         return db.collection('users').doc('user_a').collection('foobar');
       },
     });
