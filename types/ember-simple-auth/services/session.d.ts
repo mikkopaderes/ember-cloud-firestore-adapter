@@ -7,13 +7,14 @@
 import Service from '@ember/service';
 import Evented from '@ember/object/evented';
 
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 
 interface Data {
   authenticated: {
     user: firebase.User;
   };
 }
+
 declare module 'ember-simple-auth/services/session' {
   export default class SessionService extends Service.extend(Evented) {
     /**
