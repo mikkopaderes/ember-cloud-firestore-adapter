@@ -4,7 +4,7 @@ import { setupTest } from 'ember-qunit';
 module('Unit | Session Store | firebase', function (hooks) {
   setupTest(hooks);
 
-  module('function: restore', function () {
+  module('restore()', function () {
     test('should return a fake authenticated state when in fastboot and header has a bearer authorization', async function (assert) {
       assert.expect(1);
 

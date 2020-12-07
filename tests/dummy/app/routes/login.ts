@@ -6,9 +6,9 @@ import firebase from 'firebase/app';
 
 export default class LoginRoute extends Route {
   @service
-  session!: SessionService;
+  private session!: SessionService;
 
-  async beforeModel(): Promise<void> {
+  public async beforeModel(): Promise<void> {
     await this.session.authenticate('authenticator:firebase', (auth: firebase.auth.Auth) => (
       auth.signInWithEmailAndPassword('foo@gmail.com', 'foobar')
     ));

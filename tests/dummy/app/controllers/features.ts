@@ -9,10 +9,10 @@ import UserModel from '../models/user';
 
 export default class FeaturesController extends Controller {
   @tracked
-  users: UserModel[] | EmberArray<UserModel> = [];
+  public users: UserModel[] | EmberArray<UserModel> = [];
 
   @action
-  async handleCreateRecordClick(): Promise<void> {
+  public async handleCreateRecordClick(): Promise<void> {
     const user = await this.store.createRecord('user', {
       id: 'new',
       name: 'new_user',
@@ -23,7 +23,7 @@ export default class FeaturesController extends Controller {
   }
 
   @action
-  async handleUpdateRecordClick(): Promise<void> {
+  public async handleUpdateRecordClick(): Promise<void> {
     const user = await this.store.findRecord('user', 'user_a');
 
     user.set('name', 'updated_user');
@@ -34,7 +34,7 @@ export default class FeaturesController extends Controller {
   }
 
   @action
-  async handleDeleteRecordClick(): Promise<void> {
+  public async handleDeleteRecordClick(): Promise<void> {
     const users = await this.store.findAll('user');
     const user = users.get('firstObject');
 
@@ -44,21 +44,21 @@ export default class FeaturesController extends Controller {
   }
 
   @action
-  async handleFindAllClick(): Promise<void> {
+  public async handleFindAllClick(): Promise<void> {
     const users = await this.store.findAll('user');
 
     this.users = users;
   }
 
   @action
-  async handleFindRecordClick(): Promise<void> {
+  public async handleFindRecordClick(): Promise<void> {
     const user = await this.store.findRecord('user', 'user_a');
 
     this.users = [user];
   }
 
   @action
-  async handleQuery1Click(): Promise<void> {
+  public async handleQuery1Click(): Promise<void> {
     const users = await this.store.query('user', {
       filter(reference: firebase.firestore.Query) {
         return reference.where('age', '>=', 15);
@@ -69,7 +69,7 @@ export default class FeaturesController extends Controller {
   }
 
   @action
-  async handleQuery2Click(): Promise<void> {
+  public async handleQuery2Click(): Promise<void> {
     const users = await this.store.query('user', {
       buildReference(db: firebase.firestore.Firestore) {
         return db.collection('users').doc('user_a').collection('foobar');

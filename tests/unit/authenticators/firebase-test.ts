@@ -6,7 +6,7 @@ import sinon from 'sinon';
 module('Unit | Authenticator | firebase', function (hooks) {
   setupTest(hooks);
 
-  module('function: authenticate', function () {
+  module('authenticate()', function () {
     test('should use the callback', async function (assert) {
       assert.expect(1);
 
@@ -21,7 +21,7 @@ module('Unit | Authenticator | firebase', function (hooks) {
     });
   });
 
-  module('function: invalidate', function () {
+  module('invalidate()', function () {
     test('should sign out firebase user', function (assert) {
       assert.expect(1);
 
@@ -42,7 +42,7 @@ module('Unit | Authenticator | firebase', function (hooks) {
     });
   });
 
-  module('function: restore', function () {
+  module('restore()', function () {
     test('should sign in using custom token when fastboot header contains authorization token', async function (assert) {
       assert.expect(1);
 
@@ -88,7 +88,7 @@ module('Unit | Authenticator | firebase', function (hooks) {
       const user = { id: 'foo' };
       const firebase = {
         auth: sinon.stub().returns({
-          onAuthStateChanged(callback) {
+          onAuthStateChanged(callback: (firebaseUser: { id: string }) => void) {
             setTimeout(() => callback(user));
 
             return () => {};
@@ -117,7 +117,7 @@ module('Unit | Authenticator | firebase', function (hooks) {
         auth: sinon.stub().returns({
           getRedirectResult: sinon.stub().returns(Promise.resolve({ user })),
 
-          onAuthStateChanged(callback) {
+          onAuthStateChanged(callback: () => void) {
             setTimeout(() => callback());
 
             return () => {};

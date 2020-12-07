@@ -5,9 +5,9 @@ import SessionService from 'ember-simple-auth/services/session';
 
 export default class LogoutRoute extends Route {
   @service
-  session!: SessionService;
+  private session!: SessionService;
 
-  async beforeModel(): Promise<void> {
+  public async beforeModel(): Promise<void> {
     await this.session.invalidate();
   }
 }

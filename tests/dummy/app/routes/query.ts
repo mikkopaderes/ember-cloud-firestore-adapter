@@ -6,7 +6,7 @@ import firebase from 'firebase/app';
 import GroupModel from '../models/group';
 
 export default class QueryRoute extends Route {
-  async model(): Promise<ArrayProxy<GroupModel>> {
+  public async model(): Promise<ArrayProxy<GroupModel>> {
     return this.store.query('group', {
       filter(reference: firebase.firestore.CollectionReference) {
         return reference.orderBy('name').limit(1);

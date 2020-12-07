@@ -2,7 +2,7 @@ import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import EmberObject from '@ember/object';
 
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import sinon from 'sinon';
 
 import resetFixtureData from '../../helpers/reset-fixture-data';

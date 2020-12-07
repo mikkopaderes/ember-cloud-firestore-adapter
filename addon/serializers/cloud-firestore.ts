@@ -12,7 +12,7 @@ import JSONSerializer from '@ember-data/serializer/json';
 import Store from '@ember-data/store';
 
 import FirebaseService from 'ember-firebase-service/services/firebase';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 
 import buildCollectionName from 'ember-cloud-firestore-adapter/-private/build-collection-name';
 

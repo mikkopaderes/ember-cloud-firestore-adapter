@@ -1,13 +1,14 @@
 import { getOwner } from '@ember/application';
 
+import FastBootService from 'ember-cli-fastboot/services/fastboot';
 import LocalStorageStore from 'ember-simple-auth/session-stores/local-storage';
 
 export default class FirebaseStore extends LocalStorageStore {
-  get fastboot() {
+  private get fastboot(): FastBootService | null {
     return getOwner(this).lookup('service:fastboot');
   }
 
-  restore(...args) {
+  public restore(): Promise<unknown> {
     if (this.fastboot?.isFastBoot) {
       if (this.fastboot.request.headers.get('Authorization')?.startsWith('Bearer ')) {
         return Promise.resolve({
@@ -18,6 +19,6 @@ export default class FirebaseStore extends LocalStorageStore {
       return Promise.resolve({});
     }
 
-    return super.restore(...args);
+    return super.restore();
   }
 }
