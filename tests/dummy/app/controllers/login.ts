@@ -5,5 +5,5 @@ import SessionService from 'ember-simple-auth/services/session';
 
 export default class LoginController extends Controller {
   @service
-  session!: SessionService;
+  public session!: SessionService;
 }

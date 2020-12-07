@@ -2,10 +2,12 @@ import { click, visit, waitFor } from '@ember/test-helpers';
 import { module, test } from 'qunit';
 import { setupApplicationTest } from 'ember-qunit';
 
+import firebase from 'firebase/app';
+
 import resetFixtureData from '../helpers/reset-fixture-data';
 
 module('Acceptance | features', function (hooks) {
-  let db;
+  let db: firebase.firestore.Firestore;
 
   setupApplicationTest(hooks);
 

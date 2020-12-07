@@ -1,4 +1,4 @@
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 
 export default async function resetFixtureData(db: firebase.firestore.Firestore): Promise<void> {
   await fetch('http://localhost:8080/emulator/v1/projects/ember-cloud-firestore-adapter-test-project/databases/(default)/documents', {

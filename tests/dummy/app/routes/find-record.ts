@@ -3,7 +3,7 @@ import Route from '@ember/routing/route';
 import GroupModel from '../models/group';
 
 export default class FindRecordRoute extends Route {
-  async model(): Promise<GroupModel> {
+  public async model(): Promise<GroupModel> {
     return this.store.findRecord('group', 'group_a');
   }
 }

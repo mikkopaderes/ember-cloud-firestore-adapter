@@ -18,6 +18,7 @@ module.exports = {
   ],
   extends: [
     'airbnb-base',
+    'plugin:@typescript-eslint/recommended',
     'plugin:ember/recommended',
   ],
   env: {
@@ -27,9 +28,11 @@ module.exports = {
     FastBoot: 'readonly',
   },
   rules: {
+    'semi': 'off', // enforced by @typescript-eslint/semi
     'import/no-unresolved': 'off',
     'import/no-extraneous-dependencies': 'off',
-    'class-methods-use-this': 'off'
+    'class-methods-use-this': 'off',
+    'no-underscore-dangle': 'off',
   },
   overrides: [
     // node files
@@ -62,30 +65,11 @@ module.exports = {
     },
     // test files
     {
-      files: [
-        '**/*-test.js',
-        '**/*-test.ts'
-      ],
+      files: ['**/*-test.ts'],
       rules: {
         'prefer-arrow-callback': 'off',
-        'func-names': 'off'
-      }
-    },
-    // typescript files (TODO: Make this as the top rule once all scripts migrated to TS)
-    {
-      files: ['**/*.ts'],
-      excludedFiles: ['**/*-test.ts'],
-      extends: [
-        'airbnb-base',
-        'plugin:@typescript-eslint/recommended',
-        'plugin:ember/recommended',
-      ],
-      rules: {
-        'semi': 'off', // enforced by @typescript-eslint/semi
-        'import/no-unresolved': 'off',
-        'import/no-extraneous-dependencies': 'off',
-        'class-methods-use-this': 'off',
-        'no-underscore-dangle': 'off',
+        'func-names': 'off',
+        '@typescript-eslint/no-empty-function': 'off'
       }
     }
   ]

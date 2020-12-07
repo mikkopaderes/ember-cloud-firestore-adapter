@@ -7,7 +7,7 @@ import DS from 'ember-data';
 import PromiseProxyMixin from '@ember/object/promise-proxy-mixin';
 import RSVP from 'rsvp';
 
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import sinon from 'sinon';
 
 import RealtimeTracker from 'ember-cloud-firestore-adapter/-private/realtime-tracker';

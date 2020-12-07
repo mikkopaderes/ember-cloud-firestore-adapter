@@ -1,4 +1,4 @@
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 
 export default function flattenDocSnapshot(docSnapshot: firebase.firestore.DocumentSnapshot): {
   id: string,
