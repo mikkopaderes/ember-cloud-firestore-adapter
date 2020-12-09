@@ -21,11 +21,6 @@ module.exports = {
 
     app.import('vendor/ember-firebase-service/firebase/firebase-auth.js');
     app.import('vendor/ember-firebase-service/firebase/firebase-firestore.js');
-
-    if (app.env !== 'production') {
-      app.import('node_modules/mock-cloud-firestore/dist/mock-cloud-firestore.js');
-      app.import('vendor/shims/mock-cloud-firestore.js');
-    }
   },
 
   treeForServiceWorker(swTree, appTree) {

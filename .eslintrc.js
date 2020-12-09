@@ -4,7 +4,7 @@
 
 module.exports = {
   root: true,
-  parser: 'babel-eslint',
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: 'module',
@@ -13,10 +13,12 @@ module.exports = {
     }
   },
   plugins: [
+    '@typescript-eslint',
     'ember',
   ],
   extends: [
     'airbnb-base',
+    'plugin:@typescript-eslint/recommended',
     'plugin:ember/recommended',
   ],
   env: {
@@ -26,17 +28,11 @@ module.exports = {
     FastBoot: 'readonly',
   },
   rules: {
+    'semi': 'off', // enforced by @typescript-eslint/semi
     'import/no-unresolved': 'off',
     'import/no-extraneous-dependencies': 'off',
-    'import/extensions': ['error', 'ignorePackages', {
-      js: 'never',
-      mjs: 'never',
-      jsx: 'never',
-    }],
-    'no-underscore-dangle': 'off',
-    'no-param-reassign': 'off',
-    'ember/avoid-leaking-state-in-ember-objects': 'off',
     'class-methods-use-this': 'off',
+    'no-underscore-dangle': 'off',
   },
   overrides: [
     // node files
@@ -69,10 +65,11 @@ module.exports = {
     },
     // test files
     {
-      files: ['**/*-test.js'],
+      files: ['**/*-test.ts'],
       rules: {
         'prefer-arrow-callback': 'off',
-        'func-names': 'off'
+        'func-names': 'off',
+        '@typescript-eslint/no-empty-function': 'off'
       }
     }
   ]
