@@ -27,14 +27,14 @@ module('Unit | Transform | timestamp', function (hooks) {
   });
 
   module('function: serialize', function () {
-    test('should serialize to Firebase server timestamp when deserialized value isn\'t a date', function (assert) {
+    test('should serialize to Firebase server timestamp when deserialized value isn\'t a date or null', function (assert) {
       assert.expect(1);
 
       // Arrange
       const transform = this.owner.lookup('transform:timestamp');
 
       // Act
-      const result = transform.serialize(null);
+      const result = transform.serialize(undefined);
 
       // Assert
       assert.deepEqual(result, firebase.firestore.FieldValue.serverTimestamp());
@@ -52,6 +52,19 @@ module('Unit | Transform | timestamp', function (hooks) {
 
       // Assert
       assert.equal(result, date);
+    });
+
+    test('should not serialize to Firebase server timestamp when deserialized value is null', function (assert) {
+      assert.expect(1);
+
+      // Arrange
+      const transform = this.owner.lookup('transform:timestamp');
+
+      // Act
+      const result = transform.serialize(null);
+
+      // Assert
+      assert.equal(result, null);
     });
   });
 });
