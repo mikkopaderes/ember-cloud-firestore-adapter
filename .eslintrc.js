@@ -27,10 +27,29 @@ module.exports = {
   globals: {
     FastBoot: 'readonly',
   },
+  settings: {
+    'import/resolver': {
+      node: {
+        extensions: ['.mjs', '.js', '.json', '.ts']
+      }
+    },
+    'import/extensions': [
+      '.js',
+      '.mjs',
+      '.jsx',
+      '.ts',
+    ],
+  },
   rules: {
     'semi': 'off', // enforced by @typescript-eslint/semi
     'import/no-unresolved': 'off',
     'import/no-extraneous-dependencies': 'off',
+    'import/extensions': ['error', 'ignorePackages', {
+      js: 'never',
+      mjs: 'never',
+      jsx: 'never',
+      ts: 'never',
+    }],
     'class-methods-use-this': 'off',
     'no-underscore-dangle': 'off',
   },

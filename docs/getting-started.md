@@ -1,5 +1,27 @@
 # Getting Started
 
+## Pre-setup
+
+In your `ember-cli-build.js`, set the exclusion of `'firebase'` in the `ember-auto-import` settings. This is because `firebase` package is already included as a shim in this addon.
+
+```javascript
+'use strict';
+
+const EmberApp = require('ember-cli/lib/broccoli/ember-app');
+
+module.exports = function (defaults) {
+  const app = new EmberApp(defaults, {
+    autoImport: {
+      exclude: ['firebase']
+    }
+  });
+
+  ...
+
+  return app.toTree();
+};
+```
+
 ## Configuration
 
 ### 1. Setup Firebase and Addon Configuration
