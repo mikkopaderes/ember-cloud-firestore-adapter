@@ -192,14 +192,11 @@ function reopenStore(appInstance) {
               const current = currentRecords.findBy('id', changeId);
               const updated = updatedRecords.findBy('id', changeId);
 
-              // Remove
               if (changeType === 'removed') {
+                // Remove
                 if (current) currentRecords.removeObject(current);
-                return;
-              }
-
-              // Update
-              if (current) {
+              } else if (current) {
+                // Update
                 const index = currentRecords.indexOf(current);
                 currentRecords.replace(index, 1, [updated]);
               } else {
