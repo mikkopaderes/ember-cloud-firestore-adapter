@@ -1,7 +1,7 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 
 module('Unit | Transform | timestamp', function (hooks) {
   setupTest(hooks);
