@@ -12,8 +12,10 @@ export default class TimestampTransform extends Transform {
     return value;
   }
 
-  public serialize(value: unknown): unknown | firebase.firestore.FieldValue {
-    return typeOf(value) === 'date' ? value : firebase.firestore.FieldValue.serverTimestamp();
+  public serialize(value: unknown): Date | firebase.firestore.FieldValue {
+    return typeOf(value) === 'date'
+      ? value as Date
+      : firebase.firestore.FieldValue.serverTimestamp();
   }
 }
 
