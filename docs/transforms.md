@@ -13,7 +13,7 @@ export default class PostModel extends Model {
 }
 ```
 
-In the example above, whenever you save a record who's `createdOn` is not of `Date` instance it will use the server timestamp. Otherwise, it will use that same `Date` instead.
+In the example above, whenever you save a record where the value of `createdOn` is of a `Date` or `null` instance, it will use that value as-is. Otherwise, it wll use `firebase.firestore.FieldValue.serverTimestamp()`.
 
 ---
 
