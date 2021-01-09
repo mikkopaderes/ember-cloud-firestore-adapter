@@ -335,7 +335,7 @@ export default class CloudFirestoreAdapter extends Adapter {
 
     if (cardinality === 'manyToOne') {
       const inverse = snapshot.type.inverseFor(relationship.key, store);
-      const collectionName = buildCollectionName(snapshot.modelName);
+      const collectionName = buildCollectionName(snapshot.modelName.toString());
       const parentDocRef = db.doc(`${collectionName}/${snapshot.id}`);
       const collectionRef = db.collection(url).where(inverse.name, '==', parentDocRef);
 
