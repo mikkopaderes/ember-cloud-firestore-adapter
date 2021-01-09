@@ -53,6 +53,22 @@ module('Acceptance | features', function (hooks) {
     assert.dom('[data-test-age]').hasText('30');
   });
 
+  test('should be able to create record without belongs to relationship', async function (assert) {
+    assert.expect(3);
+
+    // Arrange
+    await visit('/features');
+
+    // Act
+    await click('[data-test-button="create-record-without-belongs-to-relationship"]');
+
+    // Assert
+    await waitFor('[data-test-id]', { timeout: 5000 });
+    assert.dom('[data-test-id="user_a"]').hasText('user_a');
+    assert.dom('[data-test-name="user_a"]').hasText('user_a');
+    assert.dom('[data-test-age="user_a"]').hasNoText();
+  });
+
   test('should update record', async function (assert) {
     assert.expect(1);
 

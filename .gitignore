@@ -19,6 +19,7 @@
 /testem.log
 /yarn-error.log
 vim.exe.stackdump
+/firebase-debug.log
 /firestore-debug.log
 /ui-debug.log
 
