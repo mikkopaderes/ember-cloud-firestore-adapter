@@ -21,20 +21,36 @@ module('Acceptance | features', function (hooks) {
     await resetFixtureData(db);
   });
 
-  test('should create record', async function (assert) {
+  test('should create record with ID', async function (assert) {
     assert.expect(3);
 
     // Arrange
     await visit('/features');
 
     // Act
-    await click('[data-test-button="create-record"]');
+    await click('[data-test-button="create-record-with-id"]');
 
     // Assert
     await waitFor('[data-test-id]', { timeout: 5000 });
     assert.dom('[data-test-id="new"]').hasText('new');
-    assert.dom('[data-test-name="new"]').hasText('new_user');
+    assert.dom('[data-test-name="new"]').hasText('new_user_created_with_id');
     assert.dom('[data-test-age="new"]').hasText('25');
+  });
+
+  test('should create record without ID', async function (assert) {
+    assert.expect(3);
+
+    // Arrange
+    await visit('/features');
+
+    // Act
+    await click('[data-test-button="create-record-without-id"]');
+
+    // Assert
+    await waitFor('[data-test-id]', { timeout: 5000 });
+    assert.dom('[data-test-id]').hasAnyText();
+    assert.dom('[data-test-name]').hasText('new_user_created_without_id');
+    assert.dom('[data-test-age]').hasText('30');
   });
 
   test('should update record', async function (assert) {
