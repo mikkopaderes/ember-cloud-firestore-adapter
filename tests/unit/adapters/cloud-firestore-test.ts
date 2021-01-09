@@ -28,10 +28,10 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       // Act
-      const result = adapter.generateIdForRecord({}, { modelName: 'foo' });
+      const result = adapter.generateIdForRecord({}, 'foo');
 
       // Assert
-      assert.ok(result);
+      assert.ok(typeof result === 'string');
     });
   });
 

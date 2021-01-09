@@ -12,11 +12,21 @@ export default class FeaturesController extends Controller {
   public users: UserModel[] | EmberArray<UserModel> = [];
 
   @action
-  public async handleCreateRecordClick(): Promise<void> {
+  public async handleCreateRecordWithIdClick(): Promise<void> {
     const user = await this.store.createRecord('user', {
       id: 'new',
-      name: 'new_user',
+      name: 'new_user_created_with_id',
       age: 25,
+    }).save();
+
+    this.users = [user];
+  }
+
+  @action
+  public async handleCreateRecordWithoutIdClick(): Promise<void> {
+    const user = await this.store.createRecord('user', {
+      name: 'new_user_created_without_id',
+      age: 30,
     }).save();
 
     this.users = [user];

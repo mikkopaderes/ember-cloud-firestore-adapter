@@ -81,9 +81,9 @@ export default class CloudFirestoreAdapter extends Adapter {
     this.realtimeTracker = new RealtimeTracker(getOwner(this).lookup('service:store'));
   }
 
-  public generateIdForRecord(_store: Store, type: ModelClass): string {
+  public generateIdForRecord(_store: Store, type: string): string {
     const db = this.firebase.firestore();
-    const collectionName = buildCollectionName(type.modelName);
+    const collectionName = buildCollectionName(type);
 
     return db.collection(collectionName).doc().id;
   }
