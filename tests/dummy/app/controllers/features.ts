@@ -33,6 +33,19 @@ export default class FeaturesController extends Controller {
   }
 
   @action
+  public async handleCreateRecordWithoutBelongsToRelationship(): Promise<void> {
+    const user = await this.store.findRecord('user', 'user_a');
+    const post = await this.store.createRecord('post', {
+      // No belongs to relationship for Group model
+      author: user,
+      title: 'What does having it all mean to you? (By: Gabe Lewis)',
+    }).save();
+    const author = await post.get('author');
+
+    this.users = [author];
+  }
+
+  @action
   public async handleUpdateRecordClick(): Promise<void> {
     const user = await this.store.findRecord('user', 'user_a');
 

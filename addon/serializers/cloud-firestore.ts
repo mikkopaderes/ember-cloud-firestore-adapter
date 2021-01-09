@@ -59,9 +59,11 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
 
     modelClass.eachRelationship((name, descriptor) => {
       if (descriptor.kind === 'belongsTo') {
-        const data = resourceHash[name] as firebase.firestore.CollectionReference;
+        if (resourceHash[name]) {
+          const data = resourceHash[name] as firebase.firestore.CollectionReference;
 
-        links[name] = data.path;
+          links[name] = data.path;
+        }
       } else {
         const cardinality = modelClass.determineRelationshipType(descriptor, this.store);
         let hasManyPath;
