@@ -331,17 +331,20 @@ export default class CloudFirestoreAdapter extends Adapter {
     relationship: HasManyRelationshipMeta,
   ): firebase.firestore.CollectionReference | firebase.firestore.Query {
     const db = this.firebase.firestore();
+
+    if (relationship.options.buildReference) {
+      const collectionRef = relationship.options.buildReference(db, snapshot.record);
+
+      return relationship.options.filter?.(collectionRef, snapshot.record) || collectionRef;
+    }
+
     const cardinality = snapshot.type.determineRelationshipType(relationship, store);
 
     if (cardinality === 'manyToOne') {
       const inverse = snapshot.type.inverseFor(relationship.key, store);
-      const collectionName = buildCollectionName(snapshot.modelName.toString());
-      const parentDocRef = db.doc(`${collectionName}/${snapshot.id}`);
-      const collectionRef = db.collection(url).where(inverse.name, '==', parentDocRef);
-
-      return relationship.options.filter?.(collectionRef, snapshot.record) || collectionRef;
-    } if (relationship.options.buildReference) {
-      const collectionRef = relationship.options.buildReference(db, snapshot.record);
+      const snapshotCollectionName = buildCollectionName(snapshot.modelName.toString());
+      const snapshotDocRef = db.doc(`${snapshotCollectionName}/${snapshot.id}`);
+      const collectionRef = db.collection(url).where(inverse.name, '==', snapshotDocRef);
 
       return relationship.options.filter?.(collectionRef, snapshot.record) || collectionRef;
     }
