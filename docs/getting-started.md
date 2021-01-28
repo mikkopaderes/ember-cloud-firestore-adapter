@@ -87,6 +87,22 @@ These are the settings currently available:
 
 Note that these settings will be the same regardless of the environment.
 
+### 3. Create Your Application Serializer
+
+Create an application serializer by running:
+
+```bash
+ember generate serializer application
+```
+
+Change it to look something like this:
+
+```javascript
+import CloudFirestoreSerializer from 'ember-cloud-firestore-adapter/serializers/cloud-firestore';
+
+export default class ApplicationSerializer extends CloudFirestoreSerializer { }
+```
+
 ---
 
 [Next: Data Structure »](data-structure.md)
