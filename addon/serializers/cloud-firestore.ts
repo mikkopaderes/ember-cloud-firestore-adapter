@@ -26,6 +26,14 @@ interface ResourceHash {
   [key: string]: string | Links | firebase.firestore.CollectionReference;
 }
 
+interface RelationshipDefinition {
+  key: string;
+  type: string;
+  options: {
+    buildReference?(db: firebase.firestore.Firestore): firebase.firestore.CollectionReference
+  };
+}
+
 interface ModelClass {
   modelName: string;
   determineRelationshipType(descriptor: { kind: string, type: string }, store: Store): string;
@@ -89,16 +97,22 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
   public serializeBelongsTo(
     snapshot: DS.Snapshot,
     json: { [key: string]: string | null | firebase.firestore.DocumentReference },
-    relationship: { key: string, type: string },
+    relationship: RelationshipDefinition,
   ): void {
     super.serializeBelongsTo(snapshot, json, relationship);
 
     if (json[relationship.key]) {
-      const collectionName = buildCollectionName(relationship.type);
-      const docId = json[relationship.key];
-      const path = `${collectionName}/${docId}`;
+      const db = this.firebase.firestore();
+      const docId = json[relationship.key] as string;
 
-      json[relationship.key] = this.firebase.firestore().doc(path);
+      if (relationship.options.buildReference) {
+        json[relationship.key] = relationship.options.buildReference(db).doc(docId);
+      } else {
+        const collectionName = buildCollectionName(relationship.type);
+        const path = `${collectionName}/${docId}`;
+
+        json[relationship.key] = db.doc(path);
+      }
     }
   }
 

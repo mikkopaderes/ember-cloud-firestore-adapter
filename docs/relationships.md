@@ -21,6 +21,18 @@ Indicates if the record will update in realtime
 
 **Type:** `boolean`
 
+### `buildReference`
+
+Hook for providing a custom collection reference.
+
+**Type:** `function`
+
+**Params:**
+
+| Name   | Type                                                                                                         | Description       |
+| -------| ------------------------------------------------------------------------------------------------------------ | ----------------- |
+| db     | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore) |                   |
+
 ## `hasMany`
 
 The optional configs are available by passing it as a param.
@@ -53,8 +65,6 @@ Indicates if the record will update in realtime after creating it
 ### `buildReference`
 
 Hook for providing a custom collection reference.
-
-This is ignored when the relationship is a many-to-one type.
 
 **Type:** `function`
 

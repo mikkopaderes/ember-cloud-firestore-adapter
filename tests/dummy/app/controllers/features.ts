@@ -46,6 +46,19 @@ export default class FeaturesController extends Controller {
   }
 
   @action
+  public async handleCreateRecordWithBelongsToBuildReference(): Promise<void> {
+    const user = await this.store.findRecord('user', 'user_a');
+    const post = await this.store.createRecord('post', {
+      id: 'new_post',
+      publisher: user,
+      title: 'What does having it all mean to you? (By: Gabe Lewis)',
+    }).save();
+    const publisher = await post.get('publisher');
+
+    this.users = [publisher];
+  }
+
+  @action
   public async handleUpdateRecordClick(): Promise<void> {
     const user = await this.store.findRecord('user', 'user_a');
 
