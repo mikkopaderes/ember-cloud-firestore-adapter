@@ -444,13 +444,11 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       assert.ok(inverseForStub.calledWithExactly(relationship.key, store));
     });
 
-    test('should be able to fetch with a custom reference when not a many-to-one cardinality', async function (assert) {
+    test('should be able to fetch with a custom reference', async function (assert) {
       // Arrange
       const store = { normalize: sinon.stub(), push: sinon.stub() };
-      const determineRelationshipTypeStub = sinon.stub().returns('manyToNone');
       const snapshot = {
         record: EmberObject.create({ id: 'user_a' }),
-        type: { determineRelationshipType: determineRelationshipTypeStub },
       };
       const url = null;
       const relationship = {
@@ -474,7 +472,6 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       // Assert
       assert.equal(result[0].id, 'post_b');
       assert.equal(result[0].title, 'post_b');
-      assert.ok(determineRelationshipTypeStub.calledWithExactly(relationship, store));
     });
   });
 
