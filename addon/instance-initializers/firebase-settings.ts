@@ -12,9 +12,12 @@ export function initialize(appInstance: ApplicationInstance): void {
     }
 
     if (config['ember-cloud-firestore-adapter']?.emulator) {
-      const { hostname, port, authPort } = config['ember-cloud-firestore-adapter'].emulator;
+      const {
+        hostname, port, firestorePort, authPort,
+      } = config['ember-cloud-firestore-adapter'].emulator;
 
-      db.useEmulator(hostname, port);
+      // retain "port" as fallback for backwards compat
+      db.useEmulator(hostname, firestorePort || port);
       if (authPort) {
         // for some reason the auth().useEmulator requires a string url, rather
         // than (hostname, port), even though it seems only localhost-over-HTTP is
