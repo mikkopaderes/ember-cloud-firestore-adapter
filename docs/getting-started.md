@@ -45,6 +45,7 @@ let ENV = {
     emulator: {
       hostname: 'localhost',
       port: 8080,
+      authPort: 9099  // optional if not using auth
     },
   },
 
