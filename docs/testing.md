@@ -13,7 +13,8 @@ let ENV = {
   'ember-cloud-firestore-adapter': {
     emulator: {
       hostname: 'localhost',
-      port: 8080,
+      firestorePort: 8080,
+      authPort: 9099  // optional if not using auth
     },
   },
 
