@@ -169,6 +169,8 @@ function reopenStore(appInstance) {
     listenForHasManyChanges(modelName, id, relationship, collectionRef) {
       if (!this.isInFastBoot()) {
         const { type, key: field } = relationship;
+        const { environment } = config;
+
         let hasManyTracker;
 
         if (this.hasListenerForHasMany(modelName, id, field)) {
@@ -179,7 +181,7 @@ function reopenStore(appInstance) {
         }
 
         const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
-          if (hasManyTracker && !hasManyTracker.initialized) {
+          if (environment !== 'test' && hasManyTracker && !hasManyTracker.initialized) {
             hasManyTracker.initialized = true;
             return;
           }
