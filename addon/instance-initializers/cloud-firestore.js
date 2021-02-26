@@ -178,6 +178,8 @@ function reopenStore(appInstance) {
           hasManyTracker.unsubscribe();
         } else if (this.trackHasManyListener(modelName, id, field)) {
           hasManyTracker = this.get('tracker')[modelName].document[id].relationship[field];
+        } else {
+          hasManyTracker = this.trackDocListener(modelName, id);
         }
 
         const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
@@ -440,8 +442,9 @@ function reopenStore(appInstance) {
      * @private
      */
     trackHasManyListener(modelName, id, field) {
-      if (!this.get('tracker')[modelName].document[id]) return;
-      this.get('tracker')[modelName].document[id].relationship[field] = {};
+      const tracker = this.get('tracker')[modelName];
+      if (!tracker || !tracker.document[id]) return;
+      tracker.document[id].relationship[field] = {};
       return true;
     },
 
