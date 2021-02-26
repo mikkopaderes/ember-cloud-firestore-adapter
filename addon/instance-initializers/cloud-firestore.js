@@ -1,15 +1,15 @@
 /* eslint-disable consistent-return */
-import { Promise } from 'rsvp';
-import { isNone } from '@ember/utils';
+import { updatePaginationMeta } from 'ember-cloud-firestore-adapter/utils/pagination';
+import { parseDocSnapshot } from 'ember-cloud-firestore-adapter/utils/parser';
+import { getOwner } from '@ember/application';
+import { singularize } from 'ember-inflector';
 import { computed, get } from '@ember/object';
 import { dasherize } from '@ember/string';
-import { getOwner } from '@ember/application';
 import { inject } from '@ember/service';
+import { isNone } from '@ember/utils';
 import { next } from '@ember/runloop';
-import { singularize } from 'ember-inflector';
-import { parseDocSnapshot } from 'ember-cloud-firestore-adapter/utils/parser';
-import { updatePaginationMeta } from 'ember-cloud-firestore-adapter/utils/pagination';
 import config from 'ember-get-config';
+import { Promise } from 'rsvp';
 
 /**
  * @param {Application} appInstance
@@ -179,33 +179,47 @@ function reopenStore(appInstance) {
         }
 
         const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
-          const processedChanges = this._handleDocChanges(type, querySnapshot);
-          const { changedRecords, promises } = processedChanges;
+          if (hasManyTracker && !hasManyTracker.initialized) {
+            hasManyTracker.initialized = true;
+            return;
+          }
 
-          Promise.all(promises).then((updatedRecords) => {
+          console.time('Handle Collection-Snapshot Listener');
+          console.log('Handle Collection-Snapshot Listener', {
+            collectionRef,
+            relationship,
+            modelName,
+            type,
+            id,
+          });
+
+          const processedChanges = this._handleDocChanges(type, querySnapshot);
+          const { updatedRecords, addedRecords } = processedChanges;
+
+          Promise.all(addedRecords).then((newRecords) => {
             const record = this.peekRecord(modelName, id);
             if (!record) return;
 
             const currentRecords = get(record, field);
 
-            changedRecords.forEach(({ data: { id: changeId, changeType } }) => {
-              const current = currentRecords.findBy('id', changeId);
-              const updated = updatedRecords.findBy('id', changeId);
+            currentRecords.addObjects(newRecords);
+
+            updatedRecords.forEach(({ changeType, data }) => {
+              const { id: recordId } = data;
+              const currentRecord = currentRecords.findBy('id', recordId);
 
               if (changeType === 'removed') {
                 // Remove
-                if (current) currentRecords.removeObject(current);
-              } else if (current) {
+                if (currentRecord) currentRecords.removeObject(currentRecord);
+              } else if (currentRecord) {
                 // Update
-                const index = currentRecords.indexOf(current);
-                currentRecords.replace(index, 1, [updated]);
-              } else {
-                // Add
-                currentRecords.addObject(updated);
+                this.push({ data });
               }
             });
 
             updatePaginationMeta(relationship, currentRecords);
+
+            console.timeEnd('Handle Collection-Snapshot Listener');
           });
         });
 
@@ -214,20 +228,20 @@ function reopenStore(appInstance) {
     },
 
     _handleDocChanges(type, querySnapshot) {
-      const promises = [];
-      const changedRecords = [];
+      const addedRecords = [];
+      const updatedRecords = [];
       const involvedChangeTypes = [];
       const { environment } = config;
 
       if (environment === 'test') {
         querySnapshot.forEach((docSnapshot) => {
-          promises.push(this.findRecord(type, docSnapshot.id, {
+          addedRecords.push(this.findRecord(type, docSnapshot.id, {
             adapterOptions: {
               docRef: docSnapshot.ref,
             },
           }));
 
-          changedRecords.push({
+          updatedRecords.push({
             data: { type, id: docSnapshot.id },
           });
         });
@@ -236,22 +250,30 @@ function reopenStore(appInstance) {
 
         changes.forEach((change) => {
           const { type: changeType, doc: docSnapshot } = change;
+          const { id: recordId } = docSnapshot;
+          const data = docSnapshot.data();
 
-          if (changeType === 'added' || changeType === 'modified') {
-            promises.push(this.findRecord(type, docSnapshot.id, {
+          if (changeType === 'added') {
+            addedRecords.push(this.findRecord(type, recordId, {
               adapterOptions: {
                 docRef: docSnapshot.ref,
               },
             }));
+            return;
           }
 
-          changedRecords.push({
-            data: { type, id: docSnapshot.id, changeType },
+          updatedRecords.push({
+            changeType,
+            data: {
+              id: recordId,
+              type,
+              attributes: { ...data },
+            },
           });
         });
       }
 
-      return { changedRecords, promises, involvedChangeTypes };
+      return { updatedRecords, addedRecords, involvedChangeTypes };
     },
 
     /**

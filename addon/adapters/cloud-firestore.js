@@ -472,25 +472,26 @@ export default RESTAdapter.extend({
   findHasManyRecords(store, relationship, querySnapshot) {
     return querySnapshot.docs.map((docSnapshot) => {
       const type = { modelName: relationship.type };
-      const referenceTo = docSnapshot.get(this.get('referenceKeyName')) || docSnapshot.ref;
+      return parseDocSnapshot(type, docSnapshot);
+      // const referenceTo = docSnapshot.get(this.get('referenceKeyName')) || docSnapshot.ref;
 
-      if (referenceTo && referenceTo.firestore) {
-        const options = (relationship && relationship.meta && relationship.meta.options) || {};
+      // if (referenceTo && referenceTo.firestore) {
+      //   const options = (relationship && relationship.meta && relationship.meta.options) || {};
 
-        const request = this.findRecord(store, type, referenceTo.id, Object.assign({
-          adapterOptions: {
-            buildReference() {
-              return referenceTo.parent;
-            },
-          },
-        }, options));
+      //   const request = this.findRecord(store, type, referenceTo.id, Object.assign({
+      //     adapterOptions: {
+      //       buildReference() {
+      //         return referenceTo.parent;
+      //       },
+      //     },
+      //   }, options));
 
-        return request;
-      }
+      //   return request;
+      // }
 
-      const request = this.findRecord(store, type, docSnapshot.id);
+      // const request = this.findRecord(store, type, docSnapshot.id);
 
-      return request;
+      // return request;
     });
   },
 
