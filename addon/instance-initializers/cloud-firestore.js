@@ -1,3 +1,5 @@
+/* eslint-disable no-plusplus */
+/* eslint-disable no-console */
 /* eslint-disable consistent-return */
 import { updatePaginationMeta } from 'ember-cloud-firestore-adapter/utils/pagination';
 import { parseDocSnapshot } from 'ember-cloud-firestore-adapter/utils/parser';
@@ -17,6 +19,8 @@ import { Promise } from 'rsvp';
  */
 function reopenStore(appInstance) {
   appInstance.lookup('service:store').reopen({
+    snapshotListenerCount: 0,
+
     /**
      * @type {Ember.Service}
      */
@@ -62,6 +66,9 @@ function reopenStore(appInstance) {
       ) {
         this.trackDocListener(type.modelName, docRef.id);
 
+        console.log('Adding new snapshot listener for DOC', { type: type.modelName, id: docRef.id });
+        this.snapshotListenerCount++;
+
         docRef.onSnapshot((docSnapshot) => {
           next(() => {
             if (docSnapshot.exists) {
@@ -85,6 +92,8 @@ function reopenStore(appInstance) {
             this.unloadRecordUsingModelNameAndId(type.modelName, docRef.id);
           }
         });
+
+        console.log('SNAPSHOT LISTENERS ACTIVE', this.snapshotListenerCount);
       }
     },
 
@@ -98,20 +107,34 @@ function reopenStore(appInstance) {
       if (!this.isInFastBoot() && !this.hasListenerForCollection(modelName)) {
         this.trackCollectionListener(modelName);
 
+        console.log('Adding new snapshot listener for COLLECTION', { collectionRef });
+        this.snapshotListenerCount++;
+
         collectionRef.onSnapshot((querySnapshot) => {
           next(() => {
             if (config.environment === 'test') {
-              querySnapshot.forEach(docSnapshot => this.findRecord(modelName, docSnapshot.id));
+              querySnapshot.forEach(docSnapshot =>
+                this.findRecord(
+                  modelName,
+                  docSnapshot.id,
+                  { adapterOptions: { attachSnapshotListener: false } },
+                ));
             } else {
               querySnapshot
                 .docChanges()
                 .forEach((change) => {
                   const { doc: docSnapshot } = change;
-                  return this.findRecord(modelName, docSnapshot.id);
+                  return this.findRecord(
+                    modelName,
+                    docSnapshot.id,
+                    { adapterOptions: { attachSnapshotListener: false } },
+                  );
                 });
             }
           });
         });
+
+        console.log('SNAPSHOT LISTENERS ACTIVE', this.snapshotListenerCount);
       }
     },
 
@@ -128,6 +151,9 @@ function reopenStore(appInstance) {
         if (this.hasListenerForQuery(option.queryId)) {
           queryTracker = this.get('tracker')._query[option.queryId];
 
+          console.log('Removing existing snapshot listener for QUERY');
+          this.snapshotListenerCount--;
+
           queryTracker.unsubscribe();
 
           if (!queryTracker.recordArray.get('isUpdating')) {
@@ -138,6 +164,9 @@ function reopenStore(appInstance) {
 
           queryTracker = this.get('tracker')._query[option.queryId];
         }
+
+        console.log('Adding new snapshot listener for QUERY', { modelName, option, queryRef });
+        this.snapshotListenerCount++;
 
         const unsubscribe = queryRef.onSnapshot((querySnapshot) => {
           if (queryTracker.recordArray) {
@@ -156,6 +185,8 @@ function reopenStore(appInstance) {
         });
 
         queryTracker.unsubscribe = unsubscribe;
+
+        console.log('SNAPSHOT LISTENERS ACTIVE', this.snapshotListenerCount);
       }
     },
 
@@ -175,12 +206,28 @@ function reopenStore(appInstance) {
 
         if (this.hasListenerForHasMany(modelName, id, field)) {
           hasManyTracker = this.get('tracker')[modelName].document[id].relationship[field];
+
+          console.log('Removing existing snapshot listener for HASMANY');
+          this.snapshotListenerCount--;
+
           hasManyTracker.unsubscribe();
         } else if (this.trackHasManyListener(modelName, id, field)) {
           hasManyTracker = this.get('tracker')[modelName].document[id].relationship[field];
         } else {
           hasManyTracker = this.trackDocListener(modelName, id);
         }
+
+        console.log(
+          'Adding new snapshot listener for HASMANY',
+          {
+            id,
+            modelName,
+            type,
+            field,
+          },
+        );
+
+        this.snapshotListenerCount++;
 
         const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
           if (environment !== 'test' && hasManyTracker && !hasManyTracker.initialized) {
@@ -228,6 +275,8 @@ function reopenStore(appInstance) {
         });
 
         if (hasManyTracker) hasManyTracker.unsubscribe = unsubscribe;
+
+        console.log('SNAPSHOT LISTENERS ACTIVE', this.snapshotListenerCount);
       }
     },
 
@@ -239,11 +288,16 @@ function reopenStore(appInstance) {
 
       if (environment === 'test') {
         querySnapshot.forEach((docSnapshot) => {
-          addedRecords.push(this.findRecord(type, docSnapshot.id, {
-            adapterOptions: {
-              docRef: docSnapshot.ref,
+          addedRecords.push(this.findRecord(
+            type,
+            docSnapshot.id,
+            {
+              adapterOptions: {
+                attachSnapshotListener: false,
+                docRef: docSnapshot.ref,
+              },
             },
-          }));
+          ));
 
           updatedRecords.push({
             data: { type, id: docSnapshot.id },
@@ -258,11 +312,17 @@ function reopenStore(appInstance) {
           const data = docSnapshot.data();
 
           if (changeType === 'added') {
-            addedRecords.push(this.findRecord(type, recordId, {
-              adapterOptions: {
-                docRef: docSnapshot.ref,
+            addedRecords.push(this.findRecord(
+              type,
+              recordId,
+              {
+                adapterOptions: {
+                  attachSnapshotListener: false,
+                  docRef: docSnapshot.ref,
+                },
               },
-            }));
+            ));
+
             return;
           }
 
