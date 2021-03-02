@@ -19,6 +19,7 @@ import { Promise } from 'rsvp';
  */
 function reopenStore(appInstance) {
   appInstance.lookup('service:store').reopen({
+    activeSnapshotListeners: { collection: {}, document: {} },
     snapshotListenerCount: 0,
 
     /**
@@ -66,18 +67,18 @@ function reopenStore(appInstance) {
       ) {
         this.trackDocListener(type.modelName, docRef.id);
 
-        console.log('Adding new snapshot listener for DOC', { type: type.modelName, id: docRef.id });
+        console.log(
+          'Adding new snapshot listener for DOC',
+          { modelName: type.modelName, id: docRef.id }
+        );
+
         this.snapshotListenerCount++;
 
         docRef.onSnapshot((docSnapshot) => {
           next(() => {
             if (docSnapshot.exists) {
-              const payload = parseDocSnapshot(type, docSnapshot);
-              payload._snapshot = docSnapshot;
-              payload._docRef = payload._docRef || docRef;
-              payload._docRefPath = payload._docRefPath || docRef.path;
+              const payload = parseDocSnapshot(type, docSnapshot, docRef);
               const normalizedPayload = this.normalize(type.modelName, payload);
-
               this.push(normalizedPayload);
             } else {
               this.unloadRecordUsingModelNameAndId(type.modelName, docRef.id);
@@ -93,7 +94,7 @@ function reopenStore(appInstance) {
           }
         });
 
-        console.log('SNAPSHOT LISTENERS ACTIVE', this.snapshotListenerCount);
+        this.logActiveSnapshotListeners({ doc: { modelName: type.modelName, id: docRef.id } });
       }
     },
 
@@ -144,7 +145,7 @@ function reopenStore(appInstance) {
      * @param {firebase.firestore.Query} queryRef
      * @function
      */
-    listenForQueryChanges(modelName, option, queryRef) {
+    listenForQueryChanges(modelName, option, collectionRef) {
       if (!this.isInFastBoot()) {
         let queryTracker;
 
@@ -165,10 +166,10 @@ function reopenStore(appInstance) {
           queryTracker = this.get('tracker')._query[option.queryId];
         }
 
-        console.log('Adding new snapshot listener for QUERY', { modelName, option, queryRef });
+        console.log('Adding new snapshot listener for QUERY', { modelName, option, collectionRef });
         this.snapshotListenerCount++;
 
-        const unsubscribe = queryRef.onSnapshot((querySnapshot) => {
+        const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
           if (queryTracker.recordArray) {
             const requests = this.findQueryRecords(modelName, option, querySnapshot);
 
@@ -188,6 +189,36 @@ function reopenStore(appInstance) {
 
         console.log('SNAPSHOT LISTENERS ACTIVE', this.snapshotListenerCount);
       }
+    },
+
+    /**
+     * @param {string} modelName
+     * @param {Object} option
+     * @param {firebase.firestore.QuerySnapshot} querySnapshot
+     * @return {Array.<Promise>} Find record promises
+     * @function
+     * @private
+     */
+    findQueryRecords(modelName, option, querySnapshot) {
+      return querySnapshot.docs.map((docSnapshot) => {
+        const referenceKeyName = this.adapterFor(modelName).get('referenceKeyName');
+        const referenceTo = docSnapshot.get(referenceKeyName) || docSnapshot.ref;
+
+        if (referenceTo && referenceTo.firestore) {
+          const request = this.findRecord(modelName, referenceTo.id, {
+            adapterOptions: {
+              attachSnapshotListener: false,
+              buildReference() {
+                return referenceTo.parent;
+              },
+            },
+          });
+
+          return request;
+        }
+
+        return this.findRecord(modelName, docSnapshot.id, { adapterOptions: option });
+      });
     },
 
     /**
@@ -220,10 +251,10 @@ function reopenStore(appInstance) {
         console.log(
           'Adding new snapshot listener for HASMANY',
           {
-            id,
             modelName,
-            type,
             field,
+            type,
+            id,
           },
         );
 
@@ -236,108 +267,115 @@ function reopenStore(appInstance) {
           }
 
           console.time('Handle Collection-Snapshot Listener');
-          console.log('Handle Collection-Snapshot Listener', {
-            collectionRef,
-            relationship,
-            modelName,
-            type,
-            id,
-          });
 
           const processedChanges = this._handleDocChanges(type, querySnapshot);
-          const { updatedRecords, addedRecords } = processedChanges;
+          const { newRecordData, updatedRecordData } = processedChanges;
 
-          Promise.all(addedRecords).then((newRecords) => {
-            const record = this.peekRecord(modelName, id);
-            if (!record) return;
+          const record = this.peekRecord(modelName, id);
+          if (!record) return;
 
-            const currentRecords = get(record, field);
+          const currentRecords = get(record, field);
 
-            currentRecords.addObjects(newRecords);
-
-            updatedRecords.forEach(({ changeType, data }) => {
-              const { id: recordId } = data;
-              const currentRecord = currentRecords.findBy('id', recordId);
-
-              if (changeType === 'removed') {
-                // Remove
-                if (currentRecord) currentRecords.removeObject(currentRecord);
-              } else if (currentRecord) {
-                // Update
-                this.push({ data });
-              }
-            });
-
-            updatePaginationMeta(relationship, currentRecords);
-
-            console.timeEnd('Handle Collection-Snapshot Listener');
+          // Add new records
+          const newRecords = newRecordData.map(({ type: _type, data }) => {
+            // Push to store
+            const normalizedData = this.normalize(_type, data);
+            return this.push(normalizedData);
           });
+
+          // Add to relationship array
+          currentRecords.addObjects(newRecords);
+
+          // Update existing records
+          updatedRecordData.forEach(({ changeType, type: _type, data }) => {
+            const { id: recordId } = data;
+            const currentRecord = currentRecords.findBy('id', recordId);
+
+            if (changeType === 'removed') {
+              // Remove
+              if (currentRecord) currentRecords.removeObject(currentRecord);
+            } else if (currentRecord) {
+              // Update
+              const normalizedData = this.normalize(_type, data);
+              this.push(normalizedData);
+            }
+          });
+
+          updatePaginationMeta(relationship, currentRecords);
+
+          console.timeEnd('Handle Collection-Snapshot Listener');
         });
 
         if (hasManyTracker) hasManyTracker.unsubscribe = unsubscribe;
 
-        console.log('SNAPSHOT LISTENERS ACTIVE', this.snapshotListenerCount);
+        this.logActiveSnapshotListeners({
+          collection: {
+            modelName,
+            field,
+            type,
+            id,
+          },
+        });
       }
     },
 
     _handleDocChanges(type, querySnapshot) {
-      const addedRecords = [];
-      const updatedRecords = [];
+      const newRecordData = [];
+      const updatedRecordData = [];
       const involvedChangeTypes = [];
       const { environment } = config;
 
       if (environment === 'test') {
         querySnapshot.forEach((docSnapshot) => {
-          addedRecords.push(this.findRecord(
-            type,
-            docSnapshot.id,
-            {
-              adapterOptions: {
-                attachSnapshotListener: false,
-                docRef: docSnapshot.ref,
-              },
-            },
-          ));
+          const payload = parseDocSnapshot(type, docSnapshot);
 
-          updatedRecords.push({
-            data: { type, id: docSnapshot.id },
-          });
+          [newRecordData, updatedRecordData].forEach(a => a.push({
+            type,
+            data: {
+              type,
+              ...payload,
+            },
+          }));
         });
       } else {
         const changes = querySnapshot.docChanges();
 
         changes.forEach((change) => {
           const { type: changeType, doc: docSnapshot } = change;
-          const { id: recordId } = docSnapshot;
-          const data = docSnapshot.data();
+          const payload = parseDocSnapshot(type, docSnapshot);
 
-          if (changeType === 'added') {
-            addedRecords.push(this.findRecord(
-              type,
-              recordId,
-              {
-                adapterOptions: {
-                  attachSnapshotListener: false,
-                  docRef: docSnapshot.ref,
-                },
-              },
-            ));
-
-            return;
-          }
-
-          updatedRecords.push({
+          (changeType === 'added' ? newRecordData : updatedRecordData).push({
             changeType,
-            data: {
-              id: recordId,
-              type,
-              attributes: { ...data },
-            },
+            type,
+            data: payload,
           });
         });
       }
 
-      return { updatedRecords, addedRecords, involvedChangeTypes };
+      return { newRecordData, updatedRecordData, involvedChangeTypes };
+    },
+
+    logActiveSnapshotListeners({ isActive = true, collection, doc }) {
+      const {
+        modelName,
+        field,
+        type,
+        id,
+      } = { ...(collection || {}), ...(doc || {}) };
+
+      const listenerKey = collection
+        ? `${modelName}:${id} -> ${field}:${type}`
+        : `${modelName}:${id}`;
+
+      this.activeSnapshotListeners[collection ? 'collection' : 'document'][listenerKey] = isActive;
+
+      console.log('DOCUMENT SNAPSHOT LISTENERS');
+      console.table(this.activeSnapshotListeners.document);
+
+      console.log('COLLECTION SNAPSHOT LISTENERS');
+      console.table(this.activeSnapshotListeners.collection);
+
+      console.log('TOTAL SNAPSHOT LISTENERS ACTIVE', this.snapshotListenerCount);
     },
 
     /**
@@ -520,35 +558,6 @@ function reopenStore(appInstance) {
       if (record && !record.get('isSaving')) {
         this.unloadRecord(record);
       }
-    },
-
-    /**
-     * @param {string} modelName
-     * @param {Object} option
-     * @param {firebase.firestore.QuerySnapshot} querySnapshot
-     * @return {Array.<Promise>} Find record promises
-     * @function
-     * @private
-     */
-    findQueryRecords(modelName, option, querySnapshot) {
-      return querySnapshot.docs.map((docSnapshot) => {
-        const referenceKeyName = this.adapterFor(modelName).get('referenceKeyName');
-        const referenceTo = docSnapshot.get(referenceKeyName) || docSnapshot.ref;
-
-        if (referenceTo && referenceTo.firestore) {
-          const request = this.findRecord(modelName, referenceTo.id, {
-            adapterOptions: {
-              buildReference() {
-                return referenceTo.parent;
-              },
-            },
-          });
-
-          return request;
-        }
-
-        return this.findRecord(modelName, docSnapshot.id, { adapterOptions: option });
-      });
     },
   });
 }
