@@ -245,7 +245,9 @@ function reopenStore(appInstance) {
         } else if (this.trackHasManyListener(modelName, id, field)) {
           hasManyTracker = this.get('tracker')[modelName].document[id].relationship[field];
         } else {
-          hasManyTracker = this.trackDocListener(modelName, id);
+          this.trackDocListener(modelName, id);
+          this.trackHasManyListener(modelName, id, field);
+          hasManyTracker = this.get('tracker')[modelName].document[id].relationship[field];
         }
 
         console.log(
