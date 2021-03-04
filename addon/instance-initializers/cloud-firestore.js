@@ -1,15 +1,17 @@
+/* eslint-disable no-plusplus */
+/* eslint-disable no-console */
 /* eslint-disable consistent-return */
-import { Promise } from 'rsvp';
-import { isNone } from '@ember/utils';
+import { updatePaginationMeta } from 'ember-cloud-firestore-adapter/utils/pagination';
+import { parseDocSnapshot } from 'ember-cloud-firestore-adapter/utils/parser';
+import { getOwner } from '@ember/application';
+import { singularize } from 'ember-inflector';
 import { computed, get } from '@ember/object';
 import { dasherize } from '@ember/string';
-import { getOwner } from '@ember/application';
 import { inject } from '@ember/service';
+import { isNone } from '@ember/utils';
 import { next } from '@ember/runloop';
-import { singularize } from 'ember-inflector';
-import { parseDocSnapshot } from 'ember-cloud-firestore-adapter/utils/parser';
-import { updatePaginationMeta } from 'ember-cloud-firestore-adapter/utils/pagination';
 import config from 'ember-get-config';
+import { Promise } from 'rsvp';
 
 /**
  * @param {Application} appInstance
@@ -17,6 +19,9 @@ import config from 'ember-get-config';
  */
 function reopenStore(appInstance) {
   appInstance.lookup('service:store').reopen({
+    activeSnapshotListeners: { collection: {}, document: {} },
+    snapshotListenerCount: 0,
+
     /**
      * @type {Ember.Service}
      */
@@ -62,15 +67,18 @@ function reopenStore(appInstance) {
       ) {
         this.trackDocListener(type.modelName, docRef.id);
 
+        console.log(
+          'Adding new snapshot listener for DOC',
+          { modelName: type.modelName, id: docRef.id }
+        );
+
+        this.snapshotListenerCount++;
+
         docRef.onSnapshot((docSnapshot) => {
           next(() => {
             if (docSnapshot.exists) {
-              const payload = parseDocSnapshot(type, docSnapshot);
-              payload._snapshot = docSnapshot;
-              payload._docRef = payload._docRef || docRef;
-              payload._docRefPath = payload._docRefPath || docRef.path;
+              const payload = parseDocSnapshot(type, docSnapshot, docRef);
               const normalizedPayload = this.normalize(type.modelName, payload);
-
               this.push(normalizedPayload);
             } else {
               this.unloadRecordUsingModelNameAndId(type.modelName, docRef.id);
@@ -85,6 +93,8 @@ function reopenStore(appInstance) {
             this.unloadRecordUsingModelNameAndId(type.modelName, docRef.id);
           }
         });
+
+        this.logActiveSnapshotListeners({ doc: { modelName: type.modelName, id: docRef.id } });
       }
     },
 
@@ -98,20 +108,34 @@ function reopenStore(appInstance) {
       if (!this.isInFastBoot() && !this.hasListenerForCollection(modelName)) {
         this.trackCollectionListener(modelName);
 
+        console.log('Adding new snapshot listener for COLLECTION', { collectionRef });
+        this.snapshotListenerCount++;
+
         collectionRef.onSnapshot((querySnapshot) => {
           next(() => {
             if (config.environment === 'test') {
-              querySnapshot.forEach(docSnapshot => this.findRecord(modelName, docSnapshot.id));
+              querySnapshot.forEach(docSnapshot =>
+                this.findRecord(
+                  modelName,
+                  docSnapshot.id,
+                  { adapterOptions: { attachSnapshotListener: false } },
+                ));
             } else {
               querySnapshot
                 .docChanges()
                 .forEach((change) => {
                   const { doc: docSnapshot } = change;
-                  return this.findRecord(modelName, docSnapshot.id);
+                  return this.findRecord(
+                    modelName,
+                    docSnapshot.id,
+                    { adapterOptions: { attachSnapshotListener: false } },
+                  );
                 });
             }
           });
         });
+
+        console.log('SNAPSHOT LISTENERS ACTIVE', this.snapshotListenerCount);
       }
     },
 
@@ -121,12 +145,15 @@ function reopenStore(appInstance) {
      * @param {firebase.firestore.Query} queryRef
      * @function
      */
-    listenForQueryChanges(modelName, option, queryRef) {
+    listenForQueryChanges(modelName, option, collectionRef) {
       if (!this.isInFastBoot()) {
         let queryTracker;
 
         if (this.hasListenerForQuery(option.queryId)) {
           queryTracker = this.get('tracker')._query[option.queryId];
+
+          console.log('Removing existing snapshot listener for QUERY');
+          this.snapshotListenerCount--;
 
           queryTracker.unsubscribe();
 
@@ -139,7 +166,10 @@ function reopenStore(appInstance) {
           queryTracker = this.get('tracker')._query[option.queryId];
         }
 
-        const unsubscribe = queryRef.onSnapshot((querySnapshot) => {
+        console.log('Adding new snapshot listener for QUERY', { modelName, option, collectionRef });
+        this.snapshotListenerCount++;
+
+        const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
           if (queryTracker.recordArray) {
             const requests = this.findQueryRecords(modelName, option, querySnapshot);
 
@@ -156,7 +186,39 @@ function reopenStore(appInstance) {
         });
 
         queryTracker.unsubscribe = unsubscribe;
+
+        console.log('SNAPSHOT LISTENERS ACTIVE', this.snapshotListenerCount);
       }
+    },
+
+    /**
+     * @param {string} modelName
+     * @param {Object} option
+     * @param {firebase.firestore.QuerySnapshot} querySnapshot
+     * @return {Array.<Promise>} Find record promises
+     * @function
+     * @private
+     */
+    findQueryRecords(modelName, option, querySnapshot) {
+      return querySnapshot.docs.map((docSnapshot) => {
+        const referenceKeyName = this.adapterFor(modelName).get('referenceKeyName');
+        const referenceTo = docSnapshot.get(referenceKeyName) || docSnapshot.ref;
+
+        if (referenceTo && referenceTo.firestore) {
+          const request = this.findRecord(modelName, referenceTo.id, {
+            adapterOptions: {
+              attachSnapshotListener: false,
+              buildReference() {
+                return referenceTo.parent;
+              },
+            },
+          });
+
+          return request;
+        }
+
+        return this.findRecord(modelName, docSnapshot.id, { adapterOptions: option });
+      });
     },
 
     /**
@@ -169,89 +231,153 @@ function reopenStore(appInstance) {
     listenForHasManyChanges(modelName, id, relationship, collectionRef) {
       if (!this.isInFastBoot()) {
         const { type, key: field } = relationship;
+        const { environment } = config;
+
         let hasManyTracker;
 
         if (this.hasListenerForHasMany(modelName, id, field)) {
           hasManyTracker = this.get('tracker')[modelName].document[id].relationship[field];
+
+          console.log('Removing existing snapshot listener for HASMANY');
+          this.snapshotListenerCount--;
+
           hasManyTracker.unsubscribe();
         } else if (this.trackHasManyListener(modelName, id, field)) {
           hasManyTracker = this.get('tracker')[modelName].document[id].relationship[field];
+        } else {
+          this.trackDocListener(modelName, id);
+          this.trackHasManyListener(modelName, id, field);
+          hasManyTracker = this.get('tracker')[modelName].document[id].relationship[field];
         }
 
+        console.log(
+          'Adding new snapshot listener for HASMANY',
+          {
+            modelName,
+            field,
+            type,
+            id,
+          },
+        );
+
+        this.snapshotListenerCount++;
+
         const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
+          if (environment !== 'test' && hasManyTracker && !hasManyTracker.initialized) {
+            hasManyTracker.initialized = true;
+            return;
+          }
+
+          console.time('Handle Collection-Snapshot Listener');
+
           const processedChanges = this._handleDocChanges(type, querySnapshot);
-          const { changedRecords, promises } = processedChanges;
+          const { newRecordData, updatedRecordData } = processedChanges;
 
-          Promise.all(promises).then((updatedRecords) => {
-            const record = this.peekRecord(modelName, id);
-            if (!record) return;
+          const record = this.peekRecord(modelName, id);
+          if (!record) return;
 
-            const currentRecords = get(record, field);
+          const currentRecords = get(record, field);
 
-            changedRecords.forEach(({ data: { id: changeId, changeType } }) => {
-              const current = currentRecords.findBy('id', changeId);
-              const updated = updatedRecords.findBy('id', changeId);
-
-              if (changeType === 'removed') {
-                // Remove
-                if (current) currentRecords.removeObject(current);
-              } else if (current) {
-                // Update
-                const index = currentRecords.indexOf(current);
-                currentRecords.replace(index, 1, [updated]);
-              } else {
-                // Add
-                currentRecords.addObject(updated);
-              }
-            });
-
-            updatePaginationMeta(relationship, currentRecords);
+          // Add new records
+          const newRecords = newRecordData.map(({ type: _type, data }) => {
+            // Push to store
+            const normalizedData = this.normalize(_type, data);
+            return this.push(normalizedData);
           });
+
+          // Add to relationship array
+          currentRecords.addObjects(newRecords);
+
+          // Update existing records
+          updatedRecordData.forEach(({ changeType, type: _type, data }) => {
+            const { id: recordId } = data;
+            const currentRecord = currentRecords.findBy('id', recordId);
+
+            if (changeType === 'removed') {
+              // Remove
+              if (currentRecord) currentRecords.removeObject(currentRecord);
+            } else if (currentRecord) {
+              // Update
+              const normalizedData = this.normalize(_type, data);
+              this.push(normalizedData);
+            }
+          });
+
+          updatePaginationMeta(relationship, currentRecords);
+
+          console.timeEnd('Handle Collection-Snapshot Listener');
         });
 
         if (hasManyTracker) hasManyTracker.unsubscribe = unsubscribe;
+
+        this.logActiveSnapshotListeners({
+          collection: {
+            modelName,
+            field,
+            type,
+            id,
+          },
+        });
       }
     },
 
     _handleDocChanges(type, querySnapshot) {
-      const promises = [];
-      const changedRecords = [];
+      const newRecordData = [];
+      const updatedRecordData = [];
       const involvedChangeTypes = [];
       const { environment } = config;
 
       if (environment === 'test') {
         querySnapshot.forEach((docSnapshot) => {
-          promises.push(this.findRecord(type, docSnapshot.id, {
-            adapterOptions: {
-              docRef: docSnapshot.ref,
+          const payload = parseDocSnapshot(type, docSnapshot);
+
+          [newRecordData, updatedRecordData].forEach(a => a.push({
+            type,
+            data: {
+              type,
+              ...payload,
             },
           }));
-
-          changedRecords.push({
-            data: { type, id: docSnapshot.id },
-          });
         });
       } else {
         const changes = querySnapshot.docChanges();
 
         changes.forEach((change) => {
           const { type: changeType, doc: docSnapshot } = change;
+          const payload = parseDocSnapshot(type, docSnapshot);
 
-          if (changeType === 'added' || changeType === 'modified') {
-            promises.push(this.findRecord(type, docSnapshot.id, {
-              adapterOptions: {
-                docRef: docSnapshot.ref,
-              },
-            }));
-          }
-
-          changedRecords.push({
-            data: { type, id: docSnapshot.id, changeType },
+          (changeType === 'added' ? newRecordData : updatedRecordData).push({
+            changeType,
+            type,
+            data: payload,
           });
         });
       }
 
-      return { changedRecords, promises, involvedChangeTypes };
+      return { newRecordData, updatedRecordData, involvedChangeTypes };
+    },
+
+    logActiveSnapshotListeners({ isActive = true, collection, doc }) {
+      const {
+        modelName,
+        field,
+        type,
+        id,
+      } = { ...(collection || {}), ...(doc || {}) };
+
+      const listenerKey = collection
+        ? `${modelName}:${id} -> ${field}:${type}`
+        : `${modelName}:${id}`;
+
+      this.activeSnapshotListeners[collection ? 'collection' : 'document'][listenerKey] = isActive;
+
+      console.log('DOCUMENT SNAPSHOT LISTENERS');
+      console.table(this.activeSnapshotListeners.document);
+
+      console.log('COLLECTION SNAPSHOT LISTENERS');
+      console.table(this.activeSnapshotListeners.collection);
+
+      console.log('TOTAL SNAPSHOT LISTENERS ACTIVE', this.snapshotListenerCount);
     },
 
     /**
@@ -416,8 +542,9 @@ function reopenStore(appInstance) {
      * @private
      */
     trackHasManyListener(modelName, id, field) {
-      if (!this.get('tracker')[modelName].document[id]) return;
-      this.get('tracker')[modelName].document[id].relationship[field] = {};
+      const tracker = this.get('tracker')[modelName];
+      if (!tracker || !tracker.document[id]) return;
+      tracker.document[id].relationship[field] = {};
       return true;
     },
 
@@ -433,35 +560,6 @@ function reopenStore(appInstance) {
       if (record && !record.get('isSaving')) {
         this.unloadRecord(record);
       }
-    },
-
-    /**
-     * @param {string} modelName
-     * @param {Object} option
-     * @param {firebase.firestore.QuerySnapshot} querySnapshot
-     * @return {Array.<Promise>} Find record promises
-     * @function
-     * @private
-     */
-    findQueryRecords(modelName, option, querySnapshot) {
-      return querySnapshot.docs.map((docSnapshot) => {
-        const referenceKeyName = this.adapterFor(modelName).get('referenceKeyName');
-        const referenceTo = docSnapshot.get(referenceKeyName) || docSnapshot.ref;
-
-        if (referenceTo && referenceTo.firestore) {
-          const request = this.findRecord(modelName, referenceTo.id, {
-            adapterOptions: {
-              buildReference() {
-                return referenceTo.parent;
-              },
-            },
-          });
-
-          return request;
-        }
-
-        return this.findRecord(modelName, docSnapshot.id, { adapterOptions: option });
-      });
     },
   });
 }

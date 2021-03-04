@@ -5,7 +5,7 @@ import RESTAdapter from 'ember-data/adapters/rest';
 import { inject as service } from '@ember/service';
 import { getOwner } from '@ember/application';
 import { run } from '@ember/runloop';
-import { Promise, all } from 'rsvp';
+import { Promise } from 'rsvp';
 
 
 /**
@@ -63,7 +63,7 @@ export default RESTAdapter.extend({
     }
   },
 
-  buildCollectionName(modelName, relationship, snapshot) {
+  buildCollectionName(modelName) {
     return buildCollectionName(modelName);
   },
 
@@ -200,13 +200,28 @@ export default RESTAdapter.extend({
     return new Promise((resolve, reject) => {
       const db = this.get('firebase').firestore();
 
-      let docRef =  snapshot._internalModel &&
-                    snapshot._internalModel.getAttributeValue('docRef') ||
-                    snapshot.adapterOptions &&
-                    snapshot.adapterOptions.docRef ||
-                    snapshot.adapterOptions &&
-                    snapshot.adapterOptions.buildReference &&
-                    this.buildCollectionRef(type.modelName, snapshot.adapterOptions, db).doc(id);
+      const [
+        attachSnapshotListener = true,
+        buildReference = null,
+        _docRef = null,
+      ] = this.getAdapterOptionAttributes(snapshot, [
+        'attachSnapshotListener',
+        'buildReference',
+        'docRef',
+      ]);
+
+      let docRef = (
+        snapshot._internalModel &&
+        snapshot._internalModel.getAttributeValue('docRef')
+      ) || _docRef;
+
+      if (!docRef && buildReference) {
+        const collectionRef = this
+          .buildCollectionRef(type.modelName, snapshot.adapterOptions, db)
+          .doc(id);
+
+        docRef = collectionRef;
+      }
 
       if (!docRef) {
         const collectionName = this.buildCollectionName(type.modelName, snapshot);
@@ -215,7 +230,7 @@ export default RESTAdapter.extend({
 
       const unsubscribe = docRef.onSnapshot((docSnapshot) => {
         if (docSnapshot.exists) {
-          store.listenForDocChanges(type, docRef);
+          if (attachSnapshotListener) store.listenForDocChanges(type, docRef);
           run(null, resolve, parseDocSnapshot(type, docSnapshot));
         } else if (docSnapshot.metadata && docSnapshot.metadata.fromCache) {
           run(null, reject, new Error('Connection to Firestore unavailable'));
@@ -362,7 +377,10 @@ export default RESTAdapter.extend({
     if (cardinality === 'manyToOne') {
       const path = this.buildCollectionName(relationship.type, snapshot, relationship.meta);
       const inverseRelationship = snapshot.type.inverseFor(relationship.key, store);
+
+      // eslint-disable-next-line max-len
       const referencePath = this.buildCollectionName(snapshot.modelName, snapshot, inverseRelationship);
+
       const reference = db.collection(referencePath).doc(snapshot.id);
       const { filterByInverse } = relationship.options;
 
@@ -389,8 +407,6 @@ export default RESTAdapter.extend({
    * @private
    */
   buildUpdateRecordDocRef(type, snapshot) {
-    const isCreate = this.getAdapterOptionAttribute(snapshot, 'isCreate');
-
     return this.buildCollectionRef(
       type.modelName,
       snapshot.adapterOptions,
@@ -472,25 +488,26 @@ export default RESTAdapter.extend({
   findHasManyRecords(store, relationship, querySnapshot) {
     return querySnapshot.docs.map((docSnapshot) => {
       const type = { modelName: relationship.type };
-      const referenceTo = docSnapshot.get(this.get('referenceKeyName')) || docSnapshot.ref;
+      return parseDocSnapshot(type, docSnapshot);
+      // const referenceTo = docSnapshot.get(this.get('referenceKeyName')) || docSnapshot.ref;
 
-      if (referenceTo && referenceTo.firestore) {
-        const options = (relationship && relationship.meta && relationship.meta.options) || {};
+      // if (referenceTo && referenceTo.firestore) {
+      //   const options = (relationship && relationship.meta && relationship.meta.options) || {};
 
-        const request = this.findRecord(store, type, referenceTo.id, Object.assign({
-          adapterOptions: {
-            buildReference() {
-              return referenceTo.parent;
-            },
-          },
-        }, options));
+      //   const request = this.findRecord(store, type, referenceTo.id, Object.assign({
+      //     adapterOptions: {
+      //       buildReference() {
+      //         return referenceTo.parent;
+      //       },
+      //     },
+      //   }, options));
 
-        return request;
-      }
+      //   return request;
+      // }
 
-      const request = this.findRecord(store, type, docSnapshot.id);
+      // const request = this.findRecord(store, type, docSnapshot.id);
 
-      return request;
+      // return request;
     });
   },
 
@@ -539,5 +556,13 @@ export default RESTAdapter.extend({
     }
 
     return null;
-  }
+  },
+
+  getAdapterOptionAttributes(snapshot, attributes) {
+    return attributes.map((attr) => {
+      const value = this.getAdapterOptionAttribute(snapshot, attr);
+      if (value !== null) return value;
+      return undefined;
+    });
+  },
 });
