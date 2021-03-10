@@ -489,6 +489,7 @@ export default RESTAdapter.extend({
     return querySnapshot.docs.map((docSnapshot) => {
       const type = { modelName: relationship.type };
       return parseDocSnapshot(type, docSnapshot);
+
       // const referenceTo = docSnapshot.get(this.get('referenceKeyName')) || docSnapshot.ref;
 
       // if (referenceTo && referenceTo.firestore) {
@@ -496,6 +497,7 @@ export default RESTAdapter.extend({
 
       //   const request = this.findRecord(store, type, referenceTo.id, Object.assign({
       //     adapterOptions: {
+      //       attachSnapshotListener: false,
       //       buildReference() {
       //         return referenceTo.parent;
       //       },
@@ -505,7 +507,12 @@ export default RESTAdapter.extend({
       //   return request;
       // }
 
-      // const request = this.findRecord(store, type, docSnapshot.id);
+      // const request = this.findRecord(store, type, docSnapshot.id, {
+      //   adapterOptions: {
+      //     attachSnapshotListener: false,
+      //     docRef: docSnapshot.ref,
+      //   },
+      // });
 
       // return request;
     });

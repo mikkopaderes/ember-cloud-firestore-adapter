@@ -230,8 +230,7 @@ function reopenStore(appInstance) {
      */
     listenForHasManyChanges(modelName, id, relationship, collectionRef) {
       if (!this.isInFastBoot()) {
-        const { type, key: field } = relationship;
-        const { environment } = config;
+        const { type: relatedModelType, key: field } = relationship;
 
         let hasManyTracker;
 
@@ -254,8 +253,8 @@ function reopenStore(appInstance) {
           'Adding new snapshot listener for HASMANY',
           {
             modelName,
+            type: relatedModelType,
             field,
-            type,
             id,
           },
         );
@@ -263,47 +262,42 @@ function reopenStore(appInstance) {
         this.snapshotListenerCount++;
 
         const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
-          if (environment !== 'test' && hasManyTracker && !hasManyTracker.initialized) {
-            hasManyTracker.initialized = true;
-            return;
-          }
-
           console.time('Handle Collection-Snapshot Listener');
 
-          const processedChanges = this._handleDocChanges(type, querySnapshot);
-          const { newRecordData, updatedRecordData } = processedChanges;
+          const normalizedChanges = this._normalizeDocChanges(relatedModelType, querySnapshot);
 
           const record = this.peekRecord(modelName, id);
           if (!record) return;
 
-          const currentRecords = get(record, field);
+          const hasManyRecords = get(record, field);
 
-          // Add new records
-          const newRecords = newRecordData.map(({ type: _type, data }) => {
-            // Push to store
-            const normalizedData = this.normalize(_type, data);
-            return this.push(normalizedData);
-          });
-
-          // Add to relationship array
-          currentRecords.addObjects(newRecords);
-
-          // Update existing records
-          updatedRecordData.forEach(({ changeType, type: _type, data }) => {
-            const { id: recordId } = data;
-            const currentRecord = currentRecords.findBy('id', recordId);
+          // Update records
+          normalizedChanges.forEach(({
+            type: recordType,
+            id: recordId,
+            changeType,
+            payload,
+          }) => {
+            const currentRecord = hasManyRecords.findBy('id', recordId);
 
             if (changeType === 'removed') {
               // Remove
-              if (currentRecord) currentRecords.removeObject(currentRecord);
+              if (currentRecord) hasManyRecords.removeObject(currentRecord);
             } else if (currentRecord) {
               // Update
-              const normalizedData = this.normalize(_type, data);
-              this.push(normalizedData);
+              const normalizedPayload = this.normalize(recordType, payload);
+              const updatedRecord = this.push(normalizedPayload);
+              const index = hasManyRecords.indexOf(currentRecord);
+              hasManyRecords.replace(index, 1, [updatedRecord]);
+            } else {
+              // Add
+              const normalizedPayload = this.normalize(recordType, payload);
+              const updatedRecord = this.push(normalizedPayload);
+              hasManyRecords.pushObject(updatedRecord);
             }
           });
 
-          updatePaginationMeta(relationship, currentRecords);
+          updatePaginationMeta(relationship, hasManyRecords);
 
           console.timeEnd('Handle Collection-Snapshot Listener');
         });
@@ -314,47 +308,44 @@ function reopenStore(appInstance) {
           collection: {
             modelName,
             field,
-            type,
+            type: relatedModelType,
             id,
           },
         });
       }
     },
 
-    _handleDocChanges(type, querySnapshot) {
-      const newRecordData = [];
-      const updatedRecordData = [];
-      const involvedChangeTypes = [];
+    _normalizeDocChanges(relatedModelType, querySnapshot) {
+      const normalizedChanges = [];
       const { environment } = config;
 
       if (environment === 'test') {
         querySnapshot.forEach((docSnapshot) => {
-          const payload = parseDocSnapshot(type, docSnapshot);
+          const payload = parseDocSnapshot(relatedModelType, docSnapshot);
 
-          [newRecordData, updatedRecordData].forEach(a => a.push({
-            type,
-            data: {
-              type,
-              ...payload,
-            },
-          }));
+          normalizedChanges.push({
+            type: relatedModelType,
+            id: docSnapshot.id,
+            payload,
+          });
         });
       } else {
-        const changes = querySnapshot.docChanges();
+        const docChanges = querySnapshot.docChanges();
 
-        changes.forEach((change) => {
+        docChanges.forEach((change) => {
           const { type: changeType, doc: docSnapshot } = change;
-          const payload = parseDocSnapshot(type, docSnapshot);
+          const payload = parseDocSnapshot(relatedModelType, docSnapshot);
 
-          (changeType === 'added' ? newRecordData : updatedRecordData).push({
+          normalizedChanges.push({
+            type: relatedModelType,
+            id: docSnapshot.id,
             changeType,
-            type,
-            data: payload,
+            payload,
           });
         });
       }
 
-      return { newRecordData, updatedRecordData, involvedChangeTypes };
+      return normalizedChanges;
     },
 
     logActiveSnapshotListeners({ isActive = true, collection, doc }) {
