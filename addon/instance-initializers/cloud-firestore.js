@@ -266,17 +266,24 @@ function reopenStore(appInstance) {
 
           const normalizedChanges = this._normalizeDocChanges(relatedModelType, querySnapshot);
 
-          const record = this.peekRecord(modelName, id);
-          if (!record) return;
+          const ownerRecord = this.peekRecord(modelName, id);
+          if (!ownerRecord) return;
 
-          const hasManyRecords = get(record, field);
+          const hasManyRecords = get(ownerRecord, field);
+
+          if (config.environment !== 'test' && hasManyTracker && !hasManyTracker.initialized) {
+            hasManyTracker.initialized = true;
+            const initializedRecords = normalizedChanges.mapBy('record');
+            hasManyRecords.replace(0, hasManyRecords.length, initializedRecords);
+            console.timeEnd('Handle Collection-Snapshot Listener');
+            return;
+          }
 
           // Update records
           normalizedChanges.forEach(({
-            type: recordType,
             id: recordId,
             changeType,
-            payload,
+            record,
           }) => {
             const currentRecord = hasManyRecords.findBy('id', recordId);
 
@@ -285,15 +292,11 @@ function reopenStore(appInstance) {
               if (currentRecord) hasManyRecords.removeObject(currentRecord);
             } else if (currentRecord) {
               // Update
-              const normalizedPayload = this.normalize(recordType, payload);
-              const updatedRecord = this.push(normalizedPayload);
               const index = hasManyRecords.indexOf(currentRecord);
-              hasManyRecords.replace(index, 1, [updatedRecord]);
+              hasManyRecords.replace(index, 1, [record]);
             } else {
               // Add
-              const normalizedPayload = this.normalize(recordType, payload);
-              const updatedRecord = this.push(normalizedPayload);
-              hasManyRecords.pushObject(updatedRecord);
+              hasManyRecords.pushObject(record);
             }
           });
 
@@ -322,11 +325,12 @@ function reopenStore(appInstance) {
       if (environment === 'test') {
         querySnapshot.forEach((docSnapshot) => {
           const payload = parseDocSnapshot(relatedModelType, docSnapshot);
+          const normalizedPayload = this.normalize(relatedModelType, payload);
+          const record = this.push(normalizedPayload);
 
           normalizedChanges.push({
-            type: relatedModelType,
             id: docSnapshot.id,
-            payload,
+            record,
           });
         });
       } else {
@@ -336,12 +340,18 @@ function reopenStore(appInstance) {
           const { type: changeType, doc: docSnapshot } = change;
           const payload = parseDocSnapshot(relatedModelType, docSnapshot);
 
-          normalizedChanges.push({
-            type: relatedModelType,
+          let normalizedChange = {
             id: docSnapshot.id,
             changeType,
-            payload,
-          });
+          };
+
+          if (changeType !== 'removed') {
+            const normalizedPayload = this.normalize(relatedModelType, payload);
+            const record = this.push(normalizedPayload);
+            normalizedChange = { ...normalizedChange, record };
+          }
+
+          normalizedChanges.push(normalizedChange);
         });
       }
 
