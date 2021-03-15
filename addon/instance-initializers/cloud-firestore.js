@@ -3,6 +3,7 @@
 /* eslint-disable consistent-return */
 import { updatePaginationMeta } from 'ember-cloud-firestore-adapter/utils/pagination';
 import { parseDocSnapshot } from 'ember-cloud-firestore-adapter/utils/parser';
+import { diff } from 'ember-cloud-firestore-adapter/utils/array';
 import { getOwner } from '@ember/application';
 import { singularize } from 'ember-inflector';
 import { computed, get } from '@ember/object';
@@ -271,12 +272,26 @@ function reopenStore(appInstance) {
 
           const hasManyRecords = get(ownerRecord, field);
 
-          if (config.environment !== 'test' && hasManyTracker && !hasManyTracker.initialized) {
+          const initialSnapshotListenerInfo = this._getInitialSnapshotListenerInfo(
+            hasManyTracker,
+            hasManyRecords,
+            normalizedChanges,
+          );
+
+          const {
+            isInitialCall,
+            isRedundantCall,
+          } = initialSnapshotListenerInfo;
+
+          if (isInitialCall) {
             hasManyTracker.initialized = true;
-            const initializedRecords = normalizedChanges.mapBy('record');
-            hasManyRecords.replace(0, hasManyRecords.length, initializedRecords);
-            console.timeEnd('Handle Collection-Snapshot Listener');
-            return;
+
+            if (isRedundantCall) {
+              const { changedRecords } = initialSnapshotListenerInfo;
+              hasManyRecords.replace(0, hasManyRecords.length, changedRecords);
+              console.timeEnd('Handle Collection-Snapshot Listener');
+              return;
+            }
           }
 
           // Update records
@@ -316,6 +331,31 @@ function reopenStore(appInstance) {
           },
         });
       }
+    },
+
+    _getInitialSnapshotListenerInfo(hasManyTracker, currentRecords, changes) {
+      const info = {
+        changedRecords: [],
+        isRedundantCall: changes.length === currentRecords.length,
+        isInitialCall: (
+          config.environment !== 'test'
+          && hasManyTracker
+          && !hasManyTracker.initialized
+        ),
+      };
+
+      if (!info.isRedundantCall) {
+        return info;
+      }
+
+      const changedRecords = changes.mapBy('record');
+      const recordIdDiffs = diff(currentRecords.mapBy('id'), changedRecords.mapBy('id'));
+      const hasSameRecords = !recordIdDiffs.length;
+
+      info.isRedundantCall = hasSameRecords;
+      if (hasSameRecords) info.changedRecords = changedRecords;
+
+      return info;
     },
 
     _normalizeDocChanges(relatedModelType, querySnapshot) {
