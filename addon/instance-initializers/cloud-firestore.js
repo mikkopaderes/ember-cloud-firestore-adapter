@@ -270,7 +270,7 @@ function reopenStore(appInstance) {
           const ownerRecord = this.peekRecord(modelName, id);
           if (!ownerRecord) return;
 
-          const hasManyRecords = get(ownerRecord, field);
+          const hasManyRecords = get(ownerRecord, field).compact();
 
           const initialSnapshotListenerInfo = this._getInitialSnapshotListenerInfo(
             hasManyTracker,
