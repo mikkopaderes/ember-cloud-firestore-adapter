@@ -270,7 +270,7 @@ function reopenStore(appInstance) {
           const ownerRecord = this.peekRecord(modelName, id);
           if (!ownerRecord) return;
 
-          const hasManyRecords = get(ownerRecord, field).compact();
+          const hasManyRecords = get(ownerRecord, field);
 
           const initialSnapshotListenerInfo = this._getInitialSnapshotListenerInfo(
             hasManyTracker,
@@ -333,10 +333,10 @@ function reopenStore(appInstance) {
       }
     },
 
-    _getInitialSnapshotListenerInfo(hasManyTracker, currentRecords, changes) {
+    _getInitialSnapshotListenerInfo(hasManyTracker, hasManyRecords, changes) {
       const info = {
         changedRecords: [],
-        isRedundantCall: changes.length === currentRecords.length,
+        isRedundantCall: changes.length === hasManyRecords.length,
         isInitialCall: (
           config.environment !== 'test'
           && hasManyTracker
@@ -349,7 +349,12 @@ function reopenStore(appInstance) {
       }
 
       const changedRecords = changes.mapBy('record');
-      const recordIdDiffs = diff(currentRecords.mapBy('id'), changedRecords.mapBy('id'));
+
+      const recordIdDiffs = diff(
+        hasManyRecords.compact().mapBy('id'),
+        changedRecords.mapBy('id'),
+      );
+
       const hasSameRecords = !recordIdDiffs.length;
 
       info.isRedundantCall = hasSameRecords;
