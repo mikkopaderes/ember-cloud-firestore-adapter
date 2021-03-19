@@ -348,7 +348,7 @@ function reopenStore(appInstance) {
         return info;
       }
 
-      const changedRecords = changes.mapBy('record');
+      const changedRecords = changes.mapBy('record').compact();
 
       const recordIdDiffs = diff(
         hasManyRecords.compact().mapBy('id'),
