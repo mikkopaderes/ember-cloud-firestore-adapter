@@ -305,6 +305,7 @@ function reopenStore(appInstance) {
             if (changeType === 'removed') {
               // Remove
               if (currentRecord) hasManyRecords.removeObject(currentRecord);
+              this.unloadRecordUsingModelNameAndId(relatedModelType, recordId);
             } else if (currentRecord) {
               // Update
               const index = hasManyRecords.indexOf(currentRecord);
