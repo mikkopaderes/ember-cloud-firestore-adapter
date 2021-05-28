@@ -10,6 +10,7 @@ import Adapter from '@ember-data/adapter';
 import DS from 'ember-data';
 import RSVP from 'rsvp';
 import Store from '@ember-data/store';
+import classic from 'ember-classic-decorator';
 
 import FirebaseService from 'ember-firebase-service/services/firebase';
 import firebase from 'firebase/app';
@@ -61,6 +62,7 @@ interface HasManyRelationshipMeta {
   };
 }
 
+@classic
 export default class CloudFirestoreAdapter extends Adapter {
   @service
   private firebase!: FirebaseService;
