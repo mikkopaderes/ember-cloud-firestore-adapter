@@ -24,7 +24,7 @@
     "lint:js": "eslint . --cache",
     "lint:js:fix": "eslint . --fix",
     "start": "firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember serve\"",
-    "test": "npm-run-all lint test:ember",
+    "test": "npm-run-all lint test:*",
     "test:ember": "firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember test\"",
     "test:ember-compatibility": "firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember try:each\"",
     "prepack": "ember ts:precompile",
