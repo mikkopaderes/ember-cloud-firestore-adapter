@@ -61,34 +61,50 @@ export default JSONSerializer.extend({
       if (relationship.kind === 'belongsTo') {
         const key = this.keyForRelationship(name, 'belongsTo', 'serialize');
 
-        if (
-          Object.prototype.hasOwnProperty.call(resourceHash, key)
-          && typeOf(resourceHash[key]) === 'object'
-          && resourceHash[key].firestore
-        ) {
-          const path = buildPathFromRef(resourceHash[key]);
+        if (Object.prototype.hasOwnProperty.call(resourceHash, key)) {
+          if (
+            typeOf(resourceHash[key]) === 'object'
+            && resourceHash[key].firestore
+          ) {
+            const path = buildPathFromRef(resourceHash[key]);
 
-          links[name] = path;
+            links[name] = path;
+          } else if (typeOf(resourceHash[key]) === 'string') {
+            const path = resourceHash[key];
+
+            links[name] = path;
+          }
+        } else if (resourceHash._docRefPath) {
+          // Resolve relationships to parents via document path
+          const collectionName = this.buildCollectionName(key);
+          const path = this.getParentPath(resourceHash._docRefPath, collectionName);
+
+          if (path) links[name] = path;
         }
       } else {
-        const key = this.keyForRelationship(name, 'hasMany', 'serialize');
         let hasManyPath;
 
-        if (relationship.meta.options.isReference) {
-          return;
-        } else {
-          const cardinality = modelClass.determineRelationshipType(relationship, this.get('store'));
+        const key = this.keyForRelationship(name, 'hasMany', 'serialize');
 
-          if (cardinality === 'manyToOne') {
-            resourceHash.modelName = modelClass.modelName;
-            const collectionName = this.buildCollectionName(modelClass.modelName, resourceHash, relationship.meta);
-            // hasManyPath = pluralize(relationship.type);
-            hasManyPath = collectionName;
-          } else {
-            const collectionName = this.buildCollectionName(modelClass.modelName);
-            const docId = resourceHash.id;
-            hasManyPath = [collectionName, docId, name].compact().join('/');
-          }
+        if (relationship.meta.options.isReference) return;
+
+        const cardinality = modelClass.determineRelationshipType(relationship, this.get('store'));
+
+        if (cardinality === 'manyToOne') {
+          resourceHash.modelName = modelClass.modelName;
+          const collectionName = this.buildCollectionName(
+            modelClass.modelName,
+            resourceHash,
+            relationship.meta,
+          );
+
+          // hasManyPath = pluralize(relationship.type);
+
+          hasManyPath = collectionName;
+        } else {
+          const collectionName = this.buildCollectionName(modelClass.modelName);
+          const docId = resourceHash.id;
+          hasManyPath = [collectionName, docId, name].compact().join('/');
         }
 
         links[name] = hasManyPath;
@@ -185,5 +201,14 @@ export default JSONSerializer.extend({
     }
 
     return null;
+  },
+
+  getParentPath(documentPath, parentType) {
+    const pathArray = documentPath.split('/');
+    const idx = pathArray.indexOf(parentType);
+
+    if (idx === -1) return false;
+
+    return pathArray.slice(0, idx + 2).join('/');
   },
 });
