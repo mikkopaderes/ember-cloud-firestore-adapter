@@ -103,24 +103,25 @@ export default class CloudFirestoreAdapter extends Adapter {
     type: ModelClass,
     snapshot: Snapshot,
   ): RSVP.Promise<unknown> {
-    return new RSVP.Promise(async (resolve) => {
+    return new RSVP.Promise((resolve, reject) => {
       const docRef = this.buildCollectionRef(
         type.modelName,
         snapshot.adapterOptions,
       ).doc(snapshot.id);
       const batch = this.buildWriteBatch(docRef, snapshot);
 
-      await batch.commit();
-
-      if (snapshot.adapterOptions?.isRealtime && !this.isFastBoot) {
-        const record = await this.fetchRecord(type, snapshot.id, snapshot.adapterOptions);
-
-        resolve(record);
-      } else {
+      batch.commit().then(() => {
         const data = this.serialize(snapshot, { includeId: true });
 
         resolve(data);
-      }
+
+        if (snapshot.adapterOptions?.isRealtime && !this.isFastBoot) {
+          // Setup realtime listener for record
+          this.fetchRecord(type, snapshot.id, snapshot.adapterOptions);
+        }
+      }).catch((e) => {
+        reject(e);
+      });
     });
   }
 
@@ -129,7 +130,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     type: ModelClass,
     snapshot: Snapshot,
   ): RSVP.Promise<unknown> {
-    return new RSVP.Promise(async (resolve) => {
+    return new RSVP.Promise((resolve, reject) => {
       const db = this.firebase.firestore();
       const docRef = this.buildCollectionRef(
         type.modelName,
@@ -140,8 +141,11 @@ export default class CloudFirestoreAdapter extends Adapter {
       batch.delete(docRef);
       this.addIncludeToWriteBatch(batch, snapshot.adapterOptions);
 
-      await batch.commit();
-      resolve();
+      batch.commit().then(() => {
+        resolve();
+      }).catch((e) => {
+        reject(e);
+      });
     });
   }
 
