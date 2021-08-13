@@ -65,7 +65,7 @@ interface HasManyRelationshipMeta {
 @classic
 export default class CloudFirestoreAdapter extends Adapter {
   @service
-  private firebase!: FirebaseService;
+  protected firebase!: FirebaseService;
 
   private referenceKeyName = 'referenceTo';
 
