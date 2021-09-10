@@ -7,7 +7,7 @@ import DS from 'ember-data';
 import PromiseProxyMixin from '@ember/object/promise-proxy-mixin';
 import RSVP from 'rsvp';
 
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import sinon from 'sinon';
 
 import RealtimeTracker from 'ember-cloud-firestore-adapter/-private/realtime-tracker';
@@ -19,7 +19,7 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
   setupTest(hooks);
 
   hooks.beforeEach(async function () {
-    db = this.owner.lookup('service:firebase').firestore();
+    db = this.owner.lookup('service:-firebase').firestore();
 
     await resetFixtureData(db);
   });

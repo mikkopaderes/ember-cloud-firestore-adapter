@@ -11,8 +11,8 @@ import DS from 'ember-data';
 import JSONSerializer from '@ember-data/serializer/json';
 import Store from '@ember-data/store';
 
-import FirebaseService from 'ember-firebase-service/services/firebase';
-import firebase from 'firebase/app';
+import FirebaseService from 'ember-cloud-firestore-adapter/services/-firebase';
+import firebase from 'firebase/compat/app';
 
 import buildCollectionName from 'ember-cloud-firestore-adapter/-private/build-collection-name';
 
@@ -44,7 +44,7 @@ interface ModelClass {
 }
 
 export default class CloudFirestoreSerializer extends JSONSerializer {
-  @service
+  @service('-firebase')
   private firebase!: FirebaseService;
 
   public extractRelationship(

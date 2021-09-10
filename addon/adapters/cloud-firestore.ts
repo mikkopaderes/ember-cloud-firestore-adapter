@@ -12,8 +12,8 @@ import RSVP from 'rsvp';
 import Store from '@ember-data/store';
 import classic from 'ember-classic-decorator';
 
-import FirebaseService from 'ember-firebase-service/services/firebase';
-import firebase from 'firebase/app';
+import FirebaseService from 'ember-cloud-firestore-adapter/services/-firebase';
+import firebase from 'firebase/compat/app';
 
 import RealtimeTracker from 'ember-cloud-firestore-adapter/-private/realtime-tracker';
 import buildCollectionName from 'ember-cloud-firestore-adapter/-private/build-collection-name';
@@ -64,7 +64,7 @@ interface HasManyRelationshipMeta {
 
 @classic
 export default class CloudFirestoreAdapter extends Adapter {
-  @service
+  @service('-firebase')
   protected firebase!: FirebaseService;
 
   private referenceKeyName = 'referenceTo';

@@ -2,7 +2,7 @@ import { click, visit, waitFor } from '@ember/test-helpers';
 import { module, test } from 'qunit';
 import { setupApplicationTest } from 'ember-qunit';
 
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 
 import resetFixtureData from '../helpers/reset-fixture-data';
 
@@ -12,7 +12,7 @@ module('Acceptance | features', function (hooks) {
   setupApplicationTest(hooks);
 
   hooks.beforeEach(async function () {
-    db = this.owner.lookup('service:firebase').firestore();
+    db = this.owner.lookup('service:-firebase').firestore();
 
     await resetFixtureData(db);
   });

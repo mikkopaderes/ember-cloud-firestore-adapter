@@ -3,7 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import Controller from '@ember/controller';
 import EmberArray from '@ember/array';
 
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 
 import UserModel from '../models/user';
 

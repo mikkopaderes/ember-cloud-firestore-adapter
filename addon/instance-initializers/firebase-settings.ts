@@ -1,38 +1,64 @@
-import { warn } from '@ember/debug';
 import ApplicationInstance from '@ember/application/instance';
+
+import firebase from 'firebase/compat/app';
+
+interface FirestoreAddonConfig {
+  settings?: { [key: string]: string };
+  emulator?: {
+    hostname: string,
+    port: number,
+    options?: { [key: string]: unknown }
+  };
+}
+
+interface AuthAddonConfig {
+  emulator?: {
+    hostname: string,
+    port: number,
+  };
+}
+
+function setupFirestore(app: firebase.app.App, config: FirestoreAddonConfig) {
+  const db = app.firestore();
+
+  if (config.settings) {
+    db.settings(config.settings);
+  }
+
+  if (config.emulator) {
+    const { hostname, port, options } = config.emulator;
+
+    db.useEmulator(hostname, port, options);
+  }
+}
+
+function setupAuth(app: firebase.app.App, config: AuthAddonConfig) {
+  const auth = app.auth();
+
+  if (config.emulator) {
+    const { hostname, port } = config.emulator;
+
+    auth.useEmulator(`http://${hostname}:${port}`);
+  }
+}
 
 export function initialize(appInstance: ApplicationInstance): void {
   const config = appInstance.resolveRegistration('config:environment');
-  const firebase = appInstance.lookup('service:firebase');
-  const db = firebase.firestore();
+  const addonConfig = config['ember-cloud-firestore-adapter'];
 
   try {
-    if (config['ember-cloud-firestore-adapter']?.firestoreSettings) {
-      db.settings(config['ember-cloud-firestore-adapter']?.firestoreSettings);
+    const app: firebase.app.App = appInstance.lookup('service:-firebase');
+
+    if (addonConfig.firestore) {
+      setupFirestore(app, addonConfig.firestore);
     }
 
-    if (config['ember-cloud-firestore-adapter']?.emulator) {
-      const {
-        hostname, port, firestorePort, authPort,
-      } = config['ember-cloud-firestore-adapter'].emulator;
-
-      // retain "port" as fallback for backwards compat
-      db.useEmulator(hostname, firestorePort || port);
-      if (authPort) {
-        // for some reason the auth().useEmulator requires a string url, rather
-        // than (hostname, port), even though it seems only localhost-over-HTTP is
-        // supported: https://github.com/firebase/firebase-js-sdk/issues/4124
-        //
-        // https://firebase.google.com/docs/emulator-suite/connect_auth#android_ios_and_web_sdks
-        // https://firebase.google.com/docs/reference/js/firebase.auth.Auth#useemulator
-        firebase.auth().useEmulator(`http://${hostname}:${authPort}`);
-      }
+    if (addonConfig.auth) {
+      setupAuth(app, addonConfig.auth);
     }
   } catch (e) {
-    if (e.name === 'FirebaseError' && e.code === 'failed-precondition') {
-      warn(e.message, { id: 'ember-debug.firebase-error.failed-precondition' });
-    } else {
-      throw e;
+    if (e.code !== 'failed-precondition') {
+      throw new Error(`There was a problem with initializing Firebase. Check if you've configured the addon properly. | Error: ${e}`);
     }
   }
 }

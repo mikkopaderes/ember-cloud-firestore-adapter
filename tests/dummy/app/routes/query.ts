@@ -1,7 +1,7 @@
 import ArrayProxy from '@ember/array/proxy';
 import Route from '@ember/routing/route';
 
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 
 import GroupModel from '../models/group';
 

@@ -8,7 +8,7 @@
 import DS from 'ember-data';
 import Model, { attr, belongsTo } from '@ember-data/model';
 
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 
 import TimestampTransform from 'ember-cloud-firestore-adapter/transforms/timestamp';
 import GroupModel from './group';

@@ -1,7 +1,7 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 
 import resetFixtureData from 'dummy/tests/helpers/reset-fixture-data';
 
@@ -11,7 +11,7 @@ module('Unit | Transform | timestamp', function (hooks) {
   setupTest(hooks);
 
   hooks.beforeEach(async function () {
-    db = this.owner.lookup('service:firebase').firestore();
+    db = this.owner.lookup('service:-firebase').firestore();
 
     await resetFixtureData(db);
   });

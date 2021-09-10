@@ -1,7 +1,7 @@
 import { action } from '@ember/object';
 import Controller from '@ember/controller';
 
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 
 export default class QueryController extends Controller {
   @action

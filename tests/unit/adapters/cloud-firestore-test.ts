@@ -2,7 +2,7 @@ import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import EmberObject from '@ember/object';
 
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import sinon from 'sinon';
 
 import resetFixtureData from '../../helpers/reset-fixture-data';
@@ -13,7 +13,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
   setupTest(hooks);
 
   hooks.beforeEach(async function () {
-    db = this.owner.lookup('service:firebase').firestore();
+    db = this.owner.lookup('service:-firebase').firestore();
 
     await resetFixtureData(db);
   });
