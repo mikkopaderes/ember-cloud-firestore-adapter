@@ -133,7 +133,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     return new RSVP.Promise((resolve, reject) => {
       const collectionRef = this.buildCollectionRef(type.modelName, query);
       const firestoreQuery = query.filter?.(collectionRef) || collectionRef;
-      const unsubscribe = firestoreQuery.onSnapshot(async (querySnapshot: firebase.firestore.QuerySnapshot) => {
+      const unsubscribe = firestoreQuery.onSnapshot((querySnapshot: firebase.firestore.QuerySnapshot) => {
         if (querySnapshot.size) {
           const [docSnapshot] = querySnapshot.docs;
           if (query?.isRealtime && !this.isFastBoot) {
