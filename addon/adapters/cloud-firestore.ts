@@ -125,6 +125,30 @@ export default class CloudFirestoreAdapter extends Adapter {
     });
   }
 
+  public queryRecord(
+    _store: Store,
+    type: ModelClass,
+    query: AdapterOption
+  ): RSVP.Promise<unknown> {
+    return new RSVP.Promise((resolve, reject) => {
+      const collectionRef = this.buildCollectionRef(type.modelName, query);
+      const firestoreQuery = query.filter?.(collectionRef) || collectionRef;
+      const unsubscribe = firestoreQuery.onSnapshot(async (querySnapshot: firebase.firestore.QuerySnapshot) => {
+        if (querySnapshot.size) {
+          const [docSnapshot] = querySnapshot.docs;
+          if (query?.isRealtime && !this.isFastBoot) {
+            this.realtimeTracker?.trackFindRecordChanges(type.modelName, docSnapshot.ref);
+          }
+          resolve(flattenDocSnapshot(docSnapshot));
+        } else {
+          reject(new Error(`Record for model type ${type.modelName} doesn't exist`));
+        }
+
+        unsubscribe();
+      }, (error) => reject(error));
+    });
+  }
+
   public deleteRecord(
     _store: Store,
     type: ModelClass,
