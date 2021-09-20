@@ -126,10 +126,7 @@
   "ember-addon": {
     "configPath": "tests/dummy/config",
     "fastbootDependencies": [
-      "firebase",
-      "firebase/compat/app",
-      "firebase/compat/auth",
-      "firebase/compat/firestore"
+      "firebase"
     ]
   }
 }
