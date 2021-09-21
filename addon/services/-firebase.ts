@@ -5,7 +5,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 
-declare var FastBoot: any;
+declare const FastBoot: { require(path: string): void };
 
 function setupEnvFirebase() {
   if (typeof FastBoot === 'undefined') {

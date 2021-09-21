@@ -9,12 +9,10 @@ export default class LoginRoute extends Route {
   private session!: SessionService;
 
   public async beforeModel(): Promise<void> {
-    await this.session.authenticate('authenticator:firebase', (auth: firebase.auth.Auth) => {
-      return auth.createUserWithEmailAndPassword('foo@gmail.com', 'foobar').then((credential) => {
-        return credential.user
-      }).catch(() => {
-        return auth.signInWithEmailAndPassword('foo@gmail.com', 'foobar');
-      });
-    });
+    await this.session.authenticate('authenticator:firebase', (auth: firebase.auth.Auth) => (
+      auth.createUserWithEmailAndPassword('foo@gmail.com', 'foobar')
+    ).then((credential) => credential.user).catch(() => (
+      auth.signInWithEmailAndPassword('foo@gmail.com', 'foobar')
+    )));
   }
 }
