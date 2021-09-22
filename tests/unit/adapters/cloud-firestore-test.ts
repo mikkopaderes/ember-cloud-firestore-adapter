@@ -31,7 +31,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const result = adapter.generateIdForRecord({}, 'foo');
 
       // Assert
-      assert.ok(typeof result === 'string');
+      assert.equal(typeof result, 'string');
     });
   });
 
@@ -293,6 +293,8 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
     test('should throw an error when record does not exists', async function (assert) {
       // Arrange
+      assert.expect(1);
+
       const store = { normalize: sinon.stub(), push: sinon.stub() };
       const modelClass = { modelName: 'user' };
       const modelId = 'user_100';
