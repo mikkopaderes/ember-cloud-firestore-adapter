@@ -21,16 +21,16 @@ let ENV = {
     firestore: {
       emulator: {
         hostname: 'localhost',
-        port: 8080,
-      },
+        port: 8080
+      }
     },
 
     auth: {
       emulator: {
         hostname: 'localhost',
-        port: 9099,
-      },
-    },
+        port: 9099
+      }
+    }
   },
 
   ...
@@ -44,6 +44,8 @@ let ENV = {
 The config object of your Firebase web app project. You can get this in the Project Settings of your Firebase Console.
 
 #### `firestore`
+
+This contains the settings related to Firestore.
 
 **`settings`**
 
@@ -67,6 +69,8 @@ e.g.
 *Note that this is an optional setting.*
 
 #### `auth`
+
+This contains the settings related to Auth.
 
 **`emulator`**
 
