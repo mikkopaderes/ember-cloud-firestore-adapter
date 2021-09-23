@@ -2,7 +2,7 @@ import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import EmberObject from '@ember/object';
 
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import sinon from 'sinon';
 
 import resetFixtureData from '../../helpers/reset-fixture-data';
@@ -13,7 +13,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
   setupTest(hooks);
 
   hooks.beforeEach(async function () {
-    db = this.owner.lookup('service:firebase').firestore();
+    db = this.owner.lookup('service:-firebase').firestore();
 
     await resetFixtureData(db);
   });
@@ -31,7 +31,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const result = adapter.generateIdForRecord({}, 'foo');
 
       // Assert
-      assert.ok(typeof result === 'string');
+      assert.equal(typeof result, 'string');
     });
   });
 
@@ -293,6 +293,8 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
     test('should throw an error when record does not exists', async function (assert) {
       // Arrange
+      assert.expect(1);
+
       const store = { normalize: sinon.stub(), push: sinon.stub() };
       const modelClass = { modelName: 'user' };
       const modelId = 'user_100';

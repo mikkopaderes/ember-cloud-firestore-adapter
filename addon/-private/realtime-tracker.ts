@@ -8,7 +8,7 @@ import { next } from '@ember/runloop';
 import DS from 'ember-data';
 import Store from '@ember-data/store';
 
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 
 import flattenDocSnapshotData from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
 

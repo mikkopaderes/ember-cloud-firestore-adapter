@@ -8,7 +8,7 @@ module('Unit | -Private | flatten-doc-snapshot-data', function (hooks) {
 
   test('should return a merged doc snapshot ID and data in a single object', async function (assert) {
     // Arrange
-    const firebase = this.owner.lookup('service:firebase');
+    const firebase = this.owner.lookup('service:-firebase');
     const db = firebase.firestore();
 
     const snapshot = await db.doc('users/user_a').get();

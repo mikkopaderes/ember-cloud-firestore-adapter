@@ -7,7 +7,7 @@
 import Service from '@ember/service';
 import Evented from '@ember/object/evented';
 
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 
 interface Data {
   authenticated: {

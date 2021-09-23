@@ -3,15 +3,15 @@ import { inject as service } from '@ember/service';
 
 import BaseAuthenticator from 'ember-simple-auth/authenticators/base';
 import FastBootService from 'ember-cli-fastboot/services/fastboot';
-import FirebaseService from 'ember-firebase-service/services/firebase';
-import firebase from 'firebase/app';
+import FirebaseService from 'ember-cloud-firestore-adapter/services/-firebase';
+import firebase from 'firebase/compat/app';
 
 interface AuthenticateCallback {
   (auth: firebase.auth.Auth): Promise<firebase.auth.UserCredential>;
 }
 
 export default class FirebaseAuthenticator extends BaseAuthenticator {
-  @service
+  @service('-firebase')
   private firebase!: FirebaseService;
 
   private get fastboot(): FastBootService | null {

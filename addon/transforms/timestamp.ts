@@ -1,7 +1,7 @@
 import { typeOf } from '@ember/utils';
 import Transform from '@ember-data/serializer/transform';
 
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 
 export default class TimestampTransform extends Transform {
   public deserialize(value: Date | firebase.firestore.Timestamp): Date {

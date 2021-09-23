@@ -7,7 +7,7 @@ import DS from 'ember-data';
 import PromiseProxyMixin from '@ember/object/promise-proxy-mixin';
 import RSVP from 'rsvp';
 
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import sinon from 'sinon';
 
 import RealtimeTracker from 'ember-cloud-firestore-adapter/-private/realtime-tracker';
@@ -19,7 +19,7 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
   setupTest(hooks);
 
   hooks.beforeEach(async function () {
-    db = this.owner.lookup('service:firebase').firestore();
+    db = this.owner.lookup('service:-firebase').firestore();
 
     await resetFixtureData(db);
   });
@@ -31,6 +31,8 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
   module('trackFindRecordChanges()', function () {
     test('should not push record to store when called for the first time', async function (assert) {
       // Arrange
+      assert.expect(1);
+
       const done = assert.async();
       const store = this.owner.lookup('service:store');
 
@@ -49,6 +51,8 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
 
     test('should push record to store when an update has been detected', async function (assert) {
       // Arrange
+      assert.expect(1);
+
       const done = assert.async();
       const store = this.owner.lookup('service:store');
       const realtimeTracker = new RealtimeTracker(store);
@@ -99,6 +103,8 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
 
     test('should unload record from store when a delete has been detected', async function (assert) {
       // Arrange
+      assert.expect(1);
+
       const done = assert.async();
       const store = this.owner.lookup('service:store');
       const realtimeTracker = new RealtimeTracker(store);
@@ -150,6 +156,8 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
   module('trackFindAllChanges()', function () {
     test('should not find individual records via store when called for the first time', async function (assert) {
       // Arrange
+      assert.expect(1);
+
       const done = assert.async();
       const store = this.owner.lookup('service:store');
       const findRecordStub = sinon.stub(store, 'findRecord');
@@ -168,6 +176,8 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
 
     test('should find individual records via store when an update has been detected', async function (assert) {
       // Arrange
+      assert.expect(1);
+
       const done = assert.async();
       const store = this.owner.lookup('service:store');
       const findRecordStub = sinon.stub(store, 'findRecord');
@@ -192,6 +202,8 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
   module('trackFindHasManyChanges()', function () {
     test('should not reload has many reference when called for the first time', async function (assert) {
       // Arrange
+      assert.expect(1);
+
       const done = assert.async();
       const store = this.owner.lookup('service:store');
       const reloadStub = sinon.stub().returns(Promise.resolve());
@@ -215,6 +227,8 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
 
     test('should reload has many reference when an update was detected', async function (assert) {
       // Arrange
+      assert.expect(1);
+
       const done = assert.async();
       const store = this.owner.lookup('service:store');
       const reloadStub = sinon.stub().returns(Promise.resolve());
@@ -244,6 +258,8 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
   module('trackQueryChanges()', function () {
     test('should not update record array when called for the first time', async function (assert) {
       // Arrange
+      assert.expect(1);
+
       const done = assert.async();
       const store = this.owner.lookup('service:store');
       const recordArray = {} as DS.AdapterPopulatedRecordArray<unknown>;
@@ -269,6 +285,8 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
 
     test('should update record array when an update was detected', async function (assert) {
       // Arrange
+      assert.expect(1);
+
       const done = assert.async();
       const store = this.owner.lookup('service:store');
       const recordArray = {} as DS.AdapterPopulatedRecordArray<unknown>;

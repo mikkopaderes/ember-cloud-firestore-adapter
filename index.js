@@ -15,12 +15,15 @@ module.exports = {
       this.serviceWorkerOption = {};
     }
 
-    const { firebase: firebaseConfig } = this.project.config(app.env);
+    const {
+      firebaseConfig,
+      firebaseVersion,
+    } = this.project.config(app.env)['ember-cloud-firestore-adapter'];
 
-    this.serviceWorkerOption = Object.assign({}, this.serviceWorkerOption, { firebaseConfig });
-
-    app.import('vendor/ember-firebase-service/firebase/firebase-auth.js');
-    app.import('vendor/ember-firebase-service/firebase/firebase-firestore.js');
+    this.serviceWorkerOption = Object.assign({}, this.serviceWorkerOption, {
+      firebaseConfig,
+      firebaseVersion,
+    });
   },
 
   treeForServiceWorker(swTree, appTree) {

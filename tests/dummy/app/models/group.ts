@@ -8,7 +8,7 @@
 import DS from 'ember-data';
 import Model, { attr, hasMany } from '@ember-data/model';
 
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 
 import PostModel from './post';
 import UserModel from './user';

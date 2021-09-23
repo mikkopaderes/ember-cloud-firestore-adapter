@@ -26,19 +26,26 @@ module.exports = function (environment) {
       hostWhitelist: [/^localhost:\d+$/],
     },
 
-    firebase: {
-      apiKey: '123qweasd',
-      authDomain: 'ember-cloud-firestore-adapter-test-project.firebaseapp.com',
-      databaseURL: 'https://ember-cloud-firestore-adapter-test-project.firebaseio.com',
-      projectId: 'ember-cloud-firestore-adapter-test-project',
-      storageBucket: 'ember-cloud-firestore-adapter-test-project.appspot.com',
-      messagingSenderId: '123qweasd',
-    },
-
     'ember-cloud-firestore-adapter': {
-      emulator: {
-        hostname: 'localhost',
-        firestorePort: 8080,
+      firebaseConfig: {
+        apiKey: '123qweasd',
+        authDomain: 'ember-cloud-firestore-adapter-test-project.firebaseapp.com',
+        databaseURL: 'https://ember-cloud-firestore-adapter-test-project.firebaseio.com',
+        projectId: 'ember-cloud-firestore-adapter-test-project',
+        storageBucket: 'ember-cloud-firestore-adapter-test-project.appspot.com',
+        messagingSenderId: '123qweasd',
+      },
+      firestore: {
+        emulator: {
+          hostname: 'localhost',
+          port: 8080,
+        },
+      },
+      auth: {
+        emulator: {
+          hostname: 'localhost',
+          port: 9099,
+        },
       },
     },
   };
