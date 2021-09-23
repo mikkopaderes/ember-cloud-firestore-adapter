@@ -1,51 +1,35 @@
 # Getting Started
 
-## Pre-setup
+## 1. Setup Firebase and Addon Configuration
 
-In your `ember-cli-build.js`, set the exclusion of `'firebase'` in the `ember-auto-import` settings. This is because `firebase` package is already included as a shim in this addon.
-
-```javascript
-'use strict';
-
-const EmberApp = require('ember-cli/lib/broccoli/ember-app');
-
-module.exports = function (defaults) {
-  const app = new EmberApp(defaults, {
-    autoImport: {
-      exclude: ['firebase']
-    }
-  });
-
-  ...
-
-  return app.toTree();
-};
-```
-
-## Configuration
-
-### 1. Setup Firebase and Addon Configuration
-
-Add a `firebase` property in your `config/environment.js`. Environment specific configurations for this addon can also be set up under the `ember-cloud-firestore-adapter` property in the same file.
+Configurations can be set under the `ember-cloud-firestore-adapter` like this:
 
 ```javascript
 let ENV = {
   ...
 
-  firebase: {
-    apiKey: '<api_key>',
-    authDomain: '<auth_domain>',
-    databaseURL: '<database_url>',
-    projectId: '<project_id>',
-    storageBucket: '<storage_bucket>',
-    messagingSenderId: '<messaging_sender_id>'
-  },
-
   'ember-cloud-firestore-adapter': {
-    emulator: {
-      hostname: 'localhost',
-      firestorePort: 8080,
-      authPort: 9099  // optional if not using auth
+    firebaseConfig: {
+      apiKey: '<api_key>',
+      authDomain: '<auth_domain>',
+      databaseURL: '<database_url>',
+      projectId: '<project_id>',
+      storageBucket: '<storage_bucket>',
+      messagingSenderId: '<messaging_sender_id>'
+    },
+
+    firestore: {
+      emulator: {
+        hostname: 'localhost',
+        port: 8080,
+      },
+    },
+
+    auth: {
+      emulator: {
+        hostname: 'localhost',
+        port: 9099,
+      },
     },
   },
 
@@ -53,14 +37,51 @@ let ENV = {
 }
 ```
 
-#### `ember-cloud-firestore-adapter` Configurations
+### Available Configurations
 
-These are the configurations currently available that you may set per environment:
+#### `firebaseConfig`
 
-  - `emulator` - An object specifying the `hostname` and `port` to use when connecting to a Firebase Emulator.
-  - `firestoreSettings` - An object specifying the custom settings for your Cloud Firestore instance. See [here](https://firebase.google.com/docs/reference/js/firebase.firestore.Settings).
+The config object of your Firebase web app project. You can get this in the Project Settings of your Firebase Console.
 
-At the moment, there are no required configuration in this addon so you may opt to not add any `ember-cloud-firestore-adapter` property in the `config/environment.js` file.
+#### `firestore`
+
+**`settings`**
+
+An object representing [`firebase.firestore.Settings`](https://firebase.google.com/docs/reference/js/v8/firebase.firestore.Settings). Any settings available there, you can set it here.
+
+*Note that this is an optional setting.*
+
+**`emulator`**
+
+Use this object property if you want to use [Firebase Emulator](https://firebase.google.com/docs/emulator-suite) for your local development. The available properties are `hostname` and `port`.
+
+e.g.
+
+```javascript
+{
+  hostname: 'localhost',
+  port: 8080
+}
+```
+
+*Note that this is an optional setting.*
+
+#### `auth`
+
+**`emulator`**
+
+Use this object property if you want to use [Firebase Emulator](https://firebase.google.com/docs/emulator-suite) for your local development. The available properties are `hostname` and `port`.
+
+e.g.
+
+```javascript
+{
+  hostname: 'localhost',
+  port: 8080
+}
+```
+
+*Note that this is an optional setting.*
 
 ### 2. Create Your Application Adapter
 
@@ -85,8 +106,6 @@ export default class ApplicationAdapter extends CloudFirestoreAdapter {
 These are the settings currently available:
 
   - `referenceKeyName` - Name of the field that will indicate whether a document is a reference to another one. (Defaults to `'referenceTo'`)
-
-Note that these settings will be the same regardless of the environment.
 
 ### 3. Create Your Application Serializer
 
