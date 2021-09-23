@@ -45,47 +45,16 @@ The config object of your Firebase web app project. You can get this in the Proj
 
 #### `firestore`
 
-This contains the settings related to Firestore.
+This contains the settings related to Firestore. The available properties are:
 
-**`settings`**
-
-An object representing [`firebase.firestore.Settings`](https://firebase.google.com/docs/reference/js/v8/firebase.firestore.Settings). Any settings available there, you can set it here.
-
-*Note that this is an optional setting.*
-
-**`emulator`**
-
-Use this object property if you want to use [Firebase Emulator](https://firebase.google.com/docs/emulator-suite) for your local development. The available properties are `hostname` and `port`.
-
-e.g.
-
-```javascript
-{
-  hostname: 'localhost',
-  port: 8080
-}
-```
-
-*Note that this is an optional setting.*
+- `settings` (optional) - An object representing [`firebase.firestore.Settings`](https://firebase.google.com/docs/reference/js/v8/firebase.firestore.Settings). Any settings available there, you can set it here.
+- `emulator` (optional) - Use this object property if you want to use [Firebase Emulator](https://firebase.google.com/docs/emulator-suite) for your local development. The available properties are `hostname` and `port`.
 
 #### `auth`
 
-This contains the settings related to Auth.
+This contains the settings related to Auth. The available properties are:
 
-**`emulator`**
-
-Use this object property if you want to use [Firebase Emulator](https://firebase.google.com/docs/emulator-suite) for your local development. The available properties are `hostname` and `port`.
-
-e.g.
-
-```javascript
-{
-  hostname: 'localhost',
-  port: 8080
-}
-```
-
-*Note that this is an optional setting.*
+- `emulator` (optional) - Use this object property if you want to use [Firebase Emulator](https://firebase.google.com/docs/emulator-suite) for your local development. The available properties are `hostname` and `port`.
 
 ### 2. Create Your Application Adapter
 
