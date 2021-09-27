@@ -2,7 +2,6 @@ import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
 
 import BaseAuthenticator from 'ember-simple-auth/authenticators/base';
-import FastBootService from 'ember-cli-fastboot/services/fastboot';
 import FirebaseService from 'ember-cloud-firestore-adapter/services/-firebase';
 import firebase from 'firebase/compat/app';
 
@@ -14,7 +13,8 @@ export default class FirebaseAuthenticator extends BaseAuthenticator {
   @service('-firebase')
   private firebase!: FirebaseService;
 
-  private get fastboot(): FastBootService | null {
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  private get fastboot(): any {
     return getOwner(this).lookup('service:fastboot');
   }
 
