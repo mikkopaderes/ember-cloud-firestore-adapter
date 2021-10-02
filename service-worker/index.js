@@ -3,8 +3,8 @@ import {
   firebaseConfig,
 } from 'ember-cloud-firestore-adapter/service-worker/config';
 
-importScripts(`https://www.gstatic.com/firebasejs/${firebaseVersion}/firebase-app.js`);
-importScripts(`https://www.gstatic.com/firebasejs/${firebaseVersion}/firebase-auth.js`);
+importScripts(`https://www.gstatic.com/firebasejs/${firebaseVersion}/firebase-app-compat.js`);
+importScripts(`https://www.gstatic.com/firebasejs/${firebaseVersion}/firebase-auth-compat.js`);
 
 firebase.initializeApp(firebaseConfig);
 
