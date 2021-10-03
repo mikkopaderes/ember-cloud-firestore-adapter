@@ -1,6 +1,7 @@
 import ApplicationInstance from '@ember/application/instance';
+import { getAuth, connectAuthEmulator } from 'firebase/auth';
 
-import firebase from 'firebase/compat/app';
+import type firebase from 'firebase/compat/app';
 
 interface FirestoreAddonConfig {
   settings?: { [key: string]: string };
@@ -15,6 +16,7 @@ interface AuthAddonConfig {
   emulator?: {
     hostname: string,
     port: number,
+    options?: { disableWarnings: boolean },
   };
 }
 
@@ -33,12 +35,12 @@ function setupFirestore(app: firebase.app.App, config: FirestoreAddonConfig) {
 }
 
 function setupAuth(app: firebase.app.App, config: AuthAddonConfig) {
-  const auth = app.auth();
+  const auth = getAuth(app);
 
   if (config.emulator) {
-    const { hostname, port } = config.emulator;
+    const { hostname, port, options } = config.emulator;
 
-    auth.useEmulator(`http://${hostname}:${port}`);
+    connectAuthEmulator(auth, `http://${hostname}:${port}`, options);
   }
 }
 
