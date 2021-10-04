@@ -15,22 +15,22 @@ let ENV = {
       databaseURL: '<database_url>',
       projectId: '<project_id>',
       storageBucket: '<storage_bucket>',
-      messagingSenderId: '<messaging_sender_id>'
+      messagingSenderId: '<messaging_sender_id>',
     },
 
     firestore: {
       emulator: {
         hostname: 'localhost',
-        port: 8080
-      }
+        port: 8080,
+      },
     },
 
     auth: {
       emulator: {
         hostname: 'localhost',
-        port: 9099
-      }
-    }
+        port: 9099,
+      },
+    },
   },
 
   ...

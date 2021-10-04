@@ -25,10 +25,6 @@ let ENV = {
 }
 
 if (environment === 'production') {
-  ENV['ember-cloud-firestore-adapter'] = {
-    firestore: {
-      emulator: null,
-    },
-  };
+  ENV['ember-cloud-firestore-adapter'].firestore.emulator = null;
 }
 ```
