@@ -16,7 +16,10 @@ interface AuthAddonConfig {
   emulator?: {
     hostname: string,
     port: number,
-    options?: { disableWarnings: boolean },
+    options?: {
+      disableWarnings: boolean,
+      [key: string]: unknown,
+    },
   };
 }
 
