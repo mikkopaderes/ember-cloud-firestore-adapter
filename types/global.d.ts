@@ -4,3 +4,5 @@ declare module 'ember-cloud-firestore-adapter/templates/*' {
   const tmpl: TemplateFactory;
   export default tmpl;
 }
+
+declare const FastBoot: { require(moduleName: string): any } | undefined;

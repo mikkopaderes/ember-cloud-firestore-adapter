@@ -1,0 +1,14 @@
+{
+  "files": [
+      "scripts/build-wrappers.ts"
+  ],
+  "compilerOptions": {
+      "outDir": "scripts",
+      "skipLibCheck": true,
+      "lib": ["es2019"],
+      "plugins": [
+          { "transform": "ts-transformer-keys/transformer" }
+      ],
+      "baseUrl": "./"
+  }
+}
