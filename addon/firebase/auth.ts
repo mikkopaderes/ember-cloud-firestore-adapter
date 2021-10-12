@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 // DO NOT MODIFY. THIS IS AUTO GENERATED.
 import {
   applyActionCode as _applyActionCode,
@@ -5,7 +6,6 @@ import {
   confirmPasswordReset as _confirmPasswordReset,
   connectAuthEmulator as _connectAuthEmulator,
   createUserWithEmailAndPassword as _createUserWithEmailAndPassword,
-  debugErrorMap as _debugErrorMap,
   deleteUser as _deleteUser,
   fetchSignInMethodsForEmail as _fetchSignInMethodsForEmail,
   getAdditionalUserInfo as _getAdditionalUserInfo,
@@ -14,7 +14,6 @@ import {
   getIdTokenResult as _getIdTokenResult,
   getMultiFactorResolver as _getMultiFactorResolver,
   getRedirectResult as _getRedirectResult,
-  inMemoryPersistence as _inMemoryPersistence,
   initializeAuth as _initializeAuth,
   isSignInWithEmailLink as _isSignInWithEmailLink,
   linkWithCredential as _linkWithCredential,
@@ -25,7 +24,6 @@ import {
   onAuthStateChanged as _onAuthStateChanged,
   onIdTokenChanged as _onIdTokenChanged,
   parseActionCodeURL as _parseActionCodeURL,
-  prodErrorMap as _prodErrorMap,
   reauthenticateWithCredential as _reauthenticateWithCredential,
   reauthenticateWithPhoneNumber as _reauthenticateWithPhoneNumber,
   reauthenticateWithPopup as _reauthenticateWithPopup,
@@ -55,222 +53,502 @@ import {
   verifyPasswordResetCode as _verifyPasswordResetCode,
 } from 'firebase/auth';
 
-let ___applyActionCode = _applyActionCode;
-let ___checkActionCode = _checkActionCode;
-let ___confirmPasswordReset = _confirmPasswordReset;
-let ___connectAuthEmulator = _connectAuthEmulator;
-let ___createUserWithEmailAndPassword = _createUserWithEmailAndPassword;
-let ___debugErrorMap = _debugErrorMap;
-let ___deleteUser = _deleteUser;
-let ___fetchSignInMethodsForEmail = _fetchSignInMethodsForEmail;
-let ___getAdditionalUserInfo = _getAdditionalUserInfo;
-let ___getAuth = _getAuth;
-let ___getIdToken = _getIdToken;
-let ___getIdTokenResult = _getIdTokenResult;
-let ___getMultiFactorResolver = _getMultiFactorResolver;
-let ___getRedirectResult = _getRedirectResult;
-let ___inMemoryPersistence = _inMemoryPersistence;
-let ___initializeAuth = _initializeAuth;
-let ___isSignInWithEmailLink = _isSignInWithEmailLink;
-let ___linkWithCredential = _linkWithCredential;
-let ___linkWithPhoneNumber = _linkWithPhoneNumber;
-let ___linkWithPopup = _linkWithPopup;
-let ___linkWithRedirect = _linkWithRedirect;
-let ___multiFactor = _multiFactor;
-let ___onAuthStateChanged = _onAuthStateChanged;
-let ___onIdTokenChanged = _onIdTokenChanged;
-let ___parseActionCodeURL = _parseActionCodeURL;
-let ___prodErrorMap = _prodErrorMap;
-let ___reauthenticateWithCredential = _reauthenticateWithCredential;
-let ___reauthenticateWithPhoneNumber = _reauthenticateWithPhoneNumber;
-let ___reauthenticateWithPopup = _reauthenticateWithPopup;
-let ___reauthenticateWithRedirect = _reauthenticateWithRedirect;
-let ___reload = _reload;
-let ___sendEmailVerification = _sendEmailVerification;
-let ___sendPasswordResetEmail = _sendPasswordResetEmail;
-let ___sendSignInLinkToEmail = _sendSignInLinkToEmail;
-let ___setPersistence = _setPersistence;
-let ___signInAnonymously = _signInAnonymously;
-let ___signInWithCredential = _signInWithCredential;
-let ___signInWithCustomToken = _signInWithCustomToken;
-let ___signInWithEmailAndPassword = _signInWithEmailAndPassword;
-let ___signInWithEmailLink = _signInWithEmailLink;
-let ___signInWithPhoneNumber = _signInWithPhoneNumber;
-let ___signInWithPopup = _signInWithPopup;
-let ___signInWithRedirect = _signInWithRedirect;
-let ___signOut = _signOut;
-let ___unlink = _unlink;
-let ___updateCurrentUser = _updateCurrentUser;
-let ___updateEmail = _updateEmail;
-let ___updatePassword = _updatePassword;
-let ___updatePhoneNumber = _updatePhoneNumber;
-let ___updateProfile = _updateProfile;
-let ___useDeviceLanguage = _useDeviceLanguage;
-let ___verifyBeforeUpdateEmail = _verifyBeforeUpdateEmail;
-let ___verifyPasswordResetCode = _verifyPasswordResetCode;
+export function applyActionCode(...args: Parameters<typeof _applyActionCode>): ReturnType<typeof _applyActionCode> {
+  if (typeof FastBoot === 'undefined') {
+    return _applyActionCode(...args);
+  }
 
-if (typeof FastBoot !== 'undefined') {
-  const {
-    applyActionCode: __applyActionCode,
-    checkActionCode: __checkActionCode,
-    confirmPasswordReset: __confirmPasswordReset,
-    connectAuthEmulator: __connectAuthEmulator,
-    createUserWithEmailAndPassword: __createUserWithEmailAndPassword,
-    debugErrorMap: __debugErrorMap,
-    deleteUser: __deleteUser,
-    fetchSignInMethodsForEmail: __fetchSignInMethodsForEmail,
-    getAdditionalUserInfo: __getAdditionalUserInfo,
-    getAuth: __getAuth,
-    getIdToken: __getIdToken,
-    getIdTokenResult: __getIdTokenResult,
-    getMultiFactorResolver: __getMultiFactorResolver,
-    getRedirectResult: __getRedirectResult,
-    inMemoryPersistence: __inMemoryPersistence,
-    initializeAuth: __initializeAuth,
-    isSignInWithEmailLink: __isSignInWithEmailLink,
-    linkWithCredential: __linkWithCredential,
-    linkWithPhoneNumber: __linkWithPhoneNumber,
-    linkWithPopup: __linkWithPopup,
-    linkWithRedirect: __linkWithRedirect,
-    multiFactor: __multiFactor,
-    onAuthStateChanged: __onAuthStateChanged,
-    onIdTokenChanged: __onIdTokenChanged,
-    parseActionCodeURL: __parseActionCodeURL,
-    prodErrorMap: __prodErrorMap,
-    reauthenticateWithCredential: __reauthenticateWithCredential,
-    reauthenticateWithPhoneNumber: __reauthenticateWithPhoneNumber,
-    reauthenticateWithPopup: __reauthenticateWithPopup,
-    reauthenticateWithRedirect: __reauthenticateWithRedirect,
-    reload: __reload,
-    sendEmailVerification: __sendEmailVerification,
-    sendPasswordResetEmail: __sendPasswordResetEmail,
-    sendSignInLinkToEmail: __sendSignInLinkToEmail,
-    setPersistence: __setPersistence,
-    signInAnonymously: __signInAnonymously,
-    signInWithCredential: __signInWithCredential,
-    signInWithCustomToken: __signInWithCustomToken,
-    signInWithEmailAndPassword: __signInWithEmailAndPassword,
-    signInWithEmailLink: __signInWithEmailLink,
-    signInWithPhoneNumber: __signInWithPhoneNumber,
-    signInWithPopup: __signInWithPopup,
-    signInWithRedirect: __signInWithRedirect,
-    signOut: __signOut,
-    unlink: __unlink,
-    updateCurrentUser: __updateCurrentUser,
-    updateEmail: __updateEmail,
-    updatePassword: __updatePassword,
-    updatePhoneNumber: __updatePhoneNumber,
-    updateProfile: __updateProfile,
-    useDeviceLanguage: __useDeviceLanguage,
-    verifyBeforeUpdateEmail: __verifyBeforeUpdateEmail,
-    verifyPasswordResetCode: __verifyPasswordResetCode,
-  } = FastBoot.require('firebase/auth');
+  const { applyActionCode: __applyActionCode } = FastBoot.require('firebase/auth');
 
-  ___applyActionCode = __applyActionCode;
-  ___checkActionCode = __checkActionCode;
-  ___confirmPasswordReset = __confirmPasswordReset;
-  ___connectAuthEmulator = __connectAuthEmulator;
-  ___createUserWithEmailAndPassword = __createUserWithEmailAndPassword;
-  ___debugErrorMap = __debugErrorMap;
-  ___deleteUser = __deleteUser;
-  ___fetchSignInMethodsForEmail = __fetchSignInMethodsForEmail;
-  ___getAdditionalUserInfo = __getAdditionalUserInfo;
-  ___getAuth = __getAuth;
-  ___getIdToken = __getIdToken;
-  ___getIdTokenResult = __getIdTokenResult;
-  ___getMultiFactorResolver = __getMultiFactorResolver;
-  ___getRedirectResult = __getRedirectResult;
-  ___inMemoryPersistence = __inMemoryPersistence;
-  ___initializeAuth = __initializeAuth;
-  ___isSignInWithEmailLink = __isSignInWithEmailLink;
-  ___linkWithCredential = __linkWithCredential;
-  ___linkWithPhoneNumber = __linkWithPhoneNumber;
-  ___linkWithPopup = __linkWithPopup;
-  ___linkWithRedirect = __linkWithRedirect;
-  ___multiFactor = __multiFactor;
-  ___onAuthStateChanged = __onAuthStateChanged;
-  ___onIdTokenChanged = __onIdTokenChanged;
-  ___parseActionCodeURL = __parseActionCodeURL;
-  ___prodErrorMap = __prodErrorMap;
-  ___reauthenticateWithCredential = __reauthenticateWithCredential;
-  ___reauthenticateWithPhoneNumber = __reauthenticateWithPhoneNumber;
-  ___reauthenticateWithPopup = __reauthenticateWithPopup;
-  ___reauthenticateWithRedirect = __reauthenticateWithRedirect;
-  ___reload = __reload;
-  ___sendEmailVerification = __sendEmailVerification;
-  ___sendPasswordResetEmail = __sendPasswordResetEmail;
-  ___sendSignInLinkToEmail = __sendSignInLinkToEmail;
-  ___setPersistence = __setPersistence;
-  ___signInAnonymously = __signInAnonymously;
-  ___signInWithCredential = __signInWithCredential;
-  ___signInWithCustomToken = __signInWithCustomToken;
-  ___signInWithEmailAndPassword = __signInWithEmailAndPassword;
-  ___signInWithEmailLink = __signInWithEmailLink;
-  ___signInWithPhoneNumber = __signInWithPhoneNumber;
-  ___signInWithPopup = __signInWithPopup;
-  ___signInWithRedirect = __signInWithRedirect;
-  ___signOut = __signOut;
-  ___unlink = __unlink;
-  ___updateCurrentUser = __updateCurrentUser;
-  ___updateEmail = __updateEmail;
-  ___updatePassword = __updatePassword;
-  ___updatePhoneNumber = __updatePhoneNumber;
-  ___updateProfile = __updateProfile;
-  ___useDeviceLanguage = __useDeviceLanguage;
-  ___verifyBeforeUpdateEmail = __verifyBeforeUpdateEmail;
-  ___verifyPasswordResetCode = __verifyPasswordResetCode;
+  return __applyActionCode(...args);
 }
 
-export const applyActionCode = ___applyActionCode;
-export const checkActionCode = ___checkActionCode;
-export const confirmPasswordReset = ___confirmPasswordReset;
-export const connectAuthEmulator = ___connectAuthEmulator;
-export const createUserWithEmailAndPassword = ___createUserWithEmailAndPassword;
-export const debugErrorMap = ___debugErrorMap;
-export const deleteUser = ___deleteUser;
-export const fetchSignInMethodsForEmail = ___fetchSignInMethodsForEmail;
-export const getAdditionalUserInfo = ___getAdditionalUserInfo;
-export const getAuth = ___getAuth;
-export const getIdToken = ___getIdToken;
-export const getIdTokenResult = ___getIdTokenResult;
-export const getMultiFactorResolver = ___getMultiFactorResolver;
-export const getRedirectResult = ___getRedirectResult;
-export const inMemoryPersistence = ___inMemoryPersistence;
-export const initializeAuth = ___initializeAuth;
-export const isSignInWithEmailLink = ___isSignInWithEmailLink;
-export const linkWithCredential = ___linkWithCredential;
-export const linkWithPhoneNumber = ___linkWithPhoneNumber;
-export const linkWithPopup = ___linkWithPopup;
-export const linkWithRedirect = ___linkWithRedirect;
-export const multiFactor = ___multiFactor;
-export const onAuthStateChanged = ___onAuthStateChanged;
-export const onIdTokenChanged = ___onIdTokenChanged;
-export const parseActionCodeURL = ___parseActionCodeURL;
-export const prodErrorMap = ___prodErrorMap;
-export const reauthenticateWithCredential = ___reauthenticateWithCredential;
-export const reauthenticateWithPhoneNumber = ___reauthenticateWithPhoneNumber;
-export const reauthenticateWithPopup = ___reauthenticateWithPopup;
-export const reauthenticateWithRedirect = ___reauthenticateWithRedirect;
-export const reload = ___reload;
-export const sendEmailVerification = ___sendEmailVerification;
-export const sendPasswordResetEmail = ___sendPasswordResetEmail;
-export const sendSignInLinkToEmail = ___sendSignInLinkToEmail;
-export const setPersistence = ___setPersistence;
-export const signInAnonymously = ___signInAnonymously;
-export const signInWithCredential = ___signInWithCredential;
-export const signInWithCustomToken = ___signInWithCustomToken;
-export const signInWithEmailAndPassword = ___signInWithEmailAndPassword;
-export const signInWithEmailLink = ___signInWithEmailLink;
-export const signInWithPhoneNumber = ___signInWithPhoneNumber;
-export const signInWithPopup = ___signInWithPopup;
-export const signInWithRedirect = ___signInWithRedirect;
-export const signOut = ___signOut;
-export const unlink = ___unlink;
-export const updateCurrentUser = ___updateCurrentUser;
-export const updateEmail = ___updateEmail;
-export const updatePassword = ___updatePassword;
-export const updatePhoneNumber = ___updatePhoneNumber;
-export const updateProfile = ___updateProfile;
-export const useDeviceLanguage = ___useDeviceLanguage;
-export const verifyBeforeUpdateEmail = ___verifyBeforeUpdateEmail;
-export const verifyPasswordResetCode = ___verifyPasswordResetCode;
+export function checkActionCode(...args: Parameters<typeof _checkActionCode>): ReturnType<typeof _checkActionCode> {
+  if (typeof FastBoot === 'undefined') {
+    return _checkActionCode(...args);
+  }
+
+  const { checkActionCode: __checkActionCode } = FastBoot.require('firebase/auth');
+
+  return __checkActionCode(...args);
+}
+
+export function confirmPasswordReset(...args: Parameters<typeof _confirmPasswordReset>): ReturnType<typeof _confirmPasswordReset> {
+  if (typeof FastBoot === 'undefined') {
+    return _confirmPasswordReset(...args);
+  }
+
+  const { confirmPasswordReset: __confirmPasswordReset } = FastBoot.require('firebase/auth');
+
+  return __confirmPasswordReset(...args);
+}
+
+export function connectAuthEmulator(...args: Parameters<typeof _connectAuthEmulator>): ReturnType<typeof _connectAuthEmulator> {
+  if (typeof FastBoot === 'undefined') {
+    return _connectAuthEmulator(...args);
+  }
+
+  const { connectAuthEmulator: __connectAuthEmulator } = FastBoot.require('firebase/auth');
+
+  return __connectAuthEmulator(...args);
+}
+
+export function createUserWithEmailAndPassword(...args: Parameters<typeof _createUserWithEmailAndPassword>): ReturnType<typeof _createUserWithEmailAndPassword> {
+  if (typeof FastBoot === 'undefined') {
+    return _createUserWithEmailAndPassword(...args);
+  }
+
+  const { createUserWithEmailAndPassword: __createUserWithEmailAndPassword } = FastBoot.require('firebase/auth');
+
+  return __createUserWithEmailAndPassword(...args);
+}
+
+export function deleteUser(...args: Parameters<typeof _deleteUser>): ReturnType<typeof _deleteUser> {
+  if (typeof FastBoot === 'undefined') {
+    return _deleteUser(...args);
+  }
+
+  const { deleteUser: __deleteUser } = FastBoot.require('firebase/auth');
+
+  return __deleteUser(...args);
+}
+
+export function fetchSignInMethodsForEmail(...args: Parameters<typeof _fetchSignInMethodsForEmail>): ReturnType<typeof _fetchSignInMethodsForEmail> {
+  if (typeof FastBoot === 'undefined') {
+    return _fetchSignInMethodsForEmail(...args);
+  }
+
+  const { fetchSignInMethodsForEmail: __fetchSignInMethodsForEmail } = FastBoot.require('firebase/auth');
+
+  return __fetchSignInMethodsForEmail(...args);
+}
+
+export function getAdditionalUserInfo(...args: Parameters<typeof _getAdditionalUserInfo>): ReturnType<typeof _getAdditionalUserInfo> {
+  if (typeof FastBoot === 'undefined') {
+    return _getAdditionalUserInfo(...args);
+  }
+
+  const { getAdditionalUserInfo: __getAdditionalUserInfo } = FastBoot.require('firebase/auth');
+
+  return __getAdditionalUserInfo(...args);
+}
+
+export function getAuth(...args: Parameters<typeof _getAuth>): ReturnType<typeof _getAuth> {
+  if (typeof FastBoot === 'undefined') {
+    return _getAuth(...args);
+  }
+
+  const { getAuth: __getAuth } = FastBoot.require('firebase/auth');
+
+  return __getAuth(...args);
+}
+
+export function getIdToken(...args: Parameters<typeof _getIdToken>): ReturnType<typeof _getIdToken> {
+  if (typeof FastBoot === 'undefined') {
+    return _getIdToken(...args);
+  }
+
+  const { getIdToken: __getIdToken } = FastBoot.require('firebase/auth');
+
+  return __getIdToken(...args);
+}
+
+export function getIdTokenResult(...args: Parameters<typeof _getIdTokenResult>): ReturnType<typeof _getIdTokenResult> {
+  if (typeof FastBoot === 'undefined') {
+    return _getIdTokenResult(...args);
+  }
+
+  const { getIdTokenResult: __getIdTokenResult } = FastBoot.require('firebase/auth');
+
+  return __getIdTokenResult(...args);
+}
+
+export function getMultiFactorResolver(...args: Parameters<typeof _getMultiFactorResolver>): ReturnType<typeof _getMultiFactorResolver> {
+  if (typeof FastBoot === 'undefined') {
+    return _getMultiFactorResolver(...args);
+  }
+
+  const { getMultiFactorResolver: __getMultiFactorResolver } = FastBoot.require('firebase/auth');
+
+  return __getMultiFactorResolver(...args);
+}
+
+export function getRedirectResult(...args: Parameters<typeof _getRedirectResult>): ReturnType<typeof _getRedirectResult> {
+  if (typeof FastBoot === 'undefined') {
+    return _getRedirectResult(...args);
+  }
+
+  const { getRedirectResult: __getRedirectResult } = FastBoot.require('firebase/auth');
+
+  return __getRedirectResult(...args);
+}
+
+export function initializeAuth(...args: Parameters<typeof _initializeAuth>): ReturnType<typeof _initializeAuth> {
+  if (typeof FastBoot === 'undefined') {
+    return _initializeAuth(...args);
+  }
+
+  const { initializeAuth: __initializeAuth } = FastBoot.require('firebase/auth');
+
+  return __initializeAuth(...args);
+}
+
+export function isSignInWithEmailLink(...args: Parameters<typeof _isSignInWithEmailLink>): ReturnType<typeof _isSignInWithEmailLink> {
+  if (typeof FastBoot === 'undefined') {
+    return _isSignInWithEmailLink(...args);
+  }
+
+  const { isSignInWithEmailLink: __isSignInWithEmailLink } = FastBoot.require('firebase/auth');
+
+  return __isSignInWithEmailLink(...args);
+}
+
+export function linkWithCredential(...args: Parameters<typeof _linkWithCredential>): ReturnType<typeof _linkWithCredential> {
+  if (typeof FastBoot === 'undefined') {
+    return _linkWithCredential(...args);
+  }
+
+  const { linkWithCredential: __linkWithCredential } = FastBoot.require('firebase/auth');
+
+  return __linkWithCredential(...args);
+}
+
+export function linkWithPhoneNumber(...args: Parameters<typeof _linkWithPhoneNumber>): ReturnType<typeof _linkWithPhoneNumber> {
+  if (typeof FastBoot === 'undefined') {
+    return _linkWithPhoneNumber(...args);
+  }
+
+  const { linkWithPhoneNumber: __linkWithPhoneNumber } = FastBoot.require('firebase/auth');
+
+  return __linkWithPhoneNumber(...args);
+}
+
+export function linkWithPopup(...args: Parameters<typeof _linkWithPopup>): ReturnType<typeof _linkWithPopup> {
+  if (typeof FastBoot === 'undefined') {
+    return _linkWithPopup(...args);
+  }
+
+  const { linkWithPopup: __linkWithPopup } = FastBoot.require('firebase/auth');
+
+  return __linkWithPopup(...args);
+}
+
+export function linkWithRedirect(...args: Parameters<typeof _linkWithRedirect>): ReturnType<typeof _linkWithRedirect> {
+  if (typeof FastBoot === 'undefined') {
+    return _linkWithRedirect(...args);
+  }
+
+  const { linkWithRedirect: __linkWithRedirect } = FastBoot.require('firebase/auth');
+
+  return __linkWithRedirect(...args);
+}
+
+export function multiFactor(...args: Parameters<typeof _multiFactor>): ReturnType<typeof _multiFactor> {
+  if (typeof FastBoot === 'undefined') {
+    return _multiFactor(...args);
+  }
+
+  const { multiFactor: __multiFactor } = FastBoot.require('firebase/auth');
+
+  return __multiFactor(...args);
+}
+
+export function onAuthStateChanged(...args: Parameters<typeof _onAuthStateChanged>): ReturnType<typeof _onAuthStateChanged> {
+  if (typeof FastBoot === 'undefined') {
+    return _onAuthStateChanged(...args);
+  }
+
+  const { onAuthStateChanged: __onAuthStateChanged } = FastBoot.require('firebase/auth');
+
+  return __onAuthStateChanged(...args);
+}
+
+export function onIdTokenChanged(...args: Parameters<typeof _onIdTokenChanged>): ReturnType<typeof _onIdTokenChanged> {
+  if (typeof FastBoot === 'undefined') {
+    return _onIdTokenChanged(...args);
+  }
+
+  const { onIdTokenChanged: __onIdTokenChanged } = FastBoot.require('firebase/auth');
+
+  return __onIdTokenChanged(...args);
+}
+
+export function parseActionCodeURL(...args: Parameters<typeof _parseActionCodeURL>): ReturnType<typeof _parseActionCodeURL> {
+  if (typeof FastBoot === 'undefined') {
+    return _parseActionCodeURL(...args);
+  }
+
+  const { parseActionCodeURL: __parseActionCodeURL } = FastBoot.require('firebase/auth');
+
+  return __parseActionCodeURL(...args);
+}
+
+export function reauthenticateWithCredential(...args: Parameters<typeof _reauthenticateWithCredential>): ReturnType<typeof _reauthenticateWithCredential> {
+  if (typeof FastBoot === 'undefined') {
+    return _reauthenticateWithCredential(...args);
+  }
+
+  const { reauthenticateWithCredential: __reauthenticateWithCredential } = FastBoot.require('firebase/auth');
+
+  return __reauthenticateWithCredential(...args);
+}
+
+export function reauthenticateWithPhoneNumber(...args: Parameters<typeof _reauthenticateWithPhoneNumber>): ReturnType<typeof _reauthenticateWithPhoneNumber> {
+  if (typeof FastBoot === 'undefined') {
+    return _reauthenticateWithPhoneNumber(...args);
+  }
+
+  const { reauthenticateWithPhoneNumber: __reauthenticateWithPhoneNumber } = FastBoot.require('firebase/auth');
+
+  return __reauthenticateWithPhoneNumber(...args);
+}
+
+export function reauthenticateWithPopup(...args: Parameters<typeof _reauthenticateWithPopup>): ReturnType<typeof _reauthenticateWithPopup> {
+  if (typeof FastBoot === 'undefined') {
+    return _reauthenticateWithPopup(...args);
+  }
+
+  const { reauthenticateWithPopup: __reauthenticateWithPopup } = FastBoot.require('firebase/auth');
+
+  return __reauthenticateWithPopup(...args);
+}
+
+export function reauthenticateWithRedirect(...args: Parameters<typeof _reauthenticateWithRedirect>): ReturnType<typeof _reauthenticateWithRedirect> {
+  if (typeof FastBoot === 'undefined') {
+    return _reauthenticateWithRedirect(...args);
+  }
+
+  const { reauthenticateWithRedirect: __reauthenticateWithRedirect } = FastBoot.require('firebase/auth');
+
+  return __reauthenticateWithRedirect(...args);
+}
+
+export function reload(...args: Parameters<typeof _reload>): ReturnType<typeof _reload> {
+  if (typeof FastBoot === 'undefined') {
+    return _reload(...args);
+  }
+
+  const { reload: __reload } = FastBoot.require('firebase/auth');
+
+  return __reload(...args);
+}
+
+export function sendEmailVerification(...args: Parameters<typeof _sendEmailVerification>): ReturnType<typeof _sendEmailVerification> {
+  if (typeof FastBoot === 'undefined') {
+    return _sendEmailVerification(...args);
+  }
+
+  const { sendEmailVerification: __sendEmailVerification } = FastBoot.require('firebase/auth');
+
+  return __sendEmailVerification(...args);
+}
+
+export function sendPasswordResetEmail(...args: Parameters<typeof _sendPasswordResetEmail>): ReturnType<typeof _sendPasswordResetEmail> {
+  if (typeof FastBoot === 'undefined') {
+    return _sendPasswordResetEmail(...args);
+  }
+
+  const { sendPasswordResetEmail: __sendPasswordResetEmail } = FastBoot.require('firebase/auth');
+
+  return __sendPasswordResetEmail(...args);
+}
+
+export function sendSignInLinkToEmail(...args: Parameters<typeof _sendSignInLinkToEmail>): ReturnType<typeof _sendSignInLinkToEmail> {
+  if (typeof FastBoot === 'undefined') {
+    return _sendSignInLinkToEmail(...args);
+  }
+
+  const { sendSignInLinkToEmail: __sendSignInLinkToEmail } = FastBoot.require('firebase/auth');
+
+  return __sendSignInLinkToEmail(...args);
+}
+
+export function setPersistence(...args: Parameters<typeof _setPersistence>): ReturnType<typeof _setPersistence> {
+  if (typeof FastBoot === 'undefined') {
+    return _setPersistence(...args);
+  }
+
+  const { setPersistence: __setPersistence } = FastBoot.require('firebase/auth');
+
+  return __setPersistence(...args);
+}
+
+export function signInAnonymously(...args: Parameters<typeof _signInAnonymously>): ReturnType<typeof _signInAnonymously> {
+  if (typeof FastBoot === 'undefined') {
+    return _signInAnonymously(...args);
+  }
+
+  const { signInAnonymously: __signInAnonymously } = FastBoot.require('firebase/auth');
+
+  return __signInAnonymously(...args);
+}
+
+export function signInWithCredential(...args: Parameters<typeof _signInWithCredential>): ReturnType<typeof _signInWithCredential> {
+  if (typeof FastBoot === 'undefined') {
+    return _signInWithCredential(...args);
+  }
+
+  const { signInWithCredential: __signInWithCredential } = FastBoot.require('firebase/auth');
+
+  return __signInWithCredential(...args);
+}
+
+export function signInWithCustomToken(...args: Parameters<typeof _signInWithCustomToken>): ReturnType<typeof _signInWithCustomToken> {
+  if (typeof FastBoot === 'undefined') {
+    return _signInWithCustomToken(...args);
+  }
+
+  const { signInWithCustomToken: __signInWithCustomToken } = FastBoot.require('firebase/auth');
+
+  return __signInWithCustomToken(...args);
+}
+
+export function signInWithEmailAndPassword(...args: Parameters<typeof _signInWithEmailAndPassword>): ReturnType<typeof _signInWithEmailAndPassword> {
+  if (typeof FastBoot === 'undefined') {
+    return _signInWithEmailAndPassword(...args);
+  }
+
+  const { signInWithEmailAndPassword: __signInWithEmailAndPassword } = FastBoot.require('firebase/auth');
+
+  return __signInWithEmailAndPassword(...args);
+}
+
+export function signInWithEmailLink(...args: Parameters<typeof _signInWithEmailLink>): ReturnType<typeof _signInWithEmailLink> {
+  if (typeof FastBoot === 'undefined') {
+    return _signInWithEmailLink(...args);
+  }
+
+  const { signInWithEmailLink: __signInWithEmailLink } = FastBoot.require('firebase/auth');
+
+  return __signInWithEmailLink(...args);
+}
+
+export function signInWithPhoneNumber(...args: Parameters<typeof _signInWithPhoneNumber>): ReturnType<typeof _signInWithPhoneNumber> {
+  if (typeof FastBoot === 'undefined') {
+    return _signInWithPhoneNumber(...args);
+  }
+
+  const { signInWithPhoneNumber: __signInWithPhoneNumber } = FastBoot.require('firebase/auth');
+
+  return __signInWithPhoneNumber(...args);
+}
+
+export function signInWithPopup(...args: Parameters<typeof _signInWithPopup>): ReturnType<typeof _signInWithPopup> {
+  if (typeof FastBoot === 'undefined') {
+    return _signInWithPopup(...args);
+  }
+
+  const { signInWithPopup: __signInWithPopup } = FastBoot.require('firebase/auth');
+
+  return __signInWithPopup(...args);
+}
+
+export function signInWithRedirect(...args: Parameters<typeof _signInWithRedirect>): ReturnType<typeof _signInWithRedirect> {
+  if (typeof FastBoot === 'undefined') {
+    return _signInWithRedirect(...args);
+  }
+
+  const { signInWithRedirect: __signInWithRedirect } = FastBoot.require('firebase/auth');
+
+  return __signInWithRedirect(...args);
+}
+
+export function signOut(...args: Parameters<typeof _signOut>): ReturnType<typeof _signOut> {
+  if (typeof FastBoot === 'undefined') {
+    return _signOut(...args);
+  }
+
+  const { signOut: __signOut } = FastBoot.require('firebase/auth');
+
+  return __signOut(...args);
+}
+
+export function unlink(...args: Parameters<typeof _unlink>): ReturnType<typeof _unlink> {
+  if (typeof FastBoot === 'undefined') {
+    return _unlink(...args);
+  }
+
+  const { unlink: __unlink } = FastBoot.require('firebase/auth');
+
+  return __unlink(...args);
+}
+
+export function updateCurrentUser(...args: Parameters<typeof _updateCurrentUser>): ReturnType<typeof _updateCurrentUser> {
+  if (typeof FastBoot === 'undefined') {
+    return _updateCurrentUser(...args);
+  }
+
+  const { updateCurrentUser: __updateCurrentUser } = FastBoot.require('firebase/auth');
+
+  return __updateCurrentUser(...args);
+}
+
+export function updateEmail(...args: Parameters<typeof _updateEmail>): ReturnType<typeof _updateEmail> {
+  if (typeof FastBoot === 'undefined') {
+    return _updateEmail(...args);
+  }
+
+  const { updateEmail: __updateEmail } = FastBoot.require('firebase/auth');
+
+  return __updateEmail(...args);
+}
+
+export function updatePassword(...args: Parameters<typeof _updatePassword>): ReturnType<typeof _updatePassword> {
+  if (typeof FastBoot === 'undefined') {
+    return _updatePassword(...args);
+  }
+
+  const { updatePassword: __updatePassword } = FastBoot.require('firebase/auth');
+
+  return __updatePassword(...args);
+}
+
+export function updatePhoneNumber(...args: Parameters<typeof _updatePhoneNumber>): ReturnType<typeof _updatePhoneNumber> {
+  if (typeof FastBoot === 'undefined') {
+    return _updatePhoneNumber(...args);
+  }
+
+  const { updatePhoneNumber: __updatePhoneNumber } = FastBoot.require('firebase/auth');
+
+  return __updatePhoneNumber(...args);
+}
+
+export function updateProfile(...args: Parameters<typeof _updateProfile>): ReturnType<typeof _updateProfile> {
+  if (typeof FastBoot === 'undefined') {
+    return _updateProfile(...args);
+  }
+
+  const { updateProfile: __updateProfile } = FastBoot.require('firebase/auth');
+
+  return __updateProfile(...args);
+}
+
+export function useDeviceLanguage(...args: Parameters<typeof _useDeviceLanguage>): ReturnType<typeof _useDeviceLanguage> {
+  if (typeof FastBoot === 'undefined') {
+    return _useDeviceLanguage(...args);
+  }
+
+  const { useDeviceLanguage: __useDeviceLanguage } = FastBoot.require('firebase/auth');
+
+  return __useDeviceLanguage(...args);
+}
+
+export function verifyBeforeUpdateEmail(...args: Parameters<typeof _verifyBeforeUpdateEmail>): ReturnType<typeof _verifyBeforeUpdateEmail> {
+  if (typeof FastBoot === 'undefined') {
+    return _verifyBeforeUpdateEmail(...args);
+  }
+
+  const { verifyBeforeUpdateEmail: __verifyBeforeUpdateEmail } = FastBoot.require('firebase/auth');
+
+  return __verifyBeforeUpdateEmail(...args);
+}
+
+export function verifyPasswordResetCode(...args: Parameters<typeof _verifyPasswordResetCode>): ReturnType<typeof _verifyPasswordResetCode> {
+  if (typeof FastBoot === 'undefined') {
+    return _verifyPasswordResetCode(...args);
+  }
+
+  const { verifyPasswordResetCode: __verifyPasswordResetCode } = FastBoot.require('firebase/auth');
+
+  return __verifyPasswordResetCode(...args);
+}

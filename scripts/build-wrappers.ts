@@ -4,15 +4,17 @@ import { keys } from 'ts-transformer-keys';
 
 async function buildFastBootWrappers(
   moduleName: string,
-  fileName: string,
-  apiKeys: string[],
+  moduleExports: string[],
+  outputFileName: string,
+  moduleExportsToSkip: string[] = [],
 ): Promise<void> {
-  const firestore = await import(moduleName);
-  const apisToExport = Object.keys(firestore).filter((key) => {
+  const module = await import(moduleName);
+  const outputExports = Object.keys(module).filter((key) => {
     if (
-      typeof firestore[key] === 'function'
-      && apiKeys.includes(key)
+      typeof module[key] === 'function'
+      && moduleExports.includes(key)
       && key.charAt(0) === key.charAt(0).toLowerCase()
+      && !moduleExportsToSkip.includes(key)
     ) {
       return true;
     }
@@ -21,29 +23,32 @@ async function buildFastBootWrappers(
   });
 
   fs.writeFile(
-    `./addon/firebase/${fileName}.ts`,
-    `// DO NOT MODIFY. THIS IS AUTO GENERATED.
+    `./addon/firebase/${outputFileName}.ts`,
+    `/* eslint-disable max-len */
+// DO NOT MODIFY. THIS IS AUTO GENERATED.
 import {
-  ${apisToExport.map((api) => `${api} as _${api}`).join(',\n  ')},
+  ${outputExports.map((api) => `${api} as _${api}`).join(',\n  ')},
 } from '${moduleName}';
 
-${apisToExport.map((api) => `let ___${api} = _${api};`).join('\n')}
+${outputExports.map((api) => `export function ${api}(...args: Parameters<typeof _${api}>): ReturnType<typeof _${api}> {
+  if (typeof FastBoot === 'undefined') {
+    return _${api}(...args);
+  }
 
-if (typeof FastBoot !== 'undefined') {
-  const {
-    ${apisToExport.map((api) => `${api}: __${api}`).join(',\n    ')},
-  } = FastBoot.require('${moduleName}');
+  const { ${api}: __${api} } = FastBoot.require('${moduleName}');
 
-  ${apisToExport.map((api) => `___${api} = __${api};`).join('\n  ')}
-}
-
-${apisToExport.map((api) => `export const ${api} = ___${api};`).join('\n')}\n`,
+  return __${api}(...args);
+}`).join('\n\n')}\n`,
     () => {
       // do nothing
     },
   );
 }
 
-buildFastBootWrappers('firebase/app', 'app', keys<typeof import('firebase/app')>());
-buildFastBootWrappers('firebase/auth', 'auth', keys<typeof import('firebase/auth')>());
-buildFastBootWrappers('firebase/firestore', 'firestore', keys<typeof import('firebase/firestore')>());
+buildFastBootWrappers('firebase/app', keys<typeof import('firebase/app')>(), 'app');
+buildFastBootWrappers('firebase/auth', keys<typeof import('firebase/auth')>(), 'auth', [
+  'debugErrorMap',
+  'inMemoryPersistence',
+  'prodErrorMap',
+]);
+buildFastBootWrappers('firebase/firestore', keys<typeof import('firebase/firestore')>(), 'firestore');
