@@ -1,21 +1,19 @@
 import { typeOf } from '@ember/utils';
 import Transform from '@ember-data/serializer/transform';
 
-import firebase from 'firebase/compat/app';
+import { FieldValue, Timestamp, serverTimestamp } from 'firebase/firestore';
 
 export default class TimestampTransform extends Transform {
-  public deserialize(value: Date | firebase.firestore.Timestamp): Date {
-    if (value instanceof firebase.firestore.Timestamp) {
+  public deserialize(value: Date | Timestamp): Date {
+    if (value instanceof Timestamp) {
       return value.toDate();
     }
 
     return value;
   }
 
-  public serialize(value: unknown): Date | firebase.firestore.FieldValue {
-    return typeOf(value) === 'date'
-      ? value as Date
-      : firebase.firestore.FieldValue.serverTimestamp();
+  public serialize(value: unknown): Date | FieldValue {
+    return typeOf(value) === 'date' ? value as Date : serverTimestamp();
   }
 }
 
