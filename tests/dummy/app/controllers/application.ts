@@ -2,9 +2,13 @@ import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
 
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import SessionService from 'ember-simple-auth/services/session';
 import firebase from 'firebase/compat/app';
+
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from 'ember-cloud-firestore-adapter/firebase/auth';
 
 export default class ApplicationController extends Controller {
   @service

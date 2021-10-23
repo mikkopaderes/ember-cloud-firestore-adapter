@@ -1,9 +1,9 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 
-import { signInAnonymously, signOut } from 'firebase/auth';
 import firebase from 'firebase/compat/app';
 
+import { signInAnonymously, signOut } from 'ember-cloud-firestore-adapter/firebase/auth';
 import resetFixtureData from '../../helpers/reset-fixture-data';
 
 module('Unit | Authenticator | firebase', function (hooks) {

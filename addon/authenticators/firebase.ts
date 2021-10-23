@@ -1,17 +1,17 @@
 import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
 
+import { User, UserCredential } from 'firebase/auth';
+import BaseAuthenticator from 'ember-simple-auth/authenticators/base';
+import firebase from 'firebase/compat/app';
+
 import {
-  User,
-  UserCredential,
   getRedirectResult,
   onAuthStateChanged,
   signInWithCustomToken,
   signOut,
-} from 'firebase/auth';
-import BaseAuthenticator from 'ember-simple-auth/authenticators/base';
+} from 'ember-cloud-firestore-adapter/firebase/auth';
 import FirebaseService from 'ember-cloud-firestore-adapter/services/-firebase';
-import firebase from 'firebase/compat/app';
 
 interface AuthenticateCallback {
   (auth: firebase.auth.Auth): Promise<UserCredential>;
