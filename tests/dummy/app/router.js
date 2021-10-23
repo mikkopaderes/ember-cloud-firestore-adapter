@@ -14,6 +14,4 @@ Router.map(function() {
   this.route('update-record', { path: '/update-record/:title' });
   this.route('delete-record');
   this.route('features');
-  this.route('login');
-  this.route('logout');
 });

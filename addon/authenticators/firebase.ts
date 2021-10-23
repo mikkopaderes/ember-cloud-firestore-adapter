@@ -1,12 +1,20 @@
 import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
 
+import { User, UserCredential } from 'firebase/auth';
 import BaseAuthenticator from 'ember-simple-auth/authenticators/base';
-import FirebaseService from 'ember-cloud-firestore-adapter/services/-firebase';
 import firebase from 'firebase/compat/app';
 
+import {
+  getRedirectResult,
+  onAuthStateChanged,
+  signInWithCustomToken,
+  signOut,
+} from 'ember-cloud-firestore-adapter/firebase/auth';
+import FirebaseService from 'ember-cloud-firestore-adapter/services/-firebase';
+
 interface AuthenticateCallback {
-  (auth: firebase.auth.Auth): Promise<firebase.auth.UserCredential>;
+  (auth: firebase.auth.Auth): Promise<UserCredential>;
 }
 
 export default class FirebaseAuthenticator extends BaseAuthenticator {
@@ -18,9 +26,7 @@ export default class FirebaseAuthenticator extends BaseAuthenticator {
     return getOwner(this).lookup('service:fastboot');
   }
 
-  public async authenticate(
-    callback: AuthenticateCallback,
-  ): Promise<{ user: firebase.User | null }> {
+  public async authenticate(callback: AuthenticateCallback): Promise<{ user: User | null }> {
     const auth = this.firebase.auth();
     const credential = await callback(auth);
 
@@ -28,10 +34,12 @@ export default class FirebaseAuthenticator extends BaseAuthenticator {
   }
 
   public invalidate(): Promise<void> {
-    return this.firebase.auth().signOut();
+    const auth = this.firebase.auth();
+
+    return signOut(auth);
   }
 
-  public restore(): Promise<{ user: firebase.User | null }> {
+  public restore(): Promise<{ user: User | null }> {
     return new Promise((resolve, reject) => {
       const auth = this.firebase.auth();
 
@@ -42,7 +50,7 @@ export default class FirebaseAuthenticator extends BaseAuthenticator {
         const token = this.fastboot.request.headers.get('Authorization')?.split('Bearer ')[1];
 
         if (token) {
-          auth.signInWithCustomToken(token).then((credential) => {
+          signInWithCustomToken(auth, token).then((credential) => {
             resolve({ user: credential.user });
           }).catch(() => {
             reject();
@@ -51,13 +59,13 @@ export default class FirebaseAuthenticator extends BaseAuthenticator {
           reject();
         }
       } else {
-        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
           unsubscribe();
 
           if (user) {
             resolve({ user });
           } else {
-            auth.getRedirectResult().then((credential) => {
+            getRedirectResult(auth).then((credential) => {
               if (credential) {
                 resolve({ user: credential.user });
               } else {
