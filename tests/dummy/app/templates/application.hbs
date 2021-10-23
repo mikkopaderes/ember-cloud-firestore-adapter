@@ -3,8 +3,8 @@
 <p>Authenticated: {{this.session.isAuthenticated}}</p>
 
 <div>
-  <button {{on 'click' this.login}}>Login</button>
-  <button {{on 'click' this.logout}}>Logout</button>
+  <button type="button" {{on 'click' this.login}}>Login</button>
+  <button type="button" {{on 'click' this.logout}}>Logout</button>
 </div>
 
 <LinkTo @route="create-record">Create Record</LinkTo>
