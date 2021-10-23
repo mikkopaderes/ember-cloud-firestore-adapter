@@ -2,8 +2,8 @@ import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 
 import firebase from 'firebase/compat/app';
-import { serverTimestamp } from 'firebase/firestore';
 
+import { serverTimestamp } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import resetFixtureData from 'dummy/tests/helpers/reset-fixture-data';
 
 module('Unit | Transform | timestamp', function (hooks) {
