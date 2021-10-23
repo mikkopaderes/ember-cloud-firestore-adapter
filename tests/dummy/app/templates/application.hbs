@@ -1,12 +1,17 @@
 <h2 id="title">Ember Cloud Firestore Dummy App</h2>
 
+<p>Authenticated: {{this.session.isAuthenticated}}</p>
+
+<div>
+  <button {{on 'click' this.login}}>Login</button>
+  <button {{on 'click' this.logout}}>Logout</button>
+</div>
+
 <LinkTo @route="create-record">Create Record</LinkTo>
 <LinkTo @route="update-record" @model={{this.updateRecordParam}}>Update Record</LinkTo>
 <LinkTo @route="delete-record">Delete Record</LinkTo>
 <LinkTo @route="find-all">Find All</LinkTo>
 <LinkTo @route="find-record">Find Record</LinkTo>
 <LinkTo @route="query">Query</LinkTo>
-<LinkTo @route="login">Login</LinkTo>
-<LinkTo @route="logout">Logout</LinkTo>
 
 {{outlet}}

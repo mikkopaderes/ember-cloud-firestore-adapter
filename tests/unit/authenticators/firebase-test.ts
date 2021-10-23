@@ -1,10 +1,31 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 
-import sinon from 'sinon';
+import { signInAnonymously, signOut } from 'firebase/auth';
+import firebase from 'firebase/compat/app';
+
+import resetFixtureData from '../../helpers/reset-fixture-data';
 
 module('Unit | Authenticator | firebase', function (hooks) {
+  let auth: firebase.auth.Auth;
+  let db: firebase.firestore.Firestore;
+
   setupTest(hooks);
+
+  hooks.beforeEach(async function () {
+    const app = this.owner.lookup('service:-firebase');
+
+    auth = app.auth();
+    db = app.firestore();
+
+    await signInAnonymously(auth);
+    await resetFixtureData(db);
+  });
+
+  hooks.afterEach(async function () {
+    await signOut(auth);
+    await resetFixtureData(db);
+  });
 
   module('authenticate()', function () {
     test('should use the callback', async function (assert) {
@@ -22,118 +43,32 @@ module('Unit | Authenticator | firebase', function (hooks) {
   });
 
   module('invalidate()', function () {
-    test('should sign out firebase user', function (assert) {
+    test('should sign out firebase user', async function (assert) {
       assert.expect(1);
 
       // Arrange
       const authenticator = this.owner.lookup('authenticator:firebase');
-      const signOutStub = sinon.stub();
-      const firebase = {
-        auth: sinon.stub().returns({ signOut: signOutStub }),
-      };
-
-      authenticator.set('firebase', firebase);
 
       // Act
-      authenticator.invalidate();
+      await authenticator.invalidate();
 
       // Assert
-      assert.ok(signOutStub.calledOnce);
+      assert.equal(auth.currentUser, null);
     });
   });
 
   module('restore()', function () {
-    test('should sign in using custom token when fastboot header contains authorization token', async function (assert) {
+    test('should return the authenticated user', async function (assert) {
       assert.expect(1);
 
       // Arrange
       const authenticator = this.owner.lookup('authenticator:firebase');
-      const fastboot = this.owner.lookup('service:fastboot');
-
-      fastboot.set('isFastBoot', true);
-      fastboot.set('request', {
-        headers: new Headers({
-          Authorization: 'Bearer 123',
-        }),
-      });
-
-      const userCredential = {
-        user: { id: 'foo' },
-      };
-      const firebase = {
-        auth: sinon.stub().returns({
-          signInWithCustomToken: sinon
-            .stub()
-            .withArgs('123')
-            .returns(Promise.resolve(userCredential)),
-        }),
-      };
-
-      authenticator.set('firebase', firebase);
 
       // Act
       const result = await authenticator.restore();
 
       // Assert
-      assert.deepEqual(result, {
-        user: { id: 'foo' },
-      });
-    });
-
-    test('should return the authenticated user from auth state changed', async function (assert) {
-      assert.expect(1);
-
-      // Arrange
-      const authenticator = this.owner.lookup('authenticator:firebase');
-      const user = { id: 'foo' };
-      const firebase = {
-        auth: sinon.stub().returns({
-          onAuthStateChanged(callback: (firebaseUser: { id: string }) => void) {
-            setTimeout(() => callback(user));
-
-            return () => {};
-          },
-        }),
-      };
-
-      authenticator.set('firebase', firebase);
-
-      // Act
-      const result = await authenticator.restore();
-
-      // Assert
-      assert.deepEqual(result, {
-        user: { id: 'foo' },
-      });
-    });
-
-    test('should return the authenticated user from a redirect result', async function (assert) {
-      assert.expect(1);
-
-      // Arrange
-      const authenticator = this.owner.lookup('authenticator:firebase');
-      const user = { id: 'foo' };
-      const firebase = {
-        auth: sinon.stub().returns({
-          getRedirectResult: sinon.stub().returns(Promise.resolve({ user })),
-
-          onAuthStateChanged(callback: () => void) {
-            setTimeout(() => callback());
-
-            return () => {};
-          },
-        }),
-      };
-
-      authenticator.set('firebase', firebase);
-
-      // Act
-      const result = await authenticator.restore();
-
-      // Assert
-      assert.deepEqual(result, {
-        user: { id: 'foo' },
-      });
+      assert.ok(result.user.isAnonymous);
     });
   });
 });
