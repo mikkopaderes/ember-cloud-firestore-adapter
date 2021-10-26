@@ -30,15 +30,15 @@ import {
   ${outputExports.map((api) => `${api} as _${api}`).join(',\n  ')},
 } from '${moduleName}';
 
-${outputExports.map((api) => `export function ${api}(...args: Parameters<typeof _${api}>): ReturnType<typeof _${api}> {
-  if (typeof FastBoot === 'undefined') {
-    return _${api}(...args);
-  }
+${outputExports.map((api) => `let __${api}: typeof _${api} = _${api};`).join('\n')}
 
-  const { ${api}: __${api} } = FastBoot.require('${moduleName}');
+if (typeof FastBoot !== 'undefined') {
+  ({
+    ${outputExports.map((api) => `${api}: __${api}`).join(',\n    ')},
+  } = FastBoot.require('${moduleName}'));
+}
 
-  return __${api}(...args);
-}`).join('\n\n')}\n`,
+${outputExports.map((api) => `export const ${api} = __${api};`).join('\n')}\n`,
     () => {
       // do nothing
     },

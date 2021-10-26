@@ -10,72 +10,30 @@ import {
   setLogLevel as _setLogLevel,
 } from 'firebase/app';
 
-export function deleteApp(...args: Parameters<typeof _deleteApp>): ReturnType<typeof _deleteApp> {
-  if (typeof FastBoot === 'undefined') {
-    return _deleteApp(...args);
-  }
+let __deleteApp: typeof _deleteApp = _deleteApp;
+let __getApp: typeof _getApp = _getApp;
+let __getApps: typeof _getApps = _getApps;
+let __initializeApp: typeof _initializeApp = _initializeApp;
+let __onLog: typeof _onLog = _onLog;
+let __registerVersion: typeof _registerVersion = _registerVersion;
+let __setLogLevel: typeof _setLogLevel = _setLogLevel;
 
-  const { deleteApp: __deleteApp } = FastBoot.require('firebase/app');
-
-  return __deleteApp(...args);
+if (typeof FastBoot !== 'undefined') {
+  ({
+    deleteApp: __deleteApp,
+    getApp: __getApp,
+    getApps: __getApps,
+    initializeApp: __initializeApp,
+    onLog: __onLog,
+    registerVersion: __registerVersion,
+    setLogLevel: __setLogLevel,
+  } = FastBoot.require('firebase/app'));
 }
 
-export function getApp(...args: Parameters<typeof _getApp>): ReturnType<typeof _getApp> {
-  if (typeof FastBoot === 'undefined') {
-    return _getApp(...args);
-  }
-
-  const { getApp: __getApp } = FastBoot.require('firebase/app');
-
-  return __getApp(...args);
-}
-
-export function getApps(...args: Parameters<typeof _getApps>): ReturnType<typeof _getApps> {
-  if (typeof FastBoot === 'undefined') {
-    return _getApps(...args);
-  }
-
-  const { getApps: __getApps } = FastBoot.require('firebase/app');
-
-  return __getApps(...args);
-}
-
-export function initializeApp(...args: Parameters<typeof _initializeApp>): ReturnType<typeof _initializeApp> {
-  if (typeof FastBoot === 'undefined') {
-    return _initializeApp(...args);
-  }
-
-  const { initializeApp: __initializeApp } = FastBoot.require('firebase/app');
-
-  return __initializeApp(...args);
-}
-
-export function onLog(...args: Parameters<typeof _onLog>): ReturnType<typeof _onLog> {
-  if (typeof FastBoot === 'undefined') {
-    return _onLog(...args);
-  }
-
-  const { onLog: __onLog } = FastBoot.require('firebase/app');
-
-  return __onLog(...args);
-}
-
-export function registerVersion(...args: Parameters<typeof _registerVersion>): ReturnType<typeof _registerVersion> {
-  if (typeof FastBoot === 'undefined') {
-    return _registerVersion(...args);
-  }
-
-  const { registerVersion: __registerVersion } = FastBoot.require('firebase/app');
-
-  return __registerVersion(...args);
-}
-
-export function setLogLevel(...args: Parameters<typeof _setLogLevel>): ReturnType<typeof _setLogLevel> {
-  if (typeof FastBoot === 'undefined') {
-    return _setLogLevel(...args);
-  }
-
-  const { setLogLevel: __setLogLevel } = FastBoot.require('firebase/app');
-
-  return __setLogLevel(...args);
-}
+export const deleteApp = __deleteApp;
+export const getApp = __getApp;
+export const getApps = __getApps;
+export const initializeApp = __initializeApp;
+export const onLog = __onLog;
+export const registerVersion = __registerVersion;
+export const setLogLevel = __setLogLevel;

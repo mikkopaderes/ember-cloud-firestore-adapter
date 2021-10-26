@@ -51,482 +51,153 @@ import {
   writeBatch as _writeBatch,
 } from 'firebase/firestore';
 
-export function addDoc(...args: Parameters<typeof _addDoc>): ReturnType<typeof _addDoc> {
-  if (typeof FastBoot === 'undefined') {
-    return _addDoc(...args);
-  }
+let __addDoc: typeof _addDoc = _addDoc;
+let __arrayRemove: typeof _arrayRemove = _arrayRemove;
+let __arrayUnion: typeof _arrayUnion = _arrayUnion;
+let __clearIndexedDbPersistence: typeof _clearIndexedDbPersistence = _clearIndexedDbPersistence;
+let __collection: typeof _collection = _collection;
+let __collectionGroup: typeof _collectionGroup = _collectionGroup;
+let __connectFirestoreEmulator: typeof _connectFirestoreEmulator = _connectFirestoreEmulator;
+let __deleteDoc: typeof _deleteDoc = _deleteDoc;
+let __deleteField: typeof _deleteField = _deleteField;
+let __disableNetwork: typeof _disableNetwork = _disableNetwork;
+let __doc: typeof _doc = _doc;
+let __documentId: typeof _documentId = _documentId;
+let __enableIndexedDbPersistence: typeof _enableIndexedDbPersistence = _enableIndexedDbPersistence;
+let __enableMultiTabIndexedDbPersistence: typeof _enableMultiTabIndexedDbPersistence = _enableMultiTabIndexedDbPersistence;
+let __enableNetwork: typeof _enableNetwork = _enableNetwork;
+let __endAt: typeof _endAt = _endAt;
+let __endBefore: typeof _endBefore = _endBefore;
+let __getDoc: typeof _getDoc = _getDoc;
+let __getDocFromCache: typeof _getDocFromCache = _getDocFromCache;
+let __getDocFromServer: typeof _getDocFromServer = _getDocFromServer;
+let __getDocs: typeof _getDocs = _getDocs;
+let __getDocsFromCache: typeof _getDocsFromCache = _getDocsFromCache;
+let __getDocsFromServer: typeof _getDocsFromServer = _getDocsFromServer;
+let __getFirestore: typeof _getFirestore = _getFirestore;
+let __increment: typeof _increment = _increment;
+let __initializeFirestore: typeof _initializeFirestore = _initializeFirestore;
+let __limit: typeof _limit = _limit;
+let __limitToLast: typeof _limitToLast = _limitToLast;
+let __loadBundle: typeof _loadBundle = _loadBundle;
+let __namedQuery: typeof _namedQuery = _namedQuery;
+let __onSnapshot: typeof _onSnapshot = _onSnapshot;
+let __onSnapshotsInSync: typeof _onSnapshotsInSync = _onSnapshotsInSync;
+let __orderBy: typeof _orderBy = _orderBy;
+let __query: typeof _query = _query;
+let __queryEqual: typeof _queryEqual = _queryEqual;
+let __refEqual: typeof _refEqual = _refEqual;
+let __runTransaction: typeof _runTransaction = _runTransaction;
+let __serverTimestamp: typeof _serverTimestamp = _serverTimestamp;
+let __setDoc: typeof _setDoc = _setDoc;
+let __setLogLevel: typeof _setLogLevel = _setLogLevel;
+let __snapshotEqual: typeof _snapshotEqual = _snapshotEqual;
+let __startAfter: typeof _startAfter = _startAfter;
+let __startAt: typeof _startAt = _startAt;
+let __terminate: typeof _terminate = _terminate;
+let __updateDoc: typeof _updateDoc = _updateDoc;
+let __waitForPendingWrites: typeof _waitForPendingWrites = _waitForPendingWrites;
+let __where: typeof _where = _where;
+let __writeBatch: typeof _writeBatch = _writeBatch;
 
-  const { addDoc: __addDoc } = FastBoot.require('firebase/firestore');
-
-  return __addDoc(...args);
+if (typeof FastBoot !== 'undefined') {
+  ({
+    addDoc: __addDoc,
+    arrayRemove: __arrayRemove,
+    arrayUnion: __arrayUnion,
+    clearIndexedDbPersistence: __clearIndexedDbPersistence,
+    collection: __collection,
+    collectionGroup: __collectionGroup,
+    connectFirestoreEmulator: __connectFirestoreEmulator,
+    deleteDoc: __deleteDoc,
+    deleteField: __deleteField,
+    disableNetwork: __disableNetwork,
+    doc: __doc,
+    documentId: __documentId,
+    enableIndexedDbPersistence: __enableIndexedDbPersistence,
+    enableMultiTabIndexedDbPersistence: __enableMultiTabIndexedDbPersistence,
+    enableNetwork: __enableNetwork,
+    endAt: __endAt,
+    endBefore: __endBefore,
+    getDoc: __getDoc,
+    getDocFromCache: __getDocFromCache,
+    getDocFromServer: __getDocFromServer,
+    getDocs: __getDocs,
+    getDocsFromCache: __getDocsFromCache,
+    getDocsFromServer: __getDocsFromServer,
+    getFirestore: __getFirestore,
+    increment: __increment,
+    initializeFirestore: __initializeFirestore,
+    limit: __limit,
+    limitToLast: __limitToLast,
+    loadBundle: __loadBundle,
+    namedQuery: __namedQuery,
+    onSnapshot: __onSnapshot,
+    onSnapshotsInSync: __onSnapshotsInSync,
+    orderBy: __orderBy,
+    query: __query,
+    queryEqual: __queryEqual,
+    refEqual: __refEqual,
+    runTransaction: __runTransaction,
+    serverTimestamp: __serverTimestamp,
+    setDoc: __setDoc,
+    setLogLevel: __setLogLevel,
+    snapshotEqual: __snapshotEqual,
+    startAfter: __startAfter,
+    startAt: __startAt,
+    terminate: __terminate,
+    updateDoc: __updateDoc,
+    waitForPendingWrites: __waitForPendingWrites,
+    where: __where,
+    writeBatch: __writeBatch,
+  } = FastBoot.require('firebase/firestore'));
 }
 
-export function arrayRemove(...args: Parameters<typeof _arrayRemove>): ReturnType<typeof _arrayRemove> {
-  if (typeof FastBoot === 'undefined') {
-    return _arrayRemove(...args);
-  }
-
-  const { arrayRemove: __arrayRemove } = FastBoot.require('firebase/firestore');
-
-  return __arrayRemove(...args);
-}
-
-export function arrayUnion(...args: Parameters<typeof _arrayUnion>): ReturnType<typeof _arrayUnion> {
-  if (typeof FastBoot === 'undefined') {
-    return _arrayUnion(...args);
-  }
-
-  const { arrayUnion: __arrayUnion } = FastBoot.require('firebase/firestore');
-
-  return __arrayUnion(...args);
-}
-
-export function clearIndexedDbPersistence(...args: Parameters<typeof _clearIndexedDbPersistence>): ReturnType<typeof _clearIndexedDbPersistence> {
-  if (typeof FastBoot === 'undefined') {
-    return _clearIndexedDbPersistence(...args);
-  }
-
-  const { clearIndexedDbPersistence: __clearIndexedDbPersistence } = FastBoot.require('firebase/firestore');
-
-  return __clearIndexedDbPersistence(...args);
-}
-
-export function collection(...args: Parameters<typeof _collection>): ReturnType<typeof _collection> {
-  if (typeof FastBoot === 'undefined') {
-    return _collection(...args);
-  }
-
-  const { collection: __collection } = FastBoot.require('firebase/firestore');
-
-  return __collection(...args);
-}
-
-export function collectionGroup(...args: Parameters<typeof _collectionGroup>): ReturnType<typeof _collectionGroup> {
-  if (typeof FastBoot === 'undefined') {
-    return _collectionGroup(...args);
-  }
-
-  const { collectionGroup: __collectionGroup } = FastBoot.require('firebase/firestore');
-
-  return __collectionGroup(...args);
-}
-
-export function connectFirestoreEmulator(...args: Parameters<typeof _connectFirestoreEmulator>): ReturnType<typeof _connectFirestoreEmulator> {
-  if (typeof FastBoot === 'undefined') {
-    return _connectFirestoreEmulator(...args);
-  }
-
-  const { connectFirestoreEmulator: __connectFirestoreEmulator } = FastBoot.require('firebase/firestore');
-
-  return __connectFirestoreEmulator(...args);
-}
-
-export function deleteDoc(...args: Parameters<typeof _deleteDoc>): ReturnType<typeof _deleteDoc> {
-  if (typeof FastBoot === 'undefined') {
-    return _deleteDoc(...args);
-  }
-
-  const { deleteDoc: __deleteDoc } = FastBoot.require('firebase/firestore');
-
-  return __deleteDoc(...args);
-}
-
-export function deleteField(...args: Parameters<typeof _deleteField>): ReturnType<typeof _deleteField> {
-  if (typeof FastBoot === 'undefined') {
-    return _deleteField(...args);
-  }
-
-  const { deleteField: __deleteField } = FastBoot.require('firebase/firestore');
-
-  return __deleteField(...args);
-}
-
-export function disableNetwork(...args: Parameters<typeof _disableNetwork>): ReturnType<typeof _disableNetwork> {
-  if (typeof FastBoot === 'undefined') {
-    return _disableNetwork(...args);
-  }
-
-  const { disableNetwork: __disableNetwork } = FastBoot.require('firebase/firestore');
-
-  return __disableNetwork(...args);
-}
-
-export function doc(...args: Parameters<typeof _doc>): ReturnType<typeof _doc> {
-  if (typeof FastBoot === 'undefined') {
-    return _doc(...args);
-  }
-
-  const { doc: __doc } = FastBoot.require('firebase/firestore');
-
-  return __doc(...args);
-}
-
-export function documentId(...args: Parameters<typeof _documentId>): ReturnType<typeof _documentId> {
-  if (typeof FastBoot === 'undefined') {
-    return _documentId(...args);
-  }
-
-  const { documentId: __documentId } = FastBoot.require('firebase/firestore');
-
-  return __documentId(...args);
-}
-
-export function enableIndexedDbPersistence(...args: Parameters<typeof _enableIndexedDbPersistence>): ReturnType<typeof _enableIndexedDbPersistence> {
-  if (typeof FastBoot === 'undefined') {
-    return _enableIndexedDbPersistence(...args);
-  }
-
-  const { enableIndexedDbPersistence: __enableIndexedDbPersistence } = FastBoot.require('firebase/firestore');
-
-  return __enableIndexedDbPersistence(...args);
-}
-
-export function enableMultiTabIndexedDbPersistence(...args: Parameters<typeof _enableMultiTabIndexedDbPersistence>): ReturnType<typeof _enableMultiTabIndexedDbPersistence> {
-  if (typeof FastBoot === 'undefined') {
-    return _enableMultiTabIndexedDbPersistence(...args);
-  }
-
-  const { enableMultiTabIndexedDbPersistence: __enableMultiTabIndexedDbPersistence } = FastBoot.require('firebase/firestore');
-
-  return __enableMultiTabIndexedDbPersistence(...args);
-}
-
-export function enableNetwork(...args: Parameters<typeof _enableNetwork>): ReturnType<typeof _enableNetwork> {
-  if (typeof FastBoot === 'undefined') {
-    return _enableNetwork(...args);
-  }
-
-  const { enableNetwork: __enableNetwork } = FastBoot.require('firebase/firestore');
-
-  return __enableNetwork(...args);
-}
-
-export function endAt(...args: Parameters<typeof _endAt>): ReturnType<typeof _endAt> {
-  if (typeof FastBoot === 'undefined') {
-    return _endAt(...args);
-  }
-
-  const { endAt: __endAt } = FastBoot.require('firebase/firestore');
-
-  return __endAt(...args);
-}
-
-export function endBefore(...args: Parameters<typeof _endBefore>): ReturnType<typeof _endBefore> {
-  if (typeof FastBoot === 'undefined') {
-    return _endBefore(...args);
-  }
-
-  const { endBefore: __endBefore } = FastBoot.require('firebase/firestore');
-
-  return __endBefore(...args);
-}
-
-export function getDoc(...args: Parameters<typeof _getDoc>): ReturnType<typeof _getDoc> {
-  if (typeof FastBoot === 'undefined') {
-    return _getDoc(...args);
-  }
-
-  const { getDoc: __getDoc } = FastBoot.require('firebase/firestore');
-
-  return __getDoc(...args);
-}
-
-export function getDocFromCache(...args: Parameters<typeof _getDocFromCache>): ReturnType<typeof _getDocFromCache> {
-  if (typeof FastBoot === 'undefined') {
-    return _getDocFromCache(...args);
-  }
-
-  const { getDocFromCache: __getDocFromCache } = FastBoot.require('firebase/firestore');
-
-  return __getDocFromCache(...args);
-}
-
-export function getDocFromServer(...args: Parameters<typeof _getDocFromServer>): ReturnType<typeof _getDocFromServer> {
-  if (typeof FastBoot === 'undefined') {
-    return _getDocFromServer(...args);
-  }
-
-  const { getDocFromServer: __getDocFromServer } = FastBoot.require('firebase/firestore');
-
-  return __getDocFromServer(...args);
-}
-
-export function getDocs(...args: Parameters<typeof _getDocs>): ReturnType<typeof _getDocs> {
-  if (typeof FastBoot === 'undefined') {
-    return _getDocs(...args);
-  }
-
-  const { getDocs: __getDocs } = FastBoot.require('firebase/firestore');
-
-  return __getDocs(...args);
-}
-
-export function getDocsFromCache(...args: Parameters<typeof _getDocsFromCache>): ReturnType<typeof _getDocsFromCache> {
-  if (typeof FastBoot === 'undefined') {
-    return _getDocsFromCache(...args);
-  }
-
-  const { getDocsFromCache: __getDocsFromCache } = FastBoot.require('firebase/firestore');
-
-  return __getDocsFromCache(...args);
-}
-
-export function getDocsFromServer(...args: Parameters<typeof _getDocsFromServer>): ReturnType<typeof _getDocsFromServer> {
-  if (typeof FastBoot === 'undefined') {
-    return _getDocsFromServer(...args);
-  }
-
-  const { getDocsFromServer: __getDocsFromServer } = FastBoot.require('firebase/firestore');
-
-  return __getDocsFromServer(...args);
-}
-
-export function getFirestore(...args: Parameters<typeof _getFirestore>): ReturnType<typeof _getFirestore> {
-  if (typeof FastBoot === 'undefined') {
-    return _getFirestore(...args);
-  }
-
-  const { getFirestore: __getFirestore } = FastBoot.require('firebase/firestore');
-
-  return __getFirestore(...args);
-}
-
-export function increment(...args: Parameters<typeof _increment>): ReturnType<typeof _increment> {
-  if (typeof FastBoot === 'undefined') {
-    return _increment(...args);
-  }
-
-  const { increment: __increment } = FastBoot.require('firebase/firestore');
-
-  return __increment(...args);
-}
-
-export function initializeFirestore(...args: Parameters<typeof _initializeFirestore>): ReturnType<typeof _initializeFirestore> {
-  if (typeof FastBoot === 'undefined') {
-    return _initializeFirestore(...args);
-  }
-
-  const { initializeFirestore: __initializeFirestore } = FastBoot.require('firebase/firestore');
-
-  return __initializeFirestore(...args);
-}
-
-export function limit(...args: Parameters<typeof _limit>): ReturnType<typeof _limit> {
-  if (typeof FastBoot === 'undefined') {
-    return _limit(...args);
-  }
-
-  const { limit: __limit } = FastBoot.require('firebase/firestore');
-
-  return __limit(...args);
-}
-
-export function limitToLast(...args: Parameters<typeof _limitToLast>): ReturnType<typeof _limitToLast> {
-  if (typeof FastBoot === 'undefined') {
-    return _limitToLast(...args);
-  }
-
-  const { limitToLast: __limitToLast } = FastBoot.require('firebase/firestore');
-
-  return __limitToLast(...args);
-}
-
-export function loadBundle(...args: Parameters<typeof _loadBundle>): ReturnType<typeof _loadBundle> {
-  if (typeof FastBoot === 'undefined') {
-    return _loadBundle(...args);
-  }
-
-  const { loadBundle: __loadBundle } = FastBoot.require('firebase/firestore');
-
-  return __loadBundle(...args);
-}
-
-export function namedQuery(...args: Parameters<typeof _namedQuery>): ReturnType<typeof _namedQuery> {
-  if (typeof FastBoot === 'undefined') {
-    return _namedQuery(...args);
-  }
-
-  const { namedQuery: __namedQuery } = FastBoot.require('firebase/firestore');
-
-  return __namedQuery(...args);
-}
-
-export function onSnapshot(...args: Parameters<typeof _onSnapshot>): ReturnType<typeof _onSnapshot> {
-  if (typeof FastBoot === 'undefined') {
-    return _onSnapshot(...args);
-  }
-
-  const { onSnapshot: __onSnapshot } = FastBoot.require('firebase/firestore');
-
-  return __onSnapshot(...args);
-}
-
-export function onSnapshotsInSync(...args: Parameters<typeof _onSnapshotsInSync>): ReturnType<typeof _onSnapshotsInSync> {
-  if (typeof FastBoot === 'undefined') {
-    return _onSnapshotsInSync(...args);
-  }
-
-  const { onSnapshotsInSync: __onSnapshotsInSync } = FastBoot.require('firebase/firestore');
-
-  return __onSnapshotsInSync(...args);
-}
-
-export function orderBy(...args: Parameters<typeof _orderBy>): ReturnType<typeof _orderBy> {
-  if (typeof FastBoot === 'undefined') {
-    return _orderBy(...args);
-  }
-
-  const { orderBy: __orderBy } = FastBoot.require('firebase/firestore');
-
-  return __orderBy(...args);
-}
-
-export function query(...args: Parameters<typeof _query>): ReturnType<typeof _query> {
-  if (typeof FastBoot === 'undefined') {
-    return _query(...args);
-  }
-
-  const { query: __query } = FastBoot.require('firebase/firestore');
-
-  return __query(...args);
-}
-
-export function queryEqual(...args: Parameters<typeof _queryEqual>): ReturnType<typeof _queryEqual> {
-  if (typeof FastBoot === 'undefined') {
-    return _queryEqual(...args);
-  }
-
-  const { queryEqual: __queryEqual } = FastBoot.require('firebase/firestore');
-
-  return __queryEqual(...args);
-}
-
-export function refEqual(...args: Parameters<typeof _refEqual>): ReturnType<typeof _refEqual> {
-  if (typeof FastBoot === 'undefined') {
-    return _refEqual(...args);
-  }
-
-  const { refEqual: __refEqual } = FastBoot.require('firebase/firestore');
-
-  return __refEqual(...args);
-}
-
-export function runTransaction(...args: Parameters<typeof _runTransaction>): ReturnType<typeof _runTransaction> {
-  if (typeof FastBoot === 'undefined') {
-    return _runTransaction(...args);
-  }
-
-  const { runTransaction: __runTransaction } = FastBoot.require('firebase/firestore');
-
-  return __runTransaction(...args);
-}
-
-export function serverTimestamp(...args: Parameters<typeof _serverTimestamp>): ReturnType<typeof _serverTimestamp> {
-  if (typeof FastBoot === 'undefined') {
-    return _serverTimestamp(...args);
-  }
-
-  const { serverTimestamp: __serverTimestamp } = FastBoot.require('firebase/firestore');
-
-  return __serverTimestamp(...args);
-}
-
-export function setDoc(...args: Parameters<typeof _setDoc>): ReturnType<typeof _setDoc> {
-  if (typeof FastBoot === 'undefined') {
-    return _setDoc(...args);
-  }
-
-  const { setDoc: __setDoc } = FastBoot.require('firebase/firestore');
-
-  return __setDoc(...args);
-}
-
-export function setLogLevel(...args: Parameters<typeof _setLogLevel>): ReturnType<typeof _setLogLevel> {
-  if (typeof FastBoot === 'undefined') {
-    return _setLogLevel(...args);
-  }
-
-  const { setLogLevel: __setLogLevel } = FastBoot.require('firebase/firestore');
-
-  return __setLogLevel(...args);
-}
-
-export function snapshotEqual(...args: Parameters<typeof _snapshotEqual>): ReturnType<typeof _snapshotEqual> {
-  if (typeof FastBoot === 'undefined') {
-    return _snapshotEqual(...args);
-  }
-
-  const { snapshotEqual: __snapshotEqual } = FastBoot.require('firebase/firestore');
-
-  return __snapshotEqual(...args);
-}
-
-export function startAfter(...args: Parameters<typeof _startAfter>): ReturnType<typeof _startAfter> {
-  if (typeof FastBoot === 'undefined') {
-    return _startAfter(...args);
-  }
-
-  const { startAfter: __startAfter } = FastBoot.require('firebase/firestore');
-
-  return __startAfter(...args);
-}
-
-export function startAt(...args: Parameters<typeof _startAt>): ReturnType<typeof _startAt> {
-  if (typeof FastBoot === 'undefined') {
-    return _startAt(...args);
-  }
-
-  const { startAt: __startAt } = FastBoot.require('firebase/firestore');
-
-  return __startAt(...args);
-}
-
-export function terminate(...args: Parameters<typeof _terminate>): ReturnType<typeof _terminate> {
-  if (typeof FastBoot === 'undefined') {
-    return _terminate(...args);
-  }
-
-  const { terminate: __terminate } = FastBoot.require('firebase/firestore');
-
-  return __terminate(...args);
-}
-
-export function updateDoc(...args: Parameters<typeof _updateDoc>): ReturnType<typeof _updateDoc> {
-  if (typeof FastBoot === 'undefined') {
-    return _updateDoc(...args);
-  }
-
-  const { updateDoc: __updateDoc } = FastBoot.require('firebase/firestore');
-
-  return __updateDoc(...args);
-}
-
-export function waitForPendingWrites(...args: Parameters<typeof _waitForPendingWrites>): ReturnType<typeof _waitForPendingWrites> {
-  if (typeof FastBoot === 'undefined') {
-    return _waitForPendingWrites(...args);
-  }
-
-  const { waitForPendingWrites: __waitForPendingWrites } = FastBoot.require('firebase/firestore');
-
-  return __waitForPendingWrites(...args);
-}
-
-export function where(...args: Parameters<typeof _where>): ReturnType<typeof _where> {
-  if (typeof FastBoot === 'undefined') {
-    return _where(...args);
-  }
-
-  const { where: __where } = FastBoot.require('firebase/firestore');
-
-  return __where(...args);
-}
-
-export function writeBatch(...args: Parameters<typeof _writeBatch>): ReturnType<typeof _writeBatch> {
-  if (typeof FastBoot === 'undefined') {
-    return _writeBatch(...args);
-  }
-
-  const { writeBatch: __writeBatch } = FastBoot.require('firebase/firestore');
-
-  return __writeBatch(...args);
-}
+export const addDoc = __addDoc;
+export const arrayRemove = __arrayRemove;
+export const arrayUnion = __arrayUnion;
+export const clearIndexedDbPersistence = __clearIndexedDbPersistence;
+export const collection = __collection;
+export const collectionGroup = __collectionGroup;
+export const connectFirestoreEmulator = __connectFirestoreEmulator;
+export const deleteDoc = __deleteDoc;
+export const deleteField = __deleteField;
+export const disableNetwork = __disableNetwork;
+export const doc = __doc;
+export const documentId = __documentId;
+export const enableIndexedDbPersistence = __enableIndexedDbPersistence;
+export const enableMultiTabIndexedDbPersistence = __enableMultiTabIndexedDbPersistence;
+export const enableNetwork = __enableNetwork;
+export const endAt = __endAt;
+export const endBefore = __endBefore;
+export const getDoc = __getDoc;
+export const getDocFromCache = __getDocFromCache;
+export const getDocFromServer = __getDocFromServer;
+export const getDocs = __getDocs;
+export const getDocsFromCache = __getDocsFromCache;
+export const getDocsFromServer = __getDocsFromServer;
+export const getFirestore = __getFirestore;
+export const increment = __increment;
+export const initializeFirestore = __initializeFirestore;
+export const limit = __limit;
+export const limitToLast = __limitToLast;
+export const loadBundle = __loadBundle;
+export const namedQuery = __namedQuery;
+export const onSnapshot = __onSnapshot;
+export const onSnapshotsInSync = __onSnapshotsInSync;
+export const orderBy = __orderBy;
+export const query = __query;
+export const queryEqual = __queryEqual;
+export const refEqual = __refEqual;
+export const runTransaction = __runTransaction;
+export const serverTimestamp = __serverTimestamp;
+export const setDoc = __setDoc;
+export const setLogLevel = __setLogLevel;
+export const snapshotEqual = __snapshotEqual;
+export const startAfter = __startAfter;
+export const startAt = __startAt;
+export const terminate = __terminate;
+export const updateDoc = __updateDoc;
+export const waitForPendingWrites = __waitForPendingWrites;
+export const where = __where;
+export const writeBatch = __writeBatch;

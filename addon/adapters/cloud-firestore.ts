@@ -15,6 +15,7 @@ import classic from 'ember-classic-decorator';
 import FirebaseService from 'ember-cloud-firestore-adapter/services/-firebase';
 import firebase from 'firebase/compat/app';
 
+import { collection, doc } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import RealtimeTracker from 'ember-cloud-firestore-adapter/-private/realtime-tracker';
 import buildCollectionName from 'ember-cloud-firestore-adapter/-private/build-collection-name';
 import flattenDocSnapshot from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
@@ -65,11 +66,11 @@ interface HasManyRelationshipMeta {
 @classic
 export default class CloudFirestoreAdapter extends Adapter {
   @service('-firebase')
-  protected firebase!: FirebaseService;
+  declare protected firebase: FirebaseService;
 
-  private referenceKeyName = 'referenceTo';
+  protected referenceKeyName = 'referenceTo';
 
-  private realtimeTracker: RealtimeTracker | null = null;
+  declare private realtimeTracker: RealtimeTracker;
 
   private get isFastBoot(): boolean {
     const fastboot = getOwner(this).lookup('service:fastboot');
@@ -87,7 +88,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     const db = this.firebase.firestore();
     const collectionName = buildCollectionName(type);
 
-    return db.collection(collectionName).doc().id;
+    return doc(collection(db, collectionName)).id;
   }
 
   public createRecord(
