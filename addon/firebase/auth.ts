@@ -53,163 +53,159 @@ import {
   verifyPasswordResetCode as _verifyPasswordResetCode,
 } from 'firebase/auth';
 
-let applyActionCode: typeof _applyActionCode = _applyActionCode;
-let checkActionCode: typeof _checkActionCode = _checkActionCode;
-let confirmPasswordReset: typeof _confirmPasswordReset = _confirmPasswordReset;
-let connectAuthEmulator: typeof _connectAuthEmulator = _connectAuthEmulator;
-let createUserWithEmailAndPassword: typeof _createUserWithEmailAndPassword = _createUserWithEmailAndPassword;
-let deleteUser: typeof _deleteUser = _deleteUser;
-let fetchSignInMethodsForEmail: typeof _fetchSignInMethodsForEmail = _fetchSignInMethodsForEmail;
-let getAdditionalUserInfo: typeof _getAdditionalUserInfo = _getAdditionalUserInfo;
-let getAuth: typeof _getAuth = _getAuth;
-let getIdToken: typeof _getIdToken = _getIdToken;
-let getIdTokenResult: typeof _getIdTokenResult = _getIdTokenResult;
-let getMultiFactorResolver: typeof _getMultiFactorResolver = _getMultiFactorResolver;
-let getRedirectResult: typeof _getRedirectResult = _getRedirectResult;
-let initializeAuth: typeof _initializeAuth = _initializeAuth;
-let isSignInWithEmailLink: typeof _isSignInWithEmailLink = _isSignInWithEmailLink;
-let linkWithCredential: typeof _linkWithCredential = _linkWithCredential;
-let linkWithPhoneNumber: typeof _linkWithPhoneNumber = _linkWithPhoneNumber;
-let linkWithPopup: typeof _linkWithPopup = _linkWithPopup;
-let linkWithRedirect: typeof _linkWithRedirect = _linkWithRedirect;
-let multiFactor: typeof _multiFactor = _multiFactor;
-let onAuthStateChanged: typeof _onAuthStateChanged = _onAuthStateChanged;
-let onIdTokenChanged: typeof _onIdTokenChanged = _onIdTokenChanged;
-let parseActionCodeURL: typeof _parseActionCodeURL = _parseActionCodeURL;
-let reauthenticateWithCredential: typeof _reauthenticateWithCredential = _reauthenticateWithCredential;
-let reauthenticateWithPhoneNumber: typeof _reauthenticateWithPhoneNumber = _reauthenticateWithPhoneNumber;
-let reauthenticateWithPopup: typeof _reauthenticateWithPopup = _reauthenticateWithPopup;
-let reauthenticateWithRedirect: typeof _reauthenticateWithRedirect = _reauthenticateWithRedirect;
-let reload: typeof _reload = _reload;
-let sendEmailVerification: typeof _sendEmailVerification = _sendEmailVerification;
-let sendPasswordResetEmail: typeof _sendPasswordResetEmail = _sendPasswordResetEmail;
-let sendSignInLinkToEmail: typeof _sendSignInLinkToEmail = _sendSignInLinkToEmail;
-let setPersistence: typeof _setPersistence = _setPersistence;
-let signInAnonymously: typeof _signInAnonymously = _signInAnonymously;
-let signInWithCredential: typeof _signInWithCredential = _signInWithCredential;
-let signInWithCustomToken: typeof _signInWithCustomToken = _signInWithCustomToken;
-let signInWithEmailAndPassword: typeof _signInWithEmailAndPassword = _signInWithEmailAndPassword;
-let signInWithEmailLink: typeof _signInWithEmailLink = _signInWithEmailLink;
-let signInWithPhoneNumber: typeof _signInWithPhoneNumber = _signInWithPhoneNumber;
-let signInWithPopup: typeof _signInWithPopup = _signInWithPopup;
-let signInWithRedirect: typeof _signInWithRedirect = _signInWithRedirect;
-let signOut: typeof _signOut = _signOut;
-let unlink: typeof _unlink = _unlink;
-let updateCurrentUser: typeof _updateCurrentUser = _updateCurrentUser;
-let updateEmail: typeof _updateEmail = _updateEmail;
-let updatePassword: typeof _updatePassword = _updatePassword;
-let updatePhoneNumber: typeof _updatePhoneNumber = _updatePhoneNumber;
-let updateProfile: typeof _updateProfile = _updateProfile;
-let useDeviceLanguage: typeof _useDeviceLanguage = _useDeviceLanguage;
-let verifyBeforeUpdateEmail: typeof _verifyBeforeUpdateEmail = _verifyBeforeUpdateEmail;
-let verifyPasswordResetCode: typeof _verifyPasswordResetCode = _verifyPasswordResetCode;
-
+let __applyActionCode: typeof _applyActionCode = _applyActionCode;
+let __checkActionCode: typeof _checkActionCode = _checkActionCode;
+let __confirmPasswordReset: typeof _confirmPasswordReset = _confirmPasswordReset;
+let __connectAuthEmulator: typeof _connectAuthEmulator = _connectAuthEmulator;
+let __createUserWithEmailAndPassword: typeof _createUserWithEmailAndPassword = _createUserWithEmailAndPassword;
+let __deleteUser: typeof _deleteUser = _deleteUser;
+let __fetchSignInMethodsForEmail: typeof _fetchSignInMethodsForEmail = _fetchSignInMethodsForEmail;
+let __getAdditionalUserInfo: typeof _getAdditionalUserInfo = _getAdditionalUserInfo;
+let __getAuth: typeof _getAuth = _getAuth;
+let __getIdToken: typeof _getIdToken = _getIdToken;
+let __getIdTokenResult: typeof _getIdTokenResult = _getIdTokenResult;
+let __getMultiFactorResolver: typeof _getMultiFactorResolver = _getMultiFactorResolver;
+let __getRedirectResult: typeof _getRedirectResult = _getRedirectResult;
+let __initializeAuth: typeof _initializeAuth = _initializeAuth;
+let __isSignInWithEmailLink: typeof _isSignInWithEmailLink = _isSignInWithEmailLink;
+let __linkWithCredential: typeof _linkWithCredential = _linkWithCredential;
+let __linkWithPhoneNumber: typeof _linkWithPhoneNumber = _linkWithPhoneNumber;
+let __linkWithPopup: typeof _linkWithPopup = _linkWithPopup;
+let __linkWithRedirect: typeof _linkWithRedirect = _linkWithRedirect;
+let __multiFactor: typeof _multiFactor = _multiFactor;
+let __onAuthStateChanged: typeof _onAuthStateChanged = _onAuthStateChanged;
+let __onIdTokenChanged: typeof _onIdTokenChanged = _onIdTokenChanged;
+let __parseActionCodeURL: typeof _parseActionCodeURL = _parseActionCodeURL;
+let __reauthenticateWithCredential: typeof _reauthenticateWithCredential = _reauthenticateWithCredential;
+let __reauthenticateWithPhoneNumber: typeof _reauthenticateWithPhoneNumber = _reauthenticateWithPhoneNumber;
+let __reauthenticateWithPopup: typeof _reauthenticateWithPopup = _reauthenticateWithPopup;
+let __reauthenticateWithRedirect: typeof _reauthenticateWithRedirect = _reauthenticateWithRedirect;
+let __reload: typeof _reload = _reload;
+let __sendEmailVerification: typeof _sendEmailVerification = _sendEmailVerification;
+let __sendPasswordResetEmail: typeof _sendPasswordResetEmail = _sendPasswordResetEmail;
+let __sendSignInLinkToEmail: typeof _sendSignInLinkToEmail = _sendSignInLinkToEmail;
+let __setPersistence: typeof _setPersistence = _setPersistence;
+let __signInAnonymously: typeof _signInAnonymously = _signInAnonymously;
+let __signInWithCredential: typeof _signInWithCredential = _signInWithCredential;
+let __signInWithCustomToken: typeof _signInWithCustomToken = _signInWithCustomToken;
+let __signInWithEmailAndPassword: typeof _signInWithEmailAndPassword = _signInWithEmailAndPassword;
+let __signInWithEmailLink: typeof _signInWithEmailLink = _signInWithEmailLink;
+let __signInWithPhoneNumber: typeof _signInWithPhoneNumber = _signInWithPhoneNumber;
+let __signInWithPopup: typeof _signInWithPopup = _signInWithPopup;
+let __signInWithRedirect: typeof _signInWithRedirect = _signInWithRedirect;
+let __signOut: typeof _signOut = _signOut;
+let __unlink: typeof _unlink = _unlink;
+let __updateCurrentUser: typeof _updateCurrentUser = _updateCurrentUser;
+let __updateEmail: typeof _updateEmail = _updateEmail;
+let __updatePassword: typeof _updatePassword = _updatePassword;
+let __updatePhoneNumber: typeof _updatePhoneNumber = _updatePhoneNumber;
+let __updateProfile: typeof _updateProfile = _updateProfile;
+let __useDeviceLanguage: typeof _useDeviceLanguage = _useDeviceLanguage;
+let __verifyBeforeUpdateEmail: typeof _verifyBeforeUpdateEmail = _verifyBeforeUpdateEmail;
+let __verifyPasswordResetCode: typeof _verifyPasswordResetCode = _verifyPasswordResetCode;
 
 if (typeof FastBoot !== 'undefined') {
   ({
-    applyActionCode,
-    checkActionCode,
-    confirmPasswordReset,
-    connectAuthEmulator,
-    createUserWithEmailAndPassword,
-    deleteUser,
-    fetchSignInMethodsForEmail,
-    getAdditionalUserInfo,
-    getAuth,
-    getIdToken,
-    getIdTokenResult,
-    getMultiFactorResolver,
-    getRedirectResult,
-    initializeAuth,
-    isSignInWithEmailLink,
-    linkWithCredential,
-    linkWithPhoneNumber,
-    linkWithPopup,
-    linkWithRedirect,
-    multiFactor,
-    onAuthStateChanged,
-    onIdTokenChanged,
-    parseActionCodeURL,
-    reauthenticateWithCredential,
-    reauthenticateWithPhoneNumber,
-    reauthenticateWithPopup,
-    reauthenticateWithRedirect,
-    reload,
-    sendEmailVerification,
-    sendPasswordResetEmail,
-    sendSignInLinkToEmail,
-    setPersistence,
-    signInAnonymously,
-    signInWithCredential,
-    signInWithCustomToken,
-    signInWithEmailAndPassword,
-    signInWithEmailLink,
-    signInWithPhoneNumber,
-    signInWithPopup,
-    signInWithRedirect,
-    signOut,
-    unlink,
-    updateCurrentUser,
-    updateEmail,
-    updatePassword,
-    updatePhoneNumber,
-    updateProfile,
-    useDeviceLanguage,
-    verifyBeforeUpdateEmail,
-    verifyPasswordResetCode,
+    applyActionCode: __applyActionCode,
+    checkActionCode: __checkActionCode,
+    confirmPasswordReset: __confirmPasswordReset,
+    connectAuthEmulator: __connectAuthEmulator,
+    createUserWithEmailAndPassword: __createUserWithEmailAndPassword,
+    deleteUser: __deleteUser,
+    fetchSignInMethodsForEmail: __fetchSignInMethodsForEmail,
+    getAdditionalUserInfo: __getAdditionalUserInfo,
+    getAuth: __getAuth,
+    getIdToken: __getIdToken,
+    getIdTokenResult: __getIdTokenResult,
+    getMultiFactorResolver: __getMultiFactorResolver,
+    getRedirectResult: __getRedirectResult,
+    initializeAuth: __initializeAuth,
+    isSignInWithEmailLink: __isSignInWithEmailLink,
+    linkWithCredential: __linkWithCredential,
+    linkWithPhoneNumber: __linkWithPhoneNumber,
+    linkWithPopup: __linkWithPopup,
+    linkWithRedirect: __linkWithRedirect,
+    multiFactor: __multiFactor,
+    onAuthStateChanged: __onAuthStateChanged,
+    onIdTokenChanged: __onIdTokenChanged,
+    parseActionCodeURL: __parseActionCodeURL,
+    reauthenticateWithCredential: __reauthenticateWithCredential,
+    reauthenticateWithPhoneNumber: __reauthenticateWithPhoneNumber,
+    reauthenticateWithPopup: __reauthenticateWithPopup,
+    reauthenticateWithRedirect: __reauthenticateWithRedirect,
+    reload: __reload,
+    sendEmailVerification: __sendEmailVerification,
+    sendPasswordResetEmail: __sendPasswordResetEmail,
+    sendSignInLinkToEmail: __sendSignInLinkToEmail,
+    setPersistence: __setPersistence,
+    signInAnonymously: __signInAnonymously,
+    signInWithCredential: __signInWithCredential,
+    signInWithCustomToken: __signInWithCustomToken,
+    signInWithEmailAndPassword: __signInWithEmailAndPassword,
+    signInWithEmailLink: __signInWithEmailLink,
+    signInWithPhoneNumber: __signInWithPhoneNumber,
+    signInWithPopup: __signInWithPopup,
+    signInWithRedirect: __signInWithRedirect,
+    signOut: __signOut,
+    unlink: __unlink,
+    updateCurrentUser: __updateCurrentUser,
+    updateEmail: __updateEmail,
+    updatePassword: __updatePassword,
+    updatePhoneNumber: __updatePhoneNumber,
+    updateProfile: __updateProfile,
+    useDeviceLanguage: __useDeviceLanguage,
+    verifyBeforeUpdateEmail: __verifyBeforeUpdateEmail,
+    verifyPasswordResetCode: __verifyPasswordResetCode,
   } = FastBoot.require('firebase/auth'));
 }
 
-export {
-  applyActionCode,
-  checkActionCode,
-  confirmPasswordReset,
-  connectAuthEmulator,
-  createUserWithEmailAndPassword,
-  deleteUser,
-  fetchSignInMethodsForEmail,
-  getAdditionalUserInfo,
-  getAuth,
-  getIdToken,
-  getIdTokenResult,
-  getMultiFactorResolver,
-  getRedirectResult,
-  initializeAuth,
-  isSignInWithEmailLink,
-  linkWithCredential,
-  linkWithPhoneNumber,
-  linkWithPopup,
-  linkWithRedirect,
-  multiFactor,
-  onAuthStateChanged,
-  onIdTokenChanged,
-  parseActionCodeURL,
-  reauthenticateWithCredential,
-  reauthenticateWithPhoneNumber,
-  reauthenticateWithPopup,
-  reauthenticateWithRedirect,
-  reload,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-  sendSignInLinkToEmail,
-  setPersistence,
-  signInAnonymously,
-  signInWithCredential,
-  signInWithCustomToken,
-  signInWithEmailAndPassword,
-  signInWithEmailLink,
-  signInWithPhoneNumber,
-  signInWithPopup,
-  signInWithRedirect,
-  signOut,
-  unlink,
-  updateCurrentUser,
-  updateEmail,
-  updatePassword,
-  updatePhoneNumber,
-  updateProfile,
-  useDeviceLanguage,
-  verifyBeforeUpdateEmail,
-  verifyPasswordResetCode,
-};
-
+export const applyActionCode = __applyActionCode;
+export const checkActionCode = __checkActionCode;
+export const confirmPasswordReset = __confirmPasswordReset;
+export const connectAuthEmulator = __connectAuthEmulator;
+export const createUserWithEmailAndPassword = __createUserWithEmailAndPassword;
+export const deleteUser = __deleteUser;
+export const fetchSignInMethodsForEmail = __fetchSignInMethodsForEmail;
+export const getAdditionalUserInfo = __getAdditionalUserInfo;
+export const getAuth = __getAuth;
+export const getIdToken = __getIdToken;
+export const getIdTokenResult = __getIdTokenResult;
+export const getMultiFactorResolver = __getMultiFactorResolver;
+export const getRedirectResult = __getRedirectResult;
+export const initializeAuth = __initializeAuth;
+export const isSignInWithEmailLink = __isSignInWithEmailLink;
+export const linkWithCredential = __linkWithCredential;
+export const linkWithPhoneNumber = __linkWithPhoneNumber;
+export const linkWithPopup = __linkWithPopup;
+export const linkWithRedirect = __linkWithRedirect;
+export const multiFactor = __multiFactor;
+export const onAuthStateChanged = __onAuthStateChanged;
+export const onIdTokenChanged = __onIdTokenChanged;
+export const parseActionCodeURL = __parseActionCodeURL;
+export const reauthenticateWithCredential = __reauthenticateWithCredential;
+export const reauthenticateWithPhoneNumber = __reauthenticateWithPhoneNumber;
+export const reauthenticateWithPopup = __reauthenticateWithPopup;
+export const reauthenticateWithRedirect = __reauthenticateWithRedirect;
+export const reload = __reload;
+export const sendEmailVerification = __sendEmailVerification;
+export const sendPasswordResetEmail = __sendPasswordResetEmail;
+export const sendSignInLinkToEmail = __sendSignInLinkToEmail;
+export const setPersistence = __setPersistence;
+export const signInAnonymously = __signInAnonymously;
+export const signInWithCredential = __signInWithCredential;
+export const signInWithCustomToken = __signInWithCustomToken;
+export const signInWithEmailAndPassword = __signInWithEmailAndPassword;
+export const signInWithEmailLink = __signInWithEmailLink;
+export const signInWithPhoneNumber = __signInWithPhoneNumber;
+export const signInWithPopup = __signInWithPopup;
+export const signInWithRedirect = __signInWithRedirect;
+export const signOut = __signOut;
+export const unlink = __unlink;
+export const updateCurrentUser = __updateCurrentUser;
+export const updateEmail = __updateEmail;
+export const updatePassword = __updatePassword;
+export const updatePhoneNumber = __updatePhoneNumber;
+export const updateProfile = __updateProfile;
+export const useDeviceLanguage = __useDeviceLanguage;
+export const verifyBeforeUpdateEmail = __verifyBeforeUpdateEmail;
+export const verifyPasswordResetCode = __verifyPasswordResetCode;

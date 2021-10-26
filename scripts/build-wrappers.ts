@@ -30,18 +30,15 @@ import {
   ${outputExports.map((api) => `${api} as _${api}`).join(',\n  ')},
 } from '${moduleName}';
 
-${outputExports.map((api) => `let ${api}: typeof _${api} = _${api};`).join('\n')}\n
+${outputExports.map((api) => `let __${api}: typeof _${api} = _${api};`).join('\n')}
 
 if (typeof FastBoot !== 'undefined') {
   ({
-    ${outputExports.map((api) => `${api}`).join(',\n    ')},
+    ${outputExports.map((api) => `${api}: __${api}`).join(',\n    ')},
   } = FastBoot.require('${moduleName}'));
 }
 
-export {
-  ${outputExports.map((api) => `${api}`).join(',\n  ')},
-};\n
-`,
+${outputExports.map((api) => `export const ${api} = __${api};`).join('\n')}\n`,
     () => {
       // do nothing
     },
