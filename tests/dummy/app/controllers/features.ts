@@ -5,6 +5,7 @@ import EmberArray from '@ember/array';
 
 import firebase from 'firebase/compat/app';
 
+import { collection, query, where } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import UserModel from '../models/user';
 
 export default class FeaturesController extends Controller {
@@ -96,8 +97,12 @@ export default class FeaturesController extends Controller {
   @action
   public async handleQuery1Click(): Promise<void> {
     const users = await this.store.query('user', {
-      filter(reference: firebase.firestore.Query) {
-        return reference.where('age', '>=', 15);
+      buildReference(db: firebase.firestore.Firestore) {
+        return collection(db, 'users');
+      },
+
+      filter(reference: firebase.firestore.CollectionReference) {
+        return query(reference, where('age', '>=', 15));
       },
     });
 
