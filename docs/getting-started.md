@@ -74,15 +74,15 @@ export default class ApplicationAdapter extends CloudFirestoreAdapter {
 }
 ```
 
-> **NOTE:** This addon is in a transition phase towards Firebase Modular SDK. In order to support it alongside the Compat SDK, we've created a new `cloud-firestore-modular` adapter. Compat SDK adapter is now in maintenance mode until Firebase v10 so we recommend everyone to use the Modular SDK adapter instead moving forward.
->
-> To view the Compat SDK docs, click [here](https://github.com/mikkopaderes/ember-cloud-firestore-adapter/blob/v2.0.2/docs/getting-started.md).
-
 #### Adapter Settings
 
 These are the settings currently available:
 
   - `referenceKeyName` - Name of the field that will indicate whether a document is a reference to another one. (Defaults to `'referenceTo'`)
+
+> **NOTE:** This addon is in a transition phase towards Firebase Modular SDK. In order to support it alongside the Compat SDK, we've created a new `cloud-firestore-modular` adapter. Compat SDK adapter is now in maintenance mode until Firebase v10 so we recommend everyone to use the Modular SDK adapter instead moving forward.
+>
+> To view the Compat SDK docs, click [here](https://github.com/mikkopaderes/ember-cloud-firestore-adapter/blob/v2.0.2/docs/getting-started.md).
 
 ### 3. Create Your Application Serializer
 
