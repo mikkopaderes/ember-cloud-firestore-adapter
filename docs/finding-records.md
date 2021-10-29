@@ -9,12 +9,14 @@ The optional configs are available through the `adapterOptions` property.
 e.g.
 
 ```javascript
+import { collection } from 'ember-cloud-firestore-adapter/firebase/firestore';
+
 this.store.findRecord('post', 'post_a', {
   adapterOptions: {
     isRealtime: true,
 
     buildReference(db) {
-      return db.collection('users').doc('user_a').collection('feeds');
+      return collection(db, 'users/user_a/feeds');
     }
   }
 });
@@ -65,16 +67,23 @@ The optional configs are available through the query param.
 e.g.
 
 ```javascript
+import {
+  collection,
+  limit,
+  query,
+  where
+} from 'ember-cloud-firestore-adapter/firebase/firestore';
+
 this.store.query('post', {
   isRealtime: true,
   queryId: 'foobar',
 
   buildReference(db) {
-    return db.collection('users').doc('user_a').collection('feeds');
+    return collection(db, 'users/user_a/feeds');
   },
 
   filter(reference) {
-    return reference.where('likes', '>=', 100).limit(5);
+    return query(reference, where('likes' '>=' 100), limit(5));
   }
 });
 ```
@@ -117,7 +126,7 @@ Hook for providing the query for the collection reference
 
 | Name      | Type                                                                                                                             | Description                                                                                                     |
 | --------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| reference | [`firebase.firestore.CollectionReference`](https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference) | Will contain the return of `buildReference` when overriden. Otherwise, it'll be provided by the adapter itself. |
+| reference | [`CollectionReference`](https://firebase.google.com/docs/reference/js/firestore_.collectionreference) | Will contain the return of `buildReference` when overriden. Otherwise, it'll be provided by the adapter itself. |
 
 ---
 

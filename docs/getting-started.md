@@ -67,12 +67,16 @@ ember generate adapter application
 Change it to look something like this:
 
 ```javascript
-import CloudFirestoreAdapter from 'ember-cloud-firestore-adapter/adapters/cloud-firestore';
+import CloudFirestoreAdapter from 'ember-cloud-firestore-adapter/adapters/cloud-firestore-modular';
 
 export default class ApplicationAdapter extends CloudFirestoreAdapter {
   referenceKeyName = 'foobar';
 }
 ```
+
+> **NOTE:** This addon is in a transition phase towards Firebase Modular SDK. In order to support it alongside the Compat SDK, we've created a new `cloud-firestore-modular` adapter. Compat SDK adapter is now in maintenance mode until Firebase v10 so we recommend everyone to use the Modular SDK adapter instead moving forward.
+>
+> To view the Compat SDK docs, click [here](https://github.com/mikkopaderes/ember-cloud-firestore-adapter/blob/v2.0.2/docs/getting-started.md).
 
 #### Adapter Settings
 
@@ -91,10 +95,14 @@ ember generate serializer application
 Change it to look something like this:
 
 ```javascript
-import CloudFirestoreSerializer from 'ember-cloud-firestore-adapter/serializers/cloud-firestore';
+import CloudFirestoreSerializer from 'ember-cloud-firestore-adapter/serializers/cloud-firestore-modular';
 
 export default class ApplicationSerializer extends CloudFirestoreSerializer { }
 ```
+
+> **NOTE:** This addon is in a transition phase towards Firebase Modular SDK. In order to support it alongside the Compat SDK, we've created a new `cloud-firestore-modular` serializer. Compat SDK serializer is now in maintenance mode until Firebase v10 so we recommend everyone to use the Modular SDK serializer instead moving forward.
+>
+> To view the Compat SDK docs, click [here](https://github.com/mikkopaderes/ember-cloud-firestore-adapter/blob/v2.0.2/docs/getting-started.md).
 
 ---
 
