@@ -56,7 +56,7 @@ This contains the settings related to Auth. The available properties are:
 
 - `emulator` (optional) - Use this object property if you want to use [Firebase Emulator](https://firebase.google.com/docs/emulator-suite) for your local development. The available properties are `hostname` and `port`.
 
-### 2. Create Your Application Adapter
+## 2. Create Your Application Adapter
 
 Create an application adapter by running:
 
@@ -74,7 +74,7 @@ export default class ApplicationAdapter extends CloudFirestoreAdapter {
 }
 ```
 
-#### Adapter Settings
+### Adapter Settings
 
 These are the settings currently available:
 
@@ -84,7 +84,7 @@ These are the settings currently available:
 >
 > To view the Compat SDK docs, click [here](https://github.com/mikkopaderes/ember-cloud-firestore-adapter/blob/v2.0.2/docs/getting-started.md).
 
-### 3. Create Your Application Serializer
+## 3. Create Your Application Serializer
 
 Create an application serializer by running:
 
@@ -104,7 +104,7 @@ export default class ApplicationSerializer extends CloudFirestoreSerializer { }
 >
 > To view the Compat SDK docs, click [here](https://github.com/mikkopaderes/ember-cloud-firestore-adapter/blob/v2.0.2/docs/getting-started.md).
 
-## Firebase and Auth Modular API Imports
+## 4. Firebase and Auth Modular API Imports
 
 In order to support FastBoot, we've created wrapper imports for the Modular API functions which you can source out from `ember-cloud-firestore-adapter/firebase/<app/auth/firestore>` respectively.
 
