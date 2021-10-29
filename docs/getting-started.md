@@ -104,6 +104,25 @@ export default class ApplicationSerializer extends CloudFirestoreSerializer { }
 >
 > To view the Compat SDK docs, click [here](https://github.com/mikkopaderes/ember-cloud-firestore-adapter/blob/v2.0.2/docs/getting-started.md).
 
+## Firebase and Auth Modular API Imports
+
+In order to support FastBoot, we've created wrapper imports for the Modular API functions which you can source out from `ember-cloud-firestore-adapter/firebase/<app/auth/firestore>` respectively.
+
+e.g
+
+```javascript
+import { signInWithEmailAndPassword } from 'ember-cloud-firestore-adapter/firebase/auth';
+import { doc, getDoc } from 'ember-cloud-firestore-adapter/firebase/firestore';
+```
+
+Note that only function types are wrapped. Variables, class, interface, etc. must still be imported from Firebase paths.
+
+e.g.
+
+```javascript
+import { CollectionReference } from 'firebase/firestore';
+```
+
 ---
 
 [Next: Data Structure »](data-structure.md)
