@@ -10,6 +10,7 @@ import Model, { attr, belongsTo } from '@ember-data/model';
 
 import firebase from 'firebase/compat/app';
 
+import { collection } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import TimestampTransform from 'ember-cloud-firestore-adapter/transforms/timestamp';
 import GroupModel from './group';
 import UserModel from './user';
@@ -32,7 +33,7 @@ export default class PostModel extends Model {
 
     // @ts-ignore: TODO - find a way to set custom property in RelationshipOptions interface
     buildReference(db: firebase.firestore.Firestore) {
-      return db.collection('publishers');
+      return collection(db, 'publishers');
     },
   })
   declare public publisher: DS.PromiseObject<UserModel>;
