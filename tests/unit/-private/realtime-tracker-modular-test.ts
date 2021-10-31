@@ -10,10 +10,19 @@ import RSVP from 'rsvp';
 import firebase from 'firebase/compat/app';
 import sinon from 'sinon';
 
-import RealtimeTracker from 'ember-cloud-firestore-adapter/-private/realtime-tracker';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+} from 'ember-cloud-firestore-adapter/firebase/firestore';
+import RealtimeTracker from 'ember-cloud-firestore-adapter/-private/realtime-tracker-modular';
 import resetFixtureData from '../../helpers/reset-fixture-data';
 
-module('Unit | -Private | realtime-tracker', function (hooks) {
+module('Unit | -Private | realtime-tracker-modular', function (hooks) {
   let db: firebase.firestore.Firestore;
 
   setupTest(hooks);
@@ -37,7 +46,7 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
       const store = this.owner.lookup('service:store');
 
       const realtimeTracker = new RealtimeTracker(store);
-      const docRef = db.doc('users/user_a');
+      const docRef = doc(db, 'users/user_a');
 
       // Act
       realtimeTracker.trackFindRecordChanges('user', docRef);
@@ -56,7 +65,7 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
       const done = assert.async();
       const store = this.owner.lookup('service:store');
       const realtimeTracker = new RealtimeTracker(store);
-      const docRef = db.doc('users/user_a');
+      const docRef = doc(db, 'users/user_a');
       const newName = Math.random();
       const storeFixture = {
         data: {
@@ -91,7 +100,7 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
       realtimeTracker.trackFindRecordChanges('user', docRef);
 
       setTimeout(async () => {
-        await docRef.update({ name: newName });
+        await updateDoc(docRef, { name: newName });
 
         // Assert
         setTimeout(() => {
@@ -108,7 +117,7 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
       const done = assert.async();
       const store = this.owner.lookup('service:store');
       const realtimeTracker = new RealtimeTracker(store);
-      const docRef = db.doc('users/user_a');
+      const docRef = doc(db, 'users/user_a');
       const storeFixture = {
         data: {
           id: 'user_a',
@@ -142,7 +151,7 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
       realtimeTracker.trackFindRecordChanges('user', docRef);
 
       setTimeout(async () => {
-        await docRef.delete();
+        await deleteDoc(docRef);
 
         // Assert
         setTimeout(() => {
@@ -162,7 +171,7 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
       const store = this.owner.lookup('service:store');
       const findRecordStub = sinon.stub(store, 'findRecord');
       const realtimeTracker = new RealtimeTracker(store);
-      const collectionRef = db.collection('users');
+      const collectionRef = collection(db, 'users');
 
       // Act
       realtimeTracker.trackFindAllChanges('user', collectionRef);
@@ -182,13 +191,13 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
       const store = this.owner.lookup('service:store');
       const findRecordStub = sinon.stub(store, 'findRecord');
       const realtimeTracker = new RealtimeTracker(store);
-      const collectionRef = db.collection('users');
+      const collectionRef = collection(db, 'users');
 
       // Act
       realtimeTracker.trackFindAllChanges('user', collectionRef);
 
       setTimeout(async () => {
-        await db.doc('users/new_user').set({ name: 'new_user' });
+        await setDoc(doc(db, 'users/new_user'), { name: 'new_user' });
 
         // Assert
         setTimeout(() => {
@@ -213,7 +222,7 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
       });
 
       const realtimeTracker = new RealtimeTracker(store);
-      const collectionRef = db.collection('groups');
+      const collectionRef = collection(db, 'groups');
 
       // Act
       realtimeTracker.trackFindHasManyChanges('user', 'user_a', 'groups', collectionRef);
@@ -238,13 +247,13 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
       });
 
       const realtimeTracker = new RealtimeTracker(store);
-      const collectionRef = db.collection('groups');
+      const collectionRef = collection(db, 'groups');
 
       // Act
       realtimeTracker.trackFindHasManyChanges('user', 'user_a', 'groups', collectionRef);
 
       setTimeout(async () => {
-        await db.doc('groups/new_group').set({ name: 'new_group' });
+        await setDoc(doc(db, 'groups/new_group'), { name: 'new_group' });
 
         // Assert
         setTimeout(() => {
@@ -271,10 +280,10 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
       recordArray.update = updateStub;
 
       const realtimeTracker = new RealtimeTracker(store);
-      const query = db.collection('groups').where('name', '==', 'new_group');
+      const queryRef = query(collection(db, 'groups'), where('name', '==', 'new_group'));
 
       // Act
-      realtimeTracker.trackQueryChanges(query, recordArray);
+      realtimeTracker.trackQueryChanges(queryRef, recordArray);
 
       // Assert
       setTimeout(() => {
@@ -298,10 +307,10 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
       recordArray.update = updateStub;
 
       const realtimeTracker = new RealtimeTracker(store);
-      const query = db.collection('groups').where('name', '==', 'new_group');
+      const queryRef = query(collection(db, 'groups'), where('name', '==', 'new_group'));
 
       // Act
-      realtimeTracker.trackQueryChanges(query, recordArray);
+      realtimeTracker.trackQueryChanges(queryRef, recordArray);
 
       setTimeout(async () => {
         await db.doc('groups/new_group').set({ name: 'new_group' });

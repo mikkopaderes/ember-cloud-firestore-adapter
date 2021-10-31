@@ -8,8 +8,9 @@
 import DS from 'ember-data';
 import Model, { attr, hasMany } from '@ember-data/model';
 
-import firebase from 'firebase/compat/app';
+import { Query } from 'firebase/firestore';
 
+import { limit, query } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import PostModel from './post';
 import UserModel from './user';
 
@@ -22,8 +23,8 @@ export default class GroupModel extends Model {
 
   @hasMany('post', {
     // @ts-ignore: TODO - find a way to set custom property in RelationshipOptions interface
-    filter(reference: firebase.firestore.Query) {
-      return reference.limit(1);
+    filter(reference: Query) {
+      return query(reference, limit(1));
     },
   })
   declare public posts: DS.PromiseManyArray<PostModel>;

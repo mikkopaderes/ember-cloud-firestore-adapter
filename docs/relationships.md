@@ -40,6 +40,8 @@ The optional configs are available by passing it as a param.
 ```javascript
 import Model, { attr, hasMany } from '@ember-data/model';
 
+import { query, where } from 'ember-cloud-firestore-adapter/firebase/firestore';
+
 export default class GroupModel extends Model {
   @attr name;
 
@@ -47,7 +49,7 @@ export default class GroupModel extends Model {
     isRealtime: true,
 
     filter(reference) {
-      return reference.where('status', '==', 'approved');
+      return query(reference, where('status', '==', 'approved'));
     }
   })
   approvedPosts;
@@ -84,7 +86,7 @@ Hook for providing the query for the collection reference
 
 | Name      | Type                                                                                                                             | Description                                                                                                     |
 | --------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| reference | [`firebase.firestore.CollectionReference`](https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference) | Will contain the return of `buildReference` when overriden. Otherwise, it will be provided by the adapter itself. |
+| reference | [`CollectionReference`](https://firebase.google.com/docs/reference/js/firestore_.collectionreference) | Will contain the return of `buildReference` when overriden. Otherwise, it will be provided by the adapter itself. |
 | record    | Object                                                                                                                           | The record itself                                                                                               |
 
 ---

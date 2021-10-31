@@ -6,7 +6,7 @@ The adapter supports Firebase authentication through the [ember-simple-auth](htt
 
 Using the `session` service provided by ember-simple-auth, a callback must be passed-in which will be responsible for authenticating the user.
 
-The callback will have the [`firebase.auth.Auth`](https://firebase.google.com/docs/reference/js/firebase.auth.Auth) as a param. Use this to authenticate the user using any of the providers available. It **must** also return a promise that will resolve to an instance of [`firebase.auth.UserCredential`](https://firebase.google.com/docs/reference/js/v8/firebase.auth#usercredential).
+The callback will have the [`firebase.auth.Auth`](https://firebase.google.com/docs/reference/js/firebase.auth.Auth) as a param. Use this to authenticate the user using any of the providers available. It **must** also return a promise that will resolve to an instance of [`UserCredential`](https://firebase.google.com/docs/reference/js/auth.usercredential).
 
 ```javascript
 import { signInWithEmailAndPassword } from 'ember-cloud-firestore-adapter/firebase/auth';

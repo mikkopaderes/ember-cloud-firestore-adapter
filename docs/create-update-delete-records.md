@@ -9,6 +9,8 @@ The optional configs are available through the `adapterOptions` property in the 
 e.g.
 
 ```javascript
+import { doc } from 'ember-cloud-firestore-adapter/firebase/firestore';
+
 const newPost = this.store.createRecord('post', { title: 'Post A' });
 
 newPost.save({
@@ -16,7 +18,7 @@ newPost.save({
     isRealtime: true,
 
     include(batch, db) {
-      batch.set(db.collection('users').doc('user_b').collection('feeds').doc('feed_a'), { title: 'Post A' });
+      batch.set(doc(db, 'users/user_b/feeds/feed_a'), { title: 'Post A' });
     }
   }
 });
@@ -50,7 +52,7 @@ Hook for providing additional documents to batch write
 
 | Name  | Type                                                                                                           | Description |
 | ----- | -------------------------------------------------------------------------------------------------------------- | ----------- |
-| batch | [`firebase.firestore.WriteBatch`](https://firebase.google.com/docs/reference/js/firebase.firestore.WriteBatch) |             |
+| batch | [`WriteBatch`](https://firebase.google.com/docs/reference/js/firestore_.writebatch) |             |
 | db    | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore)   |             |
 
 ## `deleteRecord`
@@ -60,11 +62,13 @@ The optional configs are available through the `adapterOptions` property in the 
 e.g.
 
 ```javascript
+import { doc } from 'ember-cloud-firestore-adapter/firebase/firestore';
+
 user.deleteRecord();
 user.save({
   adapterOptions: {
     include(batch, db) {
-      batch.delete(db.collection('usernames').doc(newUser.id));
+      batch.delete(doc(db, `usernames/${newUser.id}`));
     }
   }
 });
@@ -92,7 +96,7 @@ Hook for providing additional documents to batch write
 
 | Name  | Type                                                                                                           | Description |
 | ----- | -------------------------------------------------------------------------------------------------------------- | ----------- |
-| batch | [`firebase.firestore.WriteBatch`](https://firebase.google.com/docs/reference/js/firebase.firestore.WriteBatch) |             |
+| batch | [`WriteBatch`](https://firebase.google.com/docs/reference/js/firestore_.writebatch) |             |
 | db    | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore)   |             |
 
 ## `destroyRecord`
@@ -102,10 +106,12 @@ The optional configs are available through the `adapterOptions` property.
 e.g.
 
 ```javascript
+import { doc } from 'ember-cloud-firestore-adapter/firebase/firestore';
+
 user.destroyRecord({
   adapterOptions: {
     include(batch, db) {
-      batch.delete(db.collection('usernames').doc(newUser.id));
+      batch.delete(doc(db, `usernames/${newUser.id}`));
     }
   }
 });
@@ -133,7 +139,7 @@ Hook for providing additional documents to batch write
 
 | Name  | Type                                                                                                           | Description |
 | ----- | -------------------------------------------------------------------------------------------------------------- | ----------- |
-| batch | [`firebase.firestore.WriteBatch`](https://firebase.google.com/docs/reference/js/firebase.firestore.WriteBatch) |             |
+| batch | [`WriteBatch`](https://firebase.google.com/docs/reference/js/firestore_.writebatch) |             |
 | db    | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore)   |             |
 
 ## Updating a record
@@ -143,13 +149,15 @@ The optional configs are available through the `adapterOptions` property in the 
 e.g.
 
 ```javascript
+import { doc } from 'ember-cloud-firestore-adapter/firebase/firestore';
+
 post.set('title', 'New Title');
 post.save({
   adapterOptions: {
     isRealtime: true,
 
     include(batch, db) {
-      batch.update(db.collection('users').doc('user_b').collection('feeds').doc('feed_a'), { title: 'New Title' });
+      batch.update(doc(db, 'users/user_b/feeds/feed_a'), { title: 'New Title' });
     }
   }
 });
@@ -183,7 +191,7 @@ Hook for providing additional documents to batch write
 
 | Name  | Type                                                                                                           | Description |
 | ----- | -------------------------------------------------------------------------------------------------------------- | ----------- |
-| batch | [`firebase.firestore.WriteBatch`](https://firebase.google.com/docs/reference/js/firebase.firestore.WriteBatch) |             |
+| batch | [`WriteBatch`](https://firebase.google.com/docs/reference/js/firestore_.writebatch) |             |
 | db    | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore)   |             |
 
 ## Saving relationships
@@ -202,27 +210,31 @@ When saving a one-to-many relationship, the reference will be persisted on the b
 In this scenario, `User` model has a many-to-many relationship with `Group` model through the `groups` and `members` field name respectively.
 
 ```javascript
-// Assume that a someGroup variable already exists
+import { doc } from 'ember-cloud-firestore-adapter/firebase/firestore';
+
+// Assume that a group1 variable already exists
 
 ...
 
 const newUser = this.store.createRecord('user', {
   name: 'Foo',
-  groups: [someGroup]
+  groups: [group1]
 });
 
 newUser.save({
   adapterOptions: {
     include(batch, db) {
       // Batch write to the users/<user_id>/groups sub-collection
-      batch.set(db.collection('users').doc(newUser.get('id')).collection('groups').doc(someGroup.get('id')), {
-        referenceTo: db.collection('groups').doc(someGroup.get('id'))
-      });
+      batch.set(
+        doc(db, `users/${newUser.get('id')}/groups/${group1.get('id')}`),
+        { referenceTo: doc(db, `groups/${group1.get('id')}`) }
+      );
 
       // Batch write to the groups/<group_id>/members sub-collection
-      batch.set(db.collection('groups').doc(someGroup.get('id')).collection('members').doc(newUser.get('id')), {
-        referenceTo: db.collection('users').doc(newUser.get('id'))
-      });
+      batch.set(
+        doc(db, `groups/${group1.get('id')}/members/${newUser.get('id')}`),
+        { referenceTo: db.collection('users').doc(newUser.get('id')) }
+      );
     }
   }
 });
@@ -239,7 +251,9 @@ e.g.
 In this scenario, the `User` model has a many-to-none relationship with `Reminder` model.
 
 ```javascript
-// Assume that a someUser variable already exists
+import { collection } from 'ember-cloud-firestore-adapter/firebase/firestore';
+
+// Assume that a user1 variable already exists
 
 ...
 
@@ -250,12 +264,12 @@ const reminder = this.store.createRecord('reminder', {
 reminder.save({
   adapterOptions: {
     buildReference(db) {
-      return db.collection('users').doc(someUser.get('id')).collection('reminders');
+      return collection(db, `users/${user1.get('id')}/reminders`);
     }
   }
 }).then(() => {
-  // Update reminders hasMany without flagging someUser as "dirty" or unsaved
-  someUser.hasMany('reminders').push({
+  // Update reminders hasMany without flagging user1 as "dirty" or unsaved
+  user1.hasMany('reminders').push({
     type: 'reminder',
     id: reminder.get('id')
   });
