@@ -271,7 +271,7 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
       recordArray.update = updateStub;
 
       const realtimeTracker = new RealtimeTracker(store);
-      const query = db.collection('groups').where('name', '==', 'group_a');
+      const query = db.collection('groups').where('name', '==', 'new_group');
 
       // Act
       realtimeTracker.trackQueryChanges(query, recordArray);
