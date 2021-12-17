@@ -20,7 +20,7 @@ export default class UserModel extends Model {
   @hasMany('post')
   declare public posts: DS.PromiseManyArray<PostModel>;
 
-  @hasMany('user')
+  @hasMany('user', { inverse: null })
   declare public users: DS.PromiseManyArray<UserModel>;
 }
 
