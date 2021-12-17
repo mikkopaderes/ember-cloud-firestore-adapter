@@ -4,7 +4,10 @@ const EmberAddon = require('ember-cli/lib/broccoli/ember-addon');
 
 module.exports = function (defaults) {
   const app = new EmberAddon(defaults, {
-    // 'ember-cli-babel': { includePolyfill: true },
+    // TODO: https://github.com/babel/ember-cli-babel/issues/429
+    // 'ember-cli-babel': {
+    //   includePolyfill: true,
+    // },
     'ember-simple-auth': {
       useSessionSetupMethod: true,
     },
