@@ -6,6 +6,7 @@ import ArrayProxy from '@ember/array/proxy';
 import DS from 'ember-data';
 import PromiseProxyMixin from '@ember/object/promise-proxy-mixin';
 import RSVP from 'rsvp';
+import wait from '../../helpers/wait';
 
 import firebase from 'firebase/compat/app';
 import sinon from 'sinon';
@@ -52,10 +53,11 @@ module('Unit | -Private | realtime-tracker-modular', function (hooks) {
       realtimeTracker.trackFindRecordChanges('user', docRef);
 
       // Assert
-      setTimeout(() => {
-        assert.strictEqual(store.peekRecord('user', 'user_a'), null);
-        done();
-      }, 500);
+      await wait(500);
+      assert.strictEqual(store.peekRecord('user', 'user_a'), null);
+
+      await wait(500);
+      done();
     });
 
     test('should push record to store when an update has been detected', async function (assert) {
@@ -99,15 +101,15 @@ module('Unit | -Private | realtime-tracker-modular', function (hooks) {
       // Act
       realtimeTracker.trackFindRecordChanges('user', docRef);
 
-      setTimeout(async () => {
-        await updateDoc(docRef, { name: newName });
+      await wait(500);
+      await updateDoc(docRef, { name: newName });
 
-        // Assert
-        setTimeout(() => {
-          assert.strictEqual(store.peekRecord('user', 'user_a').name, newName);
-          done();
-        }, 500);
-      }, 500);
+      // Assert
+      await wait(500);
+      assert.strictEqual(store.peekRecord('user', 'user_a').name, newName);
+
+      await wait(500);
+      done();
     });
 
     test('should unload record from store when a delete has been detected', async function (assert) {
@@ -150,15 +152,15 @@ module('Unit | -Private | realtime-tracker-modular', function (hooks) {
       // Act
       realtimeTracker.trackFindRecordChanges('user', docRef);
 
-      setTimeout(async () => {
-        await deleteDoc(docRef);
+      await wait(500);
+      await deleteDoc(docRef);
 
-        // Assert
-        setTimeout(() => {
-          assert.strictEqual(store.peekRecord('user', 'user_a'), null);
-          done();
-        }, 500);
-      }, 500);
+      // Assert
+      await wait(500);
+      assert.strictEqual(store.peekRecord('user', 'user_a'), null);
+
+      await wait(500);
+      done();
     });
   });
 
@@ -177,10 +179,11 @@ module('Unit | -Private | realtime-tracker-modular', function (hooks) {
       realtimeTracker.trackFindAllChanges('user', collectionRef);
 
       // Assert
-      setTimeout(() => {
-        assert.ok(findRecordStub.notCalled);
-        done();
-      }, 500);
+      await wait(500);
+      assert.ok(findRecordStub.notCalled);
+
+      await wait(500);
+      done();
     });
 
     test('should find individual records via store when an update has been detected', async function (assert) {
@@ -196,15 +199,15 @@ module('Unit | -Private | realtime-tracker-modular', function (hooks) {
       // Act
       realtimeTracker.trackFindAllChanges('user', collectionRef);
 
-      setTimeout(async () => {
-        await setDoc(doc(db, 'users/new_user'), { name: 'new_user' });
+      await wait(500);
+      await setDoc(doc(db, 'users/new_user'), { name: 'new_user' });
 
-        // Assert
-        setTimeout(() => {
-          assert.ok(findRecordStub.called);
-          done();
-        }, 500);
-      }, 500);
+      // Assert
+      await wait(500);
+      assert.ok(findRecordStub.called);
+
+      await wait(500);
+      done();
     });
   });
 
@@ -239,10 +242,11 @@ module('Unit | -Private | realtime-tracker-modular', function (hooks) {
       );
 
       // Assert
-      setTimeout(() => {
-        assert.ok(reloadStub.notCalled);
-        done();
-      }, 500);
+      await wait(500);
+      assert.ok(reloadStub.notCalled);
+
+      await wait(500);
+      done();
     });
 
     test('should reload has many reference when an update was detected', async function (assert) {
@@ -274,15 +278,15 @@ module('Unit | -Private | realtime-tracker-modular', function (hooks) {
         collectionRef
       );
 
-      setTimeout(async () => {
-        await setDoc(doc(db, 'groups/new_group'), { name: 'new_group' });
+      await wait(500);
+      await setDoc(doc(db, 'groups/new_group'), { name: 'new_group' });
 
-        // Assert
-        setTimeout(() => {
-          assert.ok(reloadStub.called);
-          done();
-        }, 500);
-      }, 500);
+      // Assert
+      await wait(500);
+      assert.ok(reloadStub.called);
+
+      await wait(500);
+      done();
     });
   });
 
@@ -311,10 +315,11 @@ module('Unit | -Private | realtime-tracker-modular', function (hooks) {
       realtimeTracker.trackQueryChanges(queryRef, recordArray);
 
       // Assert
-      setTimeout(() => {
-        assert.ok(updateStub.notCalled);
-        done();
-      }, 500);
+      await wait(500);
+      assert.ok(updateStub.notCalled);
+
+      await wait(500);
+      done();
     });
 
     test('should update record array when an update was detected', async function (assert) {
@@ -340,15 +345,15 @@ module('Unit | -Private | realtime-tracker-modular', function (hooks) {
       // Act
       realtimeTracker.trackQueryChanges(queryRef, recordArray);
 
-      setTimeout(async () => {
-        await db.doc('groups/new_group').set({ name: 'new_group' });
+      await wait(500);
+      await db.doc('groups/new_group').set({ name: 'new_group' });
 
-        // Assert
-        setTimeout(() => {
-          assert.ok(updateStub.called);
-          done();
-        }, 500);
-      }, 500);
+      // Assert
+      await wait(500);
+      assert.ok(updateStub.called);
+
+      await wait(500);
+      done();
     });
   });
 });

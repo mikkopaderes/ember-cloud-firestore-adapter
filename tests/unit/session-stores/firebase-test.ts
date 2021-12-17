@@ -12,12 +12,14 @@ module('Unit | Session Store | firebase', function (hooks) {
       const sessionStore = this.owner.lookup('session-store:firebase');
       const fastboot = this.owner.lookup('service:fastboot');
 
-      fastboot.set('isFastBoot', true);
-      fastboot.set('request', {
-        headers: new Headers({
-          Authorization: 'Bearer 123',
-        }),
-      });
+      fastboot.isFastBoot = true;
+      fastboot._fastbootInfo = {
+        request: {
+          headers: new Headers({
+            Authorization: 'Bearer 123',
+          }),
+        },
+      };
 
       // Act
       const result = await sessionStore.restore();
