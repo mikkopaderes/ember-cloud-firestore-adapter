@@ -7,7 +7,9 @@ module('Unit | Serializer | cloud-firestore modular', function (hooks) {
   module('extractRelationship()', function () {
     test('should return object containing the type and id of a relationship', function (assert) {
       // Arrange
-      const serializer = this.owner.lookup('serializer:cloud-firestore-modular');
+      const serializer = this.owner.lookup(
+        'serializer:cloud-firestore-modular'
+      );
 
       // Act
       const result = serializer.extractRelationship('user', {
@@ -21,7 +23,9 @@ module('Unit | Serializer | cloud-firestore modular', function (hooks) {
 
     test('should return null when without any relationship hash', function (assert) {
       // Arrange
-      const serializer = this.owner.lookup('serializer:cloud-firestore-modular');
+      const serializer = this.owner.lookup(
+        'serializer:cloud-firestore-modular'
+      );
 
       // Act
       const result = serializer.extractRelationship('user', null);

@@ -29,7 +29,9 @@ export default {
     try {
       firebaseApp = envFirebase.app();
     } catch (e) {
-      firebaseApp = envFirebase.initializeApp(config['ember-cloud-firestore-adapter'].firebaseConfig);
+      firebaseApp = envFirebase.initializeApp(
+        config['ember-cloud-firestore-adapter'].firebaseConfig
+      );
     }
 
     return firebaseApp;

@@ -5,16 +5,16 @@ import firebase from 'firebase/compat/app';
 interface FirestoreAddonConfig {
   settings?: { [key: string]: string };
   emulator?: {
-    hostname: string,
-    port: number,
-    options?: { [key: string]: unknown }
+    hostname: string;
+    port: number;
+    options?: { [key: string]: unknown };
   };
 }
 
 interface AuthAddonConfig {
   emulator?: {
-    hostname: string,
-    port: number,
+    hostname: string;
+    port: number;
   };
 }
 
@@ -58,7 +58,9 @@ export function initialize(appInstance: ApplicationInstance): void {
     }
   } catch (e) {
     if (e.code !== 'failed-precondition') {
-      throw new Error(`There was a problem with initializing Firebase. Check if you've configured the addon properly. | Error: ${e}`);
+      throw new Error(
+        `There was a problem with initializing Firebase. Check if you've configured the addon properly. | Error: ${e}`
+      );
     }
   }
 }

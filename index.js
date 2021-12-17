@@ -4,7 +4,7 @@ const Config = require('./lib/config');
 const MergeTrees = require('broccoli-merge-trees');
 
 module.exports = {
-  name: 'ember-cloud-firestore-adapter',
+  name: require('./package').name,
 
   included(app) {
     this._super.included.apply(this, arguments);

@@ -31,7 +31,7 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const result = adapter.generateIdForRecord({}, 'foo');
 
       // Assert
-      assert.equal(typeof result, 'string');
+      assert.strictEqual(typeof result, 'string');
     });
   });
 
@@ -43,14 +43,18 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const snapshot = { id: 'user_100', age: 30, username: 'user_100' };
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
-      const updateRecordStub = sinon.stub(adapter, 'updateRecord').returns('foo');
+      const updateRecordStub = sinon
+        .stub(adapter, 'updateRecord')
+        .returns('foo');
 
       // Act
       const result = await adapter.createRecord(store, modelClass, snapshot);
 
       // Assert
-      assert.equal(result, 'foo');
-      assert.ok(updateRecordStub.calledWithExactly(store, modelClass, snapshot));
+      assert.strictEqual(result, 'foo');
+      assert.ok(
+        updateRecordStub.calledWithExactly(store, modelClass, snapshot)
+      );
     });
   });
 
@@ -78,8 +82,8 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
       const userA = await db.collection('users').doc('user_a').get();
 
-      assert.equal(userA.get('age'), 50);
-      assert.equal(userA.get('username'), 'user_a');
+      assert.strictEqual(userA.get('age'), 50);
+      assert.strictEqual(userA.get('username'), 'user_a');
     });
 
     test('should update record in a custom collection and resolve with the updated resource', async function (assert) {
@@ -118,8 +122,13 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
         id: 'user_a',
         age: 50,
         adapterOptions: {
-          include(batch: firebase.firestore.WriteBatch, firestore: firebase.firestore.Firestore) {
-            batch.set(firestore.collection('users').doc('user_100'), { age: 60 });
+          include(
+            batch: firebase.firestore.WriteBatch,
+            firestore: firebase.firestore.Firestore
+          ) {
+            batch.set(firestore.collection('users').doc('user_100'), {
+              age: 60,
+            });
           },
         },
       };
@@ -136,7 +145,11 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
       const userA = await db.collection('users').doc('user_a').get();
 
-      assert.deepEqual(userA.data(), { age: 50, name: 'user_a', username: 'user_a' });
+      assert.deepEqual(userA.data(), {
+        age: 50,
+        name: 'user_a',
+        username: 'user_a',
+      });
 
       const user100 = await db.collection('users').doc('user_100').get();
 
@@ -170,7 +183,10 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
 
         adapterOptions: {
           buildReference(firestore: firebase.firestore.Firestore) {
-            return firestore.collection('users').doc('user_a').collection('feeds');
+            return firestore
+              .collection('users')
+              .doc('user_a')
+              .collection('feeds');
           },
         },
       };
@@ -192,7 +208,10 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const snapshot = {
         id: 'user_a',
         adapterOptions: {
-          include(batch: firebase.firestore.WriteBatch, firestore: firebase.firestore.Firestore) {
+          include(
+            batch: firebase.firestore.WriteBatch,
+            firestore: firebase.firestore.Firestore
+          ) {
             batch.delete(firestore.collection('users').doc('user_b'));
           },
         },
@@ -259,7 +278,12 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       // Act
-      const result = await adapter.findRecord(store, modelClass, modelId, snapshot);
+      const result = await adapter.findRecord(
+        store,
+        modelClass,
+        modelId,
+        snapshot
+      );
 
       // Assert
       assert.deepEqual(result, {
@@ -285,7 +309,12 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       // Act
-      const result = await adapter.findRecord(store, modelClass, modelId, snapshot);
+      const result = await adapter.findRecord(
+        store,
+        modelClass,
+        modelId,
+        snapshot
+      );
 
       // Assert
       assert.deepEqual(result, { id: 'user_a', since: 2010 });
@@ -306,7 +335,10 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
         await adapter.findRecord(store, modelClass, modelId, snapshot);
       } catch (error) {
         // Assert
-        assert.equal(error.message, 'Record user_100 for model type user doesn\'t exist');
+        assert.strictEqual(
+          error.message,
+          "Record user_100 for model type user doesn't exist"
+        );
       }
     });
   });
@@ -321,7 +353,12 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       // Act
-      const result = await adapter.findBelongsTo(store, snapshot, url, relationship);
+      const result = await adapter.findBelongsTo(
+        store,
+        snapshot,
+        url,
+        relationship
+      );
 
       // Assert
       assert.deepEqual(result, {
@@ -361,12 +398,19 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       // Act
-      const result = await adapter.findHasMany(store, snapshot, url, relationship);
+      const result = await adapter.findHasMany(
+        store,
+        snapshot,
+        url,
+        relationship
+      );
 
       // Assert
-      assert.equal(result[0].id, 'post_a');
-      assert.equal(result[0].title, 'post_a');
-      assert.ok(determineRelationshipTypeStub.calledWithExactly(relationship, store));
+      assert.strictEqual(result[0].id, 'post_a');
+      assert.strictEqual(result[0].title, 'post_a');
+      assert.ok(
+        determineRelationshipTypeStub.calledWithExactly(relationship, store)
+      );
       assert.ok(inverseForStub.calledWithExactly(relationship.key, store));
     });
 
@@ -394,7 +438,12 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       // Act
-      const result = await adapter.findHasMany(store, snapshot, url, relationship);
+      const result = await adapter.findHasMany(
+        store,
+        snapshot,
+        url,
+        relationship
+      );
 
       // Assert
       assert.deepEqual(result, [
@@ -405,7 +454,9 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
           username: 'user_b',
         },
       ]);
-      assert.ok(determineRelationshipTypeStub.calledWithExactly(relationship, store));
+      assert.ok(
+        determineRelationshipTypeStub.calledWithExactly(relationship, store)
+      );
     });
 
     test('should be able to fetch with filter using a record property', async function (assert) {
@@ -428,7 +479,10 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const relationship = {
         key: 'posts',
         options: {
-          filter(reference: firebase.firestore.CollectionReference, record: { id: string }) {
+          filter(
+            reference: firebase.firestore.CollectionReference,
+            record: { id: string }
+          ) {
             return reference.where('approvedBy', '==', record.id);
           },
         },
@@ -437,12 +491,19 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       // Act
-      const result = await adapter.findHasMany(store, snapshot, url, relationship);
+      const result = await adapter.findHasMany(
+        store,
+        snapshot,
+        url,
+        relationship
+      );
 
       // Assert
-      assert.equal(result.length, 1);
-      assert.equal(result[0].id, 'post_a');
-      assert.ok(determineRelationshipTypeStub.calledWithExactly(relationship, store));
+      assert.strictEqual(result.length, 1);
+      assert.strictEqual(result[0].id, 'post_a');
+      assert.ok(
+        determineRelationshipTypeStub.calledWithExactly(relationship, store)
+      );
       assert.ok(inverseForStub.calledWithExactly(relationship.key, store));
     });
 
@@ -456,7 +517,10 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const relationship = {
         key: 'userBFeeds',
         options: {
-          buildReference(firestore: firebase.firestore.Firestore, record: { id: string }) {
+          buildReference(
+            firestore: firebase.firestore.Firestore,
+            record: { id: string }
+          ) {
             return firestore.collection(`users/${record.id}/feeds`);
           },
 
@@ -469,11 +533,16 @@ module('Unit | Adapter | cloud firestore', function (hooks) {
       const adapter = this.owner.lookup('adapter:cloud-firestore');
 
       // Act
-      const result = await adapter.findHasMany(store, snapshot, url, relationship);
+      const result = await adapter.findHasMany(
+        store,
+        snapshot,
+        url,
+        relationship
+      );
 
       // Assert
-      assert.equal(result[0].id, 'post_b');
-      assert.equal(result[0].title, 'post_b');
+      assert.strictEqual(result[0].id, 'post_b');
+      assert.strictEqual(result[0].title, 'post_b');
     });
   });
 

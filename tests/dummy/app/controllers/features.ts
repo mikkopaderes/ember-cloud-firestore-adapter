@@ -2,33 +2,45 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import Controller from '@ember/controller';
 import EmberArray from '@ember/array';
+import { inject as service } from '@ember/service';
 
-import firebase from 'firebase/compat/app';
+import type Store from '@ember-data/store';
+import type firebase from 'firebase/compat/app';
 
-import { collection, query, where } from 'ember-cloud-firestore-adapter/firebase/firestore';
+import {
+  collection,
+  query,
+  where,
+} from 'ember-cloud-firestore-adapter/firebase/firestore';
 import UserModel from '../models/user';
 
 export default class FeaturesController extends Controller {
+  @service declare store: Store;
+
   @tracked
   public users: UserModel[] | EmberArray<UserModel> = [];
 
   @action
   public async handleCreateRecordWithIdClick(): Promise<void> {
-    const user = await this.store.createRecord('user', {
-      id: 'new',
-      name: 'new_user_created_with_id',
-      age: 25,
-    }).save();
+    const user = await this.store
+      .createRecord('user', {
+        id: 'new',
+        name: 'new_user_created_with_id',
+        age: 25,
+      })
+      .save();
 
     this.users = [user];
   }
 
   @action
   public async handleCreateRecordWithoutIdClick(): Promise<void> {
-    const user = await this.store.createRecord('user', {
-      name: 'new_user_created_without_id',
-      age: 30,
-    }).save();
+    const user = await this.store
+      .createRecord('user', {
+        name: 'new_user_created_without_id',
+        age: 30,
+      })
+      .save();
 
     this.users = [user];
   }
@@ -36,11 +48,13 @@ export default class FeaturesController extends Controller {
   @action
   public async handleCreateRecordWithoutBelongsToRelationship(): Promise<void> {
     const user = await this.store.findRecord('user', 'user_a');
-    const post = await this.store.createRecord('post', {
-      // No belongs to relationship for Group model
-      author: user,
-      title: 'What does having it all mean to you? (By: Gabe Lewis)',
-    }).save();
+    const post = await this.store
+      .createRecord('post', {
+        // No belongs to relationship for Group model
+        author: user,
+        title: 'What does having it all mean to you? (By: Gabe Lewis)',
+      })
+      .save();
     const author = await post.get('author');
 
     this.users = [author];
@@ -49,11 +63,13 @@ export default class FeaturesController extends Controller {
   @action
   public async handleCreateRecordWithBelongsToBuildReference(): Promise<void> {
     const user = await this.store.findRecord('user', 'user_a');
-    const post = await this.store.createRecord('post', {
-      id: 'new_post',
-      publisher: user,
-      title: 'What does having it all mean to you? (By: Gabe Lewis)',
-    }).save();
+    const post = await this.store
+      .createRecord('post', {
+        id: 'new_post',
+        publisher: user,
+        title: 'What does having it all mean to you? (By: Gabe Lewis)',
+      })
+      .save();
     const publisher = await post.get('publisher');
 
     this.users = [publisher];

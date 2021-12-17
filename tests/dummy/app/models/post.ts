@@ -1,12 +1,9 @@
 /*
   eslint
-  import/no-cycle: off,
   @typescript-eslint/ban-ts-comment: off,
-  ember/use-ember-data-rfc-395-imports: off,
 */
 
-import DS from 'ember-data';
-import Model, { attr, belongsTo } from '@ember-data/model';
+import Model, { attr, belongsTo, AsyncBelongsTo } from '@ember-data/model';
 
 import firebase from 'firebase/compat/app';
 
@@ -17,16 +14,16 @@ import UserModel from './user';
 
 export default class PostModel extends Model {
   @attr('string')
-  declare public title: string;
+  public declare title: string;
 
   @attr('timestamp')
-  declare public createdOn: TimestampTransform;
+  public declare createdOn: TimestampTransform;
 
   @belongsTo('user')
-  declare public author: DS.PromiseObject<UserModel>;
+  public declare author: AsyncBelongsTo<UserModel>;
 
   @belongsTo('group')
-  declare public group: DS.PromiseObject<GroupModel>;
+  public declare group: AsyncBelongsTo<GroupModel>;
 
   @belongsTo('user', {
     inverse: null,
@@ -36,12 +33,12 @@ export default class PostModel extends Model {
       return collection(db, 'publishers');
     },
   })
-  declare public publisher: DS.PromiseObject<UserModel>;
+  public declare publisher: AsyncBelongsTo<UserModel>;
 }
 
 // DO NOT DELETE: this is how TypeScript knows how to look up your models.
 declare module 'ember-data/types/registries/model' {
   export default interface ModelRegistry {
-    'post': PostModel;
+    post: PostModel;
   }
 }

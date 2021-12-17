@@ -15,7 +15,7 @@ export default class TimestampTransform extends Transform {
   }
 
   public serialize(value: unknown): Date | FieldValue {
-    return typeOf(value) === 'date' ? value as Date : serverTimestamp();
+    return typeOf(value) === 'date' ? (value as Date) : serverTimestamp();
   }
 }
 

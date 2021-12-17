@@ -10,7 +10,6 @@ import Adapter from '@ember-data/adapter';
 import DS from 'ember-data';
 import RSVP from 'rsvp';
 import Store from '@ember-data/store';
-import classic from 'ember-classic-decorator';
 
 import {
   CollectionReference,
@@ -64,21 +63,23 @@ interface HasManyRelationshipMeta {
   key: string;
   type: string;
   options: {
-    isRealtime?: boolean,
+    isRealtime?: boolean;
 
-    buildReference?(db: firebase.firestore.Firestore, record: unknown): CollectionReference,
-    filter?(db: CollectionReference | Query, record: unknown): Query,
+    buildReference?(
+      db: firebase.firestore.Firestore,
+      record: unknown
+    ): CollectionReference;
+    filter?(db: CollectionReference | Query, record: unknown): Query;
   };
 }
 
-@classic
 export default class CloudFirestoreModularAdapter extends Adapter {
   @service('-firebase')
-  declare protected firebase: FirebaseService;
+  protected declare firebase: FirebaseService;
 
   protected referenceKeyName = 'referenceTo';
 
-  declare private realtimeTracker: RealtimeTracker;
+  private declare realtimeTracker: RealtimeTracker;
 
   private get isFastBoot(): boolean {
     const fastboot = getOwner(this).lookup('service:fastboot');
@@ -86,10 +87,13 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     return fastboot && fastboot.isFastBoot;
   }
 
+  // eslint-disable-next-line ember/classic-decorator-hooks
   public init(...args: unknown[]): void {
     this._super(...args);
 
-    this.realtimeTracker = new RealtimeTracker(getOwner(this).lookup('service:store'));
+    this.realtimeTracker = new RealtimeTracker(
+      getOwner(this).lookup('service:store')
+    );
   }
 
   public generateIdForRecord(_store: Store, type: string): string {
@@ -102,7 +106,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
   public createRecord(
     store: Store,
     type: ModelClass,
-    snapshot: Snapshot,
+    snapshot: Snapshot
   ): RSVP.Promise<unknown> {
     return this.updateRecord(store, type, snapshot);
   }
@@ -110,47 +114,59 @@ export default class CloudFirestoreModularAdapter extends Adapter {
   public updateRecord(
     _store: Store,
     type: ModelClass,
-    snapshot: Snapshot,
+    snapshot: Snapshot
   ): RSVP.Promise<unknown> {
     return new RSVP.Promise((resolve, reject) => {
-      const collectionRef = this.buildCollectionRef(type.modelName, snapshot.adapterOptions);
+      const collectionRef = this.buildCollectionRef(
+        type.modelName,
+        snapshot.adapterOptions
+      );
       const docRef = doc(collectionRef, snapshot.id);
       const batch = this.buildWriteBatch(docRef, snapshot);
 
-      batch.commit().then(() => {
-        const data = this.serialize(snapshot, { includeId: true });
+      batch
+        .commit()
+        .then(() => {
+          const data = this.serialize(snapshot, { includeId: true });
 
-        resolve(data);
+          resolve(data);
 
-        if (snapshot.adapterOptions?.isRealtime && !this.isFastBoot) {
-          // Setup realtime listener for record
-          this.fetchRecord(type, snapshot.id, snapshot.adapterOptions);
-        }
-      }).catch((e) => {
-        reject(e);
-      });
+          if (snapshot.adapterOptions?.isRealtime && !this.isFastBoot) {
+            // Setup realtime listener for record
+            this.fetchRecord(type, snapshot.id, snapshot.adapterOptions);
+          }
+        })
+        .catch((e) => {
+          reject(e);
+        });
     });
   }
 
   public deleteRecord(
     _store: Store,
     type: ModelClass,
-    snapshot: Snapshot,
+    snapshot: Snapshot
   ): RSVP.Promise<unknown> {
     return new RSVP.Promise((resolve, reject) => {
       const db = this.firebase.firestore();
-      const collectionRef = this.buildCollectionRef(type.modelName, snapshot.adapterOptions);
+      const collectionRef = this.buildCollectionRef(
+        type.modelName,
+        snapshot.adapterOptions
+      );
       const docRef = doc(collectionRef, snapshot.id);
       const batch = writeBatch(db);
 
       batch.delete(docRef);
       this.addIncludeToWriteBatch(batch, snapshot.adapterOptions);
 
-      batch.commit().then(() => {
-        resolve();
-      }).catch((e) => {
-        reject(e);
-      });
+      batch
+        .commit()
+        .then(() => {
+          resolve();
+        })
+        .catch((e) => {
+          reject(e);
+        });
     });
   }
 
@@ -158,7 +174,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     _store: Store,
     type: ModelClass,
     id: string,
-    snapshot: Snapshot,
+    snapshot: Snapshot
   ): RSVP.Promise<unknown> {
     return this.fetchRecord(type, id, snapshot.adapterOptions);
   }
@@ -167,28 +183,42 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     _store: Store,
     type: ModelClass,
     _sinceToken: string,
-    snapshotRecordArray?: SnapshotRecordArray,
+    snapshotRecordArray?: SnapshotRecordArray
   ): RSVP.Promise<unknown> {
     return new RSVP.Promise((resolve, reject) => {
       const db = this.firebase.firestore();
       const collectionRef = collection(db, buildCollectionName(type.modelName));
-      const unsubscribe = onSnapshot(collectionRef, async (querySnapshot) => {
-        if (snapshotRecordArray?.adapterOptions?.isRealtime && !this.isFastBoot) {
-          this.realtimeTracker?.trackFindAllChanges(type.modelName, collectionRef);
-        }
+      const unsubscribe = onSnapshot(
+        collectionRef,
+        async (querySnapshot) => {
+          if (
+            snapshotRecordArray?.adapterOptions?.isRealtime &&
+            !this.isFastBoot
+          ) {
+            this.realtimeTracker?.trackFindAllChanges(
+              type.modelName,
+              collectionRef
+            );
+          }
 
-        const requests = querySnapshot.docs.map((docSnapshot) => (
-          this.fetchRecord(type, docSnapshot.id, snapshotRecordArray?.adapterOptions)
-        ));
+          const requests = querySnapshot.docs.map((docSnapshot) =>
+            this.fetchRecord(
+              type,
+              docSnapshot.id,
+              snapshotRecordArray?.adapterOptions
+            )
+          );
 
-        try {
-          resolve(await RSVP.Promise.all(requests));
-        } catch (error) {
-          reject(error);
-        }
+          try {
+            resolve(await RSVP.Promise.all(requests));
+          } catch (error) {
+            reject(error);
+          }
 
-        unsubscribe();
-      }, (error) => reject(error));
+          unsubscribe();
+        },
+        (error) => reject(error)
+      );
     });
   }
 
@@ -196,7 +226,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     _store: Store,
     _snapshot: Snapshot,
     url: string,
-    relationship: BelongsToRelationshipMeta,
+    relationship: BelongsToRelationshipMeta
   ): RSVP.Promise<unknown> {
     const type = { modelName: relationship.type };
     const urlNodes = url.split('/');
@@ -217,30 +247,39 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     store: Store,
     snapshot: Snapshot,
     url: string,
-    relationship: HasManyRelationshipMeta,
+    relationship: HasManyRelationshipMeta
   ): RSVP.Promise<unknown> {
     return new RSVP.Promise((resolve, reject) => {
-      const collectionRef = this.buildHasManyCollectionRef(store, snapshot, url, relationship);
-      const unsubscribe = onSnapshot(collectionRef, async (querySnapshot) => {
-        if (relationship.options.isRealtime && !this.isFastBoot) {
-          this.realtimeTracker?.trackFindHasManyChanges(
-            snapshot.modelName,
-            snapshot.id,
-            relationship.key,
-            collectionRef,
-          );
-        }
+      const collectionRef = this.buildHasManyCollectionRef(
+        store,
+        snapshot,
+        url,
+        relationship
+      );
+      const unsubscribe = onSnapshot(
+        collectionRef,
+        async (querySnapshot) => {
+          if (relationship.options.isRealtime && !this.isFastBoot) {
+            this.realtimeTracker?.trackFindHasManyChanges(
+              snapshot.modelName,
+              snapshot.id,
+              relationship.key,
+              collectionRef
+            );
+          }
 
-        const requests = this.findHasManyRecords(relationship, querySnapshot);
+          const requests = this.findHasManyRecords(relationship, querySnapshot);
 
-        try {
-          resolve(await RSVP.Promise.all(requests));
-        } catch (error) {
-          reject(error);
-        }
+          try {
+            resolve(await RSVP.Promise.all(requests));
+          } catch (error) {
+            reject(error);
+          }
 
-        unsubscribe();
-      }, (error) => reject(error));
+          unsubscribe();
+        },
+        (error) => reject(error)
+      );
     });
   }
 
@@ -248,79 +287,117 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     _store: Store,
     type: ModelClass,
     queryOption: AdapterOption,
-    recordArray: DS.AdapterPopulatedRecordArray<unknown>,
+    recordArray: DS.AdapterPopulatedRecordArray<unknown>
   ): RSVP.Promise<unknown> {
     return new RSVP.Promise((resolve, reject) => {
-      const collectionRef = this.buildCollectionRef(type.modelName, queryOption);
+      const collectionRef = this.buildCollectionRef(
+        type.modelName,
+        queryOption
+      );
       const queryRef = queryOption.filter?.(collectionRef) || collectionRef;
-      const unsubscribe = onSnapshot(queryRef, async (querySnapshot) => {
-        if (queryOption.isRealtime && !this.isFastBoot) {
-          this.realtimeTracker?.trackQueryChanges(queryRef, recordArray, queryOption.queryId);
-        }
+      const unsubscribe = onSnapshot(
+        queryRef,
+        async (querySnapshot) => {
+          if (queryOption.isRealtime && !this.isFastBoot) {
+            this.realtimeTracker?.trackQueryChanges(
+              queryRef,
+              recordArray,
+              queryOption.queryId
+            );
+          }
 
-        const requests = this.findQueryRecords(type, queryOption, querySnapshot);
+          const requests = this.findQueryRecords(
+            type,
+            queryOption,
+            querySnapshot
+          );
 
-        try {
-          resolve(await RSVP.Promise.all(requests));
-        } catch (error) {
-          reject(error);
-        }
+          try {
+            resolve(await RSVP.Promise.all(requests));
+          } catch (error) {
+            reject(error);
+          }
 
-        unsubscribe();
-      }, (error) => reject(error));
+          unsubscribe();
+        },
+        (error) => reject(error)
+      );
     });
   }
 
   private buildCollectionRef(
     modelName: string,
-    adapterOptions?: AdapterOption,
+    adapterOptions?: AdapterOption
   ): CollectionReference {
     const db = this.firebase.firestore();
 
-    return adapterOptions?.buildReference?.(db) || collection(db, buildCollectionName(modelName));
+    return (
+      adapterOptions?.buildReference?.(db) ||
+      collection(db, buildCollectionName(modelName))
+    );
   }
 
   private fetchRecord(
     type: ModelClass,
     id: string,
-    adapterOption?: AdapterOption,
+    adapterOption?: AdapterOption
   ): RSVP.Promise<unknown> {
     return new RSVP.Promise((resolve, reject) => {
-      const collectionRef = this.buildCollectionRef(type.modelName, adapterOption);
+      const collectionRef = this.buildCollectionRef(
+        type.modelName,
+        adapterOption
+      );
       const docRef = doc(collectionRef, id);
-      const unsubscribe = onSnapshot(docRef, (docSnapshot) => {
-        if (docSnapshot.exists()) {
-          if (adapterOption?.isRealtime && !this.isFastBoot) {
-            this.realtimeTracker?.trackFindRecordChanges(type.modelName, docRef);
+      const unsubscribe = onSnapshot(
+        docRef,
+        (docSnapshot) => {
+          if (docSnapshot.exists()) {
+            if (adapterOption?.isRealtime && !this.isFastBoot) {
+              this.realtimeTracker?.trackFindRecordChanges(
+                type.modelName,
+                docRef
+              );
+            }
+
+            resolve(flattenDocSnapshot(docSnapshot));
+          } else {
+            reject(
+              new Error(
+                `Record ${id} for model type ${type.modelName} doesn't exist`
+              )
+            );
           }
 
-          resolve(flattenDocSnapshot(docSnapshot));
-        } else {
-          reject(new Error(`Record ${id} for model type ${type.modelName} doesn't exist`));
-        }
-
-        unsubscribe();
-      }, (error) => reject(error));
+          unsubscribe();
+        },
+        (error) => reject(error)
+      );
     });
   }
 
   private addDocRefToWriteBatch(
     batch: WriteBatch,
     docRef: DocumentReference,
-    snapshot: Snapshot,
+    snapshot: Snapshot
   ): void {
     const data = this.serialize(snapshot, {});
 
     batch.set(docRef, data, { merge: true });
   }
 
-  private addIncludeToWriteBatch(batch: WriteBatch, adapterOptions?: AdapterOption): void {
+  private addIncludeToWriteBatch(
+    batch: WriteBatch,
+    adapterOptions?: AdapterOption
+  ): void {
     const db = this.firebase.firestore();
 
     adapterOptions?.include?.(batch, db);
   }
 
-  private buildWriteBatch(docRef: DocumentReference, snapshot: Snapshot): WriteBatch {
+  private buildWriteBatch(
+    docRef: DocumentReference,
+    snapshot: Snapshot
+  ): WriteBatch {
     const db = this.firebase.firestore();
     const batch = writeBatch(db);
 
@@ -334,36 +411,58 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     store: Store,
     snapshot: Snapshot,
     url: string,
-    relationship: HasManyRelationshipMeta,
+    relationship: HasManyRelationshipMeta
   ): CollectionReference | Query {
     const db = this.firebase.firestore();
 
     if (relationship.options.buildReference) {
-      const collectionRef = relationship.options.buildReference(db, snapshot.record);
+      const collectionRef = relationship.options.buildReference(
+        db,
+        snapshot.record
+      );
 
-      return relationship.options.filter?.(collectionRef, snapshot.record) || collectionRef;
+      return (
+        relationship.options.filter?.(collectionRef, snapshot.record) ||
+        collectionRef
+      );
     }
 
-    const cardinality = snapshot.type.determineRelationshipType(relationship, store);
+    const cardinality = snapshot.type.determineRelationshipType(
+      relationship,
+      store
+    );
 
     if (cardinality === 'manyToOne') {
       const inverse = snapshot.type.inverseFor(relationship.key, store);
-      const snapshotCollectionName = buildCollectionName(snapshot.modelName.toString());
-      const snapshotDocRef = doc(db, `${snapshotCollectionName}/${snapshot.id}`);
+      const snapshotCollectionName = buildCollectionName(
+        snapshot.modelName.toString()
+      );
+      const snapshotDocRef = doc(
+        db,
+        `${snapshotCollectionName}/${snapshot.id}`
+      );
       const collectionRef = collection(db, url);
-      const queryRef = query(collectionRef, where(inverse.name, '==', snapshotDocRef));
+      const queryRef = query(
+        collectionRef,
+        where(inverse.name, '==', snapshotDocRef)
+      );
 
-      return relationship.options.filter?.(queryRef, snapshot.record) || queryRef;
+      return (
+        relationship.options.filter?.(queryRef, snapshot.record) || queryRef
+      );
     }
 
     const collectionRef = collection(db, url);
 
-    return relationship.options.filter?.(collectionRef, snapshot.record) || collectionRef;
+    return (
+      relationship.options.filter?.(collectionRef, snapshot.record) ||
+      collectionRef
+    );
   }
 
   private findHasManyRecords(
     relationship: HasManyRelationshipMeta,
-    querySnapshot: QuerySnapshot,
+    querySnapshot: QuerySnapshot
   ): RSVP.Promise<unknown>[] {
     return querySnapshot.docs.map((docSnapshot) => {
       const type = { modelName: relationship.type };
@@ -394,7 +493,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
   private findQueryRecords(
     type: ModelClass,
     option: AdapterOption,
-    querySnapshot: QuerySnapshot,
+    querySnapshot: QuerySnapshot
   ): RSVP.Promise<unknown>[] {
     return querySnapshot.docs.map((docSnapshot) => {
       const referenceTo = docSnapshot.get(this.referenceKeyName);

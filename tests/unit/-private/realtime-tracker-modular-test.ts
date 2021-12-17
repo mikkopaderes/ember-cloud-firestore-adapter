@@ -53,7 +53,7 @@ module('Unit | -Private | realtime-tracker-modular', function (hooks) {
 
       // Assert
       setTimeout(() => {
-        assert.equal(store.peekRecord('user', 'user_a'), null);
+        assert.strictEqual(store.peekRecord('user', 'user_a'), null);
         done();
       }, 500);
     });
@@ -66,7 +66,7 @@ module('Unit | -Private | realtime-tracker-modular', function (hooks) {
       const store = this.owner.lookup('service:store');
       const realtimeTracker = new RealtimeTracker(store);
       const docRef = doc(db, 'users/user_a');
-      const newName = Math.random();
+      const newName = Math.random().toString();
       const storeFixture = {
         data: {
           id: 'user_a',
@@ -104,7 +104,7 @@ module('Unit | -Private | realtime-tracker-modular', function (hooks) {
 
         // Assert
         setTimeout(() => {
-          assert.equal(store.peekRecord('user', 'user_a').name, newName);
+          assert.strictEqual(store.peekRecord('user', 'user_a').name, newName);
           done();
         }, 500);
       }, 500);
@@ -155,7 +155,7 @@ module('Unit | -Private | realtime-tracker-modular', function (hooks) {
 
         // Assert
         setTimeout(() => {
-          assert.equal(store.peekRecord('user', 'user_a'), null);
+          assert.strictEqual(store.peekRecord('user', 'user_a'), null);
           done();
         }, 500);
       }, 500);
@@ -217,15 +217,26 @@ module('Unit | -Private | realtime-tracker-modular', function (hooks) {
       const store = this.owner.lookup('service:store');
       const reloadStub = sinon.stub().returns(Promise.resolve());
 
-      sinon.stub(store, 'peekRecord').withArgs('user', 'user_a').returns({
-        hasMany: sinon.stub().withArgs('groups').returns({ reload: reloadStub }),
-      });
+      sinon
+        .stub(store, 'peekRecord')
+        .withArgs('user', 'user_a')
+        .returns({
+          hasMany: sinon
+            .stub()
+            .withArgs('groups')
+            .returns({ reload: reloadStub }),
+        });
 
       const realtimeTracker = new RealtimeTracker(store);
       const collectionRef = collection(db, 'groups');
 
       // Act
-      realtimeTracker.trackFindHasManyChanges('user', 'user_a', 'groups', collectionRef);
+      realtimeTracker.trackFindHasManyChanges(
+        'user',
+        'user_a',
+        'groups',
+        collectionRef
+      );
 
       // Assert
       setTimeout(() => {
@@ -242,15 +253,26 @@ module('Unit | -Private | realtime-tracker-modular', function (hooks) {
       const store = this.owner.lookup('service:store');
       const reloadStub = sinon.stub().returns(Promise.resolve());
 
-      sinon.stub(store, 'peekRecord').withArgs('user', 'user_a').returns({
-        hasMany: sinon.stub().withArgs('groups').returns({ reload: reloadStub }),
-      });
+      sinon
+        .stub(store, 'peekRecord')
+        .withArgs('user', 'user_a')
+        .returns({
+          hasMany: sinon
+            .stub()
+            .withArgs('groups')
+            .returns({ reload: reloadStub }),
+        });
 
       const realtimeTracker = new RealtimeTracker(store);
       const collectionRef = collection(db, 'groups');
 
       // Act
-      realtimeTracker.trackFindHasManyChanges('user', 'user_a', 'groups', collectionRef);
+      realtimeTracker.trackFindHasManyChanges(
+        'user',
+        'user_a',
+        'groups',
+        collectionRef
+      );
 
       setTimeout(async () => {
         await setDoc(doc(db, 'groups/new_group'), { name: 'new_group' });
@@ -273,14 +295,17 @@ module('Unit | -Private | realtime-tracker-modular', function (hooks) {
       const store = this.owner.lookup('service:store');
       const recordArray = {} as DS.AdapterPopulatedRecordArray<unknown>;
       const promiseArray = ArrayProxy.extend(PromiseProxyMixin);
-      const updateStub = sinon.stub().returns(
-        promiseArray.create({ promise: RSVP.Promise.resolve() }),
-      );
+      const updateStub = sinon
+        .stub()
+        .returns(promiseArray.create({ promise: RSVP.Promise.resolve() }));
 
       recordArray.update = updateStub;
 
       const realtimeTracker = new RealtimeTracker(store);
-      const queryRef = query(collection(db, 'groups'), where('name', '==', 'new_group'));
+      const queryRef = query(
+        collection(db, 'groups'),
+        where('name', '==', 'new_group')
+      );
 
       // Act
       realtimeTracker.trackQueryChanges(queryRef, recordArray);
@@ -300,14 +325,17 @@ module('Unit | -Private | realtime-tracker-modular', function (hooks) {
       const store = this.owner.lookup('service:store');
       const recordArray = {} as DS.AdapterPopulatedRecordArray<unknown>;
       const promiseArray = ArrayProxy.extend(PromiseProxyMixin);
-      const updateStub = sinon.stub().returns(
-        promiseArray.create({ promise: RSVP.Promise.resolve() }),
-      );
+      const updateStub = sinon
+        .stub()
+        .returns(promiseArray.create({ promise: RSVP.Promise.resolve() }));
 
       recordArray.update = updateStub;
 
       const realtimeTracker = new RealtimeTracker(store);
-      const queryRef = query(collection(db, 'groups'), where('name', '==', 'new_group'));
+      const queryRef = query(
+        collection(db, 'groups'),
+        where('name', '==', 'new_group')
+      );
 
       // Act
       realtimeTracker.trackQueryChanges(queryRef, recordArray);

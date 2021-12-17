@@ -1,8 +1,12 @@
 import Route from '@ember/routing/route';
+import { inject as service } from '@ember/service';
 
-import GroupModel from '../models/group';
+import type Store from '@ember-data/store';
+import type GroupModel from '../models/group';
 
 export default class FindRecordRoute extends Route {
+  @service declare store: Store;
+
   public async model(): Promise<GroupModel> {
     return this.store.findRecord('group', 'group_a');
   }

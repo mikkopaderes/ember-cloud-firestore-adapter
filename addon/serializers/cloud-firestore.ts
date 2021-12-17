@@ -30,17 +30,27 @@ interface RelationshipDefinition {
   key: string;
   type: string;
   options: {
-    buildReference?(db: firebase.firestore.Firestore): firebase.firestore.CollectionReference
+    buildReference?(
+      db: firebase.firestore.Firestore
+    ): firebase.firestore.CollectionReference;
   };
 }
 
 interface ModelClass {
   modelName: string;
-  determineRelationshipType(descriptor: { kind: string, type: string }, store: Store): string;
-  eachRelationship(callback: (name: string, descriptor: {
-    kind: string,
-    type: string,
-  }) => void): void;
+  determineRelationshipType(
+    descriptor: { kind: string; type: string },
+    store: Store
+  ): string;
+  eachRelationship(
+    callback: (
+      name: string,
+      descriptor: {
+        kind: string;
+        type: string;
+      }
+    ) => void
+  ): void;
 }
 
 export default class CloudFirestoreSerializer extends JSONSerializer {
@@ -49,8 +59,8 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
 
   public extractRelationship(
     relationshipModelName: string,
-    relationshipHash: firebase.firestore.DocumentReference,
-  ): { id: string, type: string } | {} {
+    relationshipHash: firebase.firestore.DocumentReference
+  ): { id: string; type: string } | {} {
     if (isNone(relationshipHash)) {
       return super.extractRelationship(relationshipModelName, relationshipHash);
     }
@@ -61,19 +71,27 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
     return { id: belongsToId, type: relationshipModelName };
   }
 
-  public extractRelationships(modelClass: ModelClass, resourceHash: ResourceHash): {} {
+  public extractRelationships(
+    modelClass: ModelClass,
+    resourceHash: ResourceHash
+  ): {} {
     const newResourceHash = { ...resourceHash };
     const links: { [key: string]: string } = {};
 
     modelClass.eachRelationship((name, descriptor) => {
       if (descriptor.kind === 'belongsTo') {
         if (resourceHash[name]) {
-          const data = resourceHash[name] as firebase.firestore.CollectionReference;
+          const data = resourceHash[
+            name
+          ] as firebase.firestore.CollectionReference;
 
           links[name] = data.path;
         }
       } else {
-        const cardinality = modelClass.determineRelationshipType(descriptor, this.store);
+        const cardinality = modelClass.determineRelationshipType(
+          descriptor,
+          this.store
+        );
         let hasManyPath;
 
         if (cardinality === 'manyToOne') {
@@ -96,8 +114,10 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
 
   public serializeBelongsTo(
     snapshot: DS.Snapshot,
-    json: { [key: string]: string | null | firebase.firestore.DocumentReference },
-    relationship: RelationshipDefinition,
+    json: {
+      [key: string]: string | null | firebase.firestore.DocumentReference;
+    },
+    relationship: RelationshipDefinition
   ): void {
     super.serializeBelongsTo(snapshot, json, relationship);
 
@@ -106,7 +126,9 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
       const docId = json[relationship.key] as string;
 
       if (relationship.options.buildReference) {
-        json[relationship.key] = relationship.options.buildReference(db).doc(docId);
+        json[relationship.key] = relationship.options
+          .buildReference(db)
+          .doc(docId);
       } else {
         const collectionName = buildCollectionName(relationship.type);
         const path = `${collectionName}/${docId}`;
@@ -117,7 +139,9 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
   }
 
   public serialize(snapshot: DS.Snapshot, options: {}): {} {
-    const json: { [key: string]: unknown } = { ...super.serialize(snapshot, options) };
+    const json: { [key: string]: unknown } = {
+      ...super.serialize(snapshot, options),
+    };
 
     snapshot.eachRelationship((name: string, relationship) => {
       if (relationship.kind === 'hasMany') {

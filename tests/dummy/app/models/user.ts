@@ -1,32 +1,25 @@
-/*
-  eslint
-  import/no-cycle: off,
-  ember/use-ember-data-rfc-395-imports: off,
-*/
+import Model, { attr, hasMany, AsyncHasMany } from '@ember-data/model';
 
-import DS from 'ember-data';
-import Model, { attr, hasMany } from '@ember-data/model';
-
-import GroupModel from './group';
-import PostModel from './post';
+import type GroupModel from './group';
+import type PostModel from './post';
 
 export default class UserModel extends Model {
   @attr('string')
-  declare public name: string;
+  public declare name: string;
 
   @hasMany('group')
-  declare public groups: DS.PromiseManyArray<GroupModel>;
+  public declare groups: AsyncHasMany<GroupModel>;
 
   @hasMany('post')
-  declare public posts: DS.PromiseManyArray<PostModel>;
+  public declare posts: AsyncHasMany<PostModel>;
 
   @hasMany('user', { inverse: null })
-  declare public users: DS.PromiseManyArray<UserModel>;
+  public declare users: AsyncHasMany<this>;
 }
 
 // DO NOT DELETE: this is how TypeScript knows how to look up your models.
 declare module 'ember-data/types/registries/model' {
   export default interface ModelRegistry {
-    'user': UserModel;
+    user: UserModel;
   }
 }
