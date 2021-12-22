@@ -1,9 +1,7 @@
 import { getOwner } from '@ember/application';
-import classic from 'ember-classic-decorator';
 
 import LocalStorageStore from 'ember-simple-auth/session-stores/local-storage';
 
-@classic
 export default class FirebaseStore extends LocalStorageStore {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   private get fastboot(): any {

@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "ember-auto-import": "^1.11.3",
-    "ember-classic-decorator": "^2.0.0",
     "ember-cli-babel": "^7.26.6",
     "ember-cli-htmlbars": "^5.7.1",
     "ember-cli-typescript": "^4.2.1"
