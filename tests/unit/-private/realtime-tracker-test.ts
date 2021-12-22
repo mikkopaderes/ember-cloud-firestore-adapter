@@ -44,7 +44,7 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
 
       // Assert
       setTimeout(() => {
-        assert.equal(store.peekRecord('user', 'user_a'), null);
+        assert.strictEqual(store.peekRecord('user', 'user_a'), null);
         done();
       }, 500);
     });
@@ -95,7 +95,7 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
 
         // Assert
         setTimeout(() => {
-          assert.equal(store.peekRecord('user', 'user_a').name, newName);
+          assert.strictEqual(store.peekRecord('user', 'user_a').name, newName);
           done();
         }, 500);
       }, 500);
@@ -146,7 +146,7 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
 
         // Assert
         setTimeout(() => {
-          assert.equal(store.peekRecord('user', 'user_a'), null);
+          assert.strictEqual(store.peekRecord('user', 'user_a'), null);
           done();
         }, 500);
       }, 500);
