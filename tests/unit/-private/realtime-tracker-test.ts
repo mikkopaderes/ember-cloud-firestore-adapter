@@ -57,7 +57,7 @@ module('Unit | -Private | realtime-tracker', function (hooks) {
       const store = this.owner.lookup('service:store');
       const realtimeTracker = new RealtimeTracker(store);
       const docRef = db.doc('users/user_a');
-      const newName = Math.random();
+      const newName = Math.random().toString();
       const storeFixture = {
         data: {
           id: 'user_a',
