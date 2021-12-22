@@ -53,7 +53,7 @@ module('Unit | Authenticator | firebase', function (hooks) {
       await authenticator.invalidate();
 
       // Assert
-      assert.equal(auth.currentUser, null);
+      assert.strictEqual(auth.currentUser, null);
     });
   });
 

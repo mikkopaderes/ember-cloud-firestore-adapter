@@ -6,6 +6,6 @@ module('Unit | -Private | build-collection-name', function () {
   test('should return the camelize and pluralize name of the string', function (assert) {
     const result = buildCollectionName('blog-post');
 
-    assert.equal(result, 'blogPosts');
+    assert.strictEqual(result, 'blogPosts');
   });
 });
