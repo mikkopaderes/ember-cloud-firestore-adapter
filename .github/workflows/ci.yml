@@ -44,17 +44,15 @@ jobs:
       fail-fast: false
       matrix:
         ember-try-scenario:
-          - ember-lts-3.20
           - ember-lts-3.24
+          - ember-lts-3.28
           - ember-release
           - ember-default-with-jquery
           - ember-classic
-          # Disable temporarily since ember-simple-auth uses Ember Global
-          # See https://github.com/simplabs/ember-simple-auth/issues/2309
-          # - ember-beta
-          # - ember-canary
-          # - embroider-safe
-          # - embroider-optimized
+          - ember-beta
+          - ember-canary
+          - embroider-safe
+          - embroider-optimized
 
     steps:
       - uses: actions/checkout@v2
