@@ -84,6 +84,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     return fastboot && fastboot.isFastBoot;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public constructor(...args: any[]) {
     super(...args);
 
