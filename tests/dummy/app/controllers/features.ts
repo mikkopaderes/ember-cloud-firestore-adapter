@@ -5,7 +5,7 @@ import Controller from '@ember/controller';
 import EmberArray from '@ember/array';
 import Store from '@ember-data/store';
 
-import { CollectionReference } from '@firebase/firestore';
+import { CollectionReference } from 'firebase/firestore';
 import firebase from 'firebase/compat/app';
 
 import { collection, query, where } from 'ember-cloud-firestore-adapter/firebase/firestore';
