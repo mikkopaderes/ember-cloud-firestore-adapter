@@ -13,9 +13,7 @@ export default class QueryController extends Controller {
   public async handleLoadMoreClick(): Promise<void> {
     this.model.set(
       'query.filter',
-      (reference: firebase.firestore.CollectionReference) => {
-        return query(reference, orderBy('name'), limit(5));
-      }
+      (reference: firebase.firestore.CollectionReference) => query(reference, orderBy('name'), limit(5)),
     );
 
     await this.model.update();
