@@ -1,5 +1,12 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
+import Service from '@ember/service';
+
+class FastBootStub extends Service {
+  isFastBoot = true;
+
+  request = null;
+}
 
 module('Unit | Session Store | firebase', function (hooks) {
   setupTest(hooks);
@@ -9,10 +16,11 @@ module('Unit | Session Store | firebase', function (hooks) {
       assert.expect(1);
 
       // Arrange
+      this.owner.register('service:fastboot', FastBootStub);
+
       const sessionStore = this.owner.lookup('session-store:firebase');
       const fastboot = this.owner.lookup('service:fastboot');
 
-      fastboot.set('isFastBoot', true);
       fastboot.set('request', {
         headers: new Headers({
           Authorization: 'Bearer 123',
