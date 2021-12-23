@@ -2,65 +2,80 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches:
+      - main
+      - master
+  pull_request: {}
+
+concurrency:
+   group: ci-${{ github.head_ref || github.ref }}
+   cancel-in-progress: true
 
 jobs:
   test:
-    timeout-minutes: 10
-    name: Tests
+    name: "Tests"
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
+      - name: Install Node
+        uses: actions/setup-node@v2
         with:
           node-version: 12.x
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run test:ember
+          cache: npm
+      - name: Install Dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Run Tests
+        run: npm run test:ember
 
-  floating-dependencies:
-    timeout-minutes: 10
+  floating:
     name: "Floating Dependencies"
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
           node-version: 12.x
-      - run: npm install --no-package-lock
-      - run: npm run test:ember
+          cache: npm
+      - name: Install Dependencies
+        run: npm install --no-shrinkwrap
+      - name: Run Tests
+        run: npm run test:ember
 
   try-scenarios:
-    timeout-minutes: 10
-    name: "Try: ${{ matrix.ember-try-scenario }}"
-
+    name: ${{ matrix.try-scenario }}
     runs-on: ubuntu-latest
-
-    needs: test
+    needs: 'test'
 
     strategy:
       fail-fast: false
       matrix:
-        ember-try-scenario:
-          - ember-lts-3.20
+        try-scenario:
           - ember-lts-3.24
+          - ember-lts-3.28
           - ember-release
-          - ember-default-with-jquery
+          - ember-beta
+          - ember-canary
           - ember-classic
-          # Disable temporarily since ember-simple-auth uses Ember Global
-          # See https://github.com/simplabs/ember-simple-auth/issues/2309
-          # - ember-beta
-          # - ember-canary
+          - ember-default-with-jquery
+          # Disable Embroider builds as Acceptance Tests are failing with the error:
+          # Attempting to inject an unknown injection: 'service:session'
+          # I believe this is something that has to do with ember-simple-auth and not our
+          # our addon itself.
           # - embroider-safe
           # - embroider-optimized
 
     steps:
       - uses: actions/checkout@v2
+      - name: Install Node
+        uses: actions/setup-node@v2
         with:
           node-version: 12.x
-      - name: install dependencies
+          cache: npm
+      - name: Install Dependencies
         run: npm ci
-      - name: test
-        run: npx firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project "node_modules/.bin/ember try:one ${{ matrix.ember-try-scenario }} --skip-cleanup"
+      - name: Run Tests
+        run: npx firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project "./node_modules/.bin/ember try:one ${{ matrix.try-scenario }} --skip-cleanup"

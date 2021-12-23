@@ -1,7 +1,9 @@
 import { action } from '@ember/object';
+import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import Controller from '@ember/controller';
 import EmberArray from '@ember/array';
+import Store from '@ember-data/store';
 
 import firebase from 'firebase/compat/app';
 
@@ -9,6 +11,9 @@ import { collection, query, where } from 'ember-cloud-firestore-adapter/firebase
 import UserModel from '../models/user';
 
 export default class FeaturesController extends Controller {
+  @service
+  public declare store: Store;
+
   @tracked
   public users: UserModel[] | EmberArray<UserModel> = [];
 

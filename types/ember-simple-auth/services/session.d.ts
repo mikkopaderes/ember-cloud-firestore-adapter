@@ -62,5 +62,7 @@ declare module 'ember-simple-auth/services/session' {
     invalidate(...args: any): Promise<void>;
 
     authorize(...args: any[]): Promise<void>;
+
+    setup(): Promise<unknown>;
   }
 }

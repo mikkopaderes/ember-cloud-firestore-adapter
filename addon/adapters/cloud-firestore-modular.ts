@@ -10,7 +10,6 @@ import Adapter from '@ember-data/adapter';
 import DS from 'ember-data';
 import RSVP from 'rsvp';
 import Store from '@ember-data/store';
-import classic from 'ember-classic-decorator';
 
 import {
   CollectionReference,
@@ -71,7 +70,6 @@ interface HasManyRelationshipMeta {
   };
 }
 
-@classic
 export default class CloudFirestoreModularAdapter extends Adapter {
   @service('-firebase')
   declare protected firebase: FirebaseService;
@@ -86,8 +84,9 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     return fastboot && fastboot.isFastBoot;
   }
 
-  public init(...args: unknown[]): void {
-    this._super(...args);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public constructor(...args: any[]) {
+    super(...args);
 
     this.realtimeTracker = new RealtimeTracker(getOwner(this).lookup('service:store'));
   }
