@@ -1,19 +1,19 @@
 import { action } from '@ember/object';
 import Controller from '@ember/controller';
+
 import {
   query,
   orderBy,
   limit,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
-
-import type firebase from 'firebase/compat/app';
+import { CollectionReference } from 'firebase/firestore';
 
 export default class QueryController extends Controller {
   @action
   public async handleLoadMoreClick(): Promise<void> {
     this.model.set(
       'query.filter',
-      (reference: firebase.firestore.CollectionReference) => query(reference, orderBy('name'), limit(5)),
+      (reference: CollectionReference) => query(reference, orderBy('name'), limit(5)),
     );
 
     await this.model.update();
