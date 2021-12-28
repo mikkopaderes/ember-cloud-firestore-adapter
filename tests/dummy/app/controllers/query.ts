@@ -1,12 +1,13 @@
 import { action } from '@ember/object';
 import Controller from '@ember/controller';
 
+import { CollectionReference } from 'firebase/firestore';
+
 import {
   query,
   orderBy,
   limit,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
-import { CollectionReference } from 'firebase/firestore';
 
 export default class QueryController extends Controller {
   @action

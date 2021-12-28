@@ -3,12 +3,13 @@ import ArrayProxy from '@ember/array/proxy';
 import Route from '@ember/routing/route';
 import Store from '@ember-data/store';
 
+import { CollectionReference } from 'firebase/firestore';
+
 import {
   query,
   orderBy,
   limit,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
-import { CollectionReference } from 'firebase/firestore';
 
 import GroupModel from '../models/group';
 
