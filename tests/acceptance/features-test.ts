@@ -86,7 +86,7 @@ module('Acceptance | features', function (hooks) {
 
     const createdRecord = await db.doc('posts/new_post').get();
 
-    assert.equal(createdRecord.get('publisher').path, 'publishers/user_a');
+    assert.strictEqual(createdRecord.get('publisher').path, 'publishers/user_a');
   });
 
   test('should update record', async function (assert) {

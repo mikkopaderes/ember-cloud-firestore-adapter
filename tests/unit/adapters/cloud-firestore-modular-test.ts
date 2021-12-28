@@ -40,7 +40,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       const result = adapter.generateIdForRecord({}, 'foo');
 
       // Assert
-      assert.equal(typeof result, 'string');
+      assert.strictEqual(typeof result, 'string');
     });
   });
 
@@ -58,7 +58,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       const result = await adapter.createRecord(store, modelClass, snapshot);
 
       // Assert
-      assert.equal(result, 'foo');
+      assert.strictEqual(result, 'foo');
       assert.ok(updateRecordStub.calledWithExactly(store, modelClass, snapshot));
     });
   });
@@ -87,8 +87,8 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
 
       const userA = await getDoc(doc(db, 'users/user_a'));
 
-      assert.equal(userA.get('age'), 50);
-      assert.equal(userA.get('username'), 'user_a');
+      assert.strictEqual(userA.get('age'), 50);
+      assert.strictEqual(userA.get('username'), 'user_a');
     });
 
     test('should update record in a custom collection and resolve with the updated resource', async function (assert) {
@@ -315,7 +315,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         await adapter.findRecord(store, modelClass, modelId, snapshot);
       } catch (error) {
         // Assert
-        assert.equal(error.message, 'Record user_100 for model type user doesn\'t exist');
+        assert.strictEqual(error.message, 'Record user_100 for model type user doesn\'t exist');
       }
     });
   });
@@ -373,8 +373,8 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       const result = await adapter.findHasMany(store, snapshot, url, relationship);
 
       // Assert
-      assert.equal(result[0].id, 'post_a');
-      assert.equal(result[0].title, 'post_a');
+      assert.strictEqual(result[0].id, 'post_a');
+      assert.strictEqual(result[0].title, 'post_a');
       assert.ok(determineRelationshipTypeStub.calledWithExactly(relationship, store));
       assert.ok(inverseForStub.calledWithExactly(relationship.key, store));
     });
@@ -449,8 +449,8 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       const result = await adapter.findHasMany(store, snapshot, url, relationship);
 
       // Assert
-      assert.equal(result.length, 1);
-      assert.equal(result[0].id, 'post_a');
+      assert.strictEqual(result.length, 1);
+      assert.strictEqual(result[0].id, 'post_a');
       assert.ok(determineRelationshipTypeStub.calledWithExactly(relationship, store));
       assert.ok(inverseForStub.calledWithExactly(relationship.key, store));
     });
@@ -481,8 +481,8 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       const result = await adapter.findHasMany(store, snapshot, url, relationship);
 
       // Assert
-      assert.equal(result[0].id, 'post_b');
-      assert.equal(result[0].title, 'post_b');
+      assert.strictEqual(result[0].id, 'post_b');
+      assert.strictEqual(result[0].title, 'post_b');
     });
   });
 
