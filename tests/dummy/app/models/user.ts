@@ -19,9 +19,6 @@ export default class UserModel extends Model {
 
   @hasMany('post')
   declare public posts: DS.PromiseManyArray<PostModel>;
-
-  @hasMany('user')
-  declare public users: DS.PromiseManyArray<UserModel>;
 }
 
 // DO NOT DELETE: this is how TypeScript knows how to look up your models.
