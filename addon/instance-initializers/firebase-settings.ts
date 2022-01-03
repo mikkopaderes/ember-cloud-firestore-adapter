@@ -28,7 +28,9 @@ function setupFirestore(app: firebase.app.App, config: FirestoreAddonConfig) {
   if (config.emulator) {
     const { hostname, port, options } = config.emulator;
 
-    db.useEmulator(hostname, port, options);
+    if ((db as any)._delegate._settings.host === 'firestore.googleapis.com') {
+      db.useEmulator(hostname, port, options);
+    }
   }
 }
 
