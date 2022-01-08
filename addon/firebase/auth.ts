@@ -2,6 +2,8 @@
 // DO NOT MODIFY. THIS IS AUTO GENERATED.
 import {
   applyActionCode as _applyActionCode,
+  browserLocalPersistence as _browserLocalPersistence,
+  browserSessionPersistence as _browserSessionPersistence,
   checkActionCode as _checkActionCode,
   confirmPasswordReset as _confirmPasswordReset,
   connectAuthEmulator as _connectAuthEmulator,
@@ -14,6 +16,7 @@ import {
   getIdTokenResult as _getIdTokenResult,
   getMultiFactorResolver as _getMultiFactorResolver,
   getRedirectResult as _getRedirectResult,
+  indexedDBLocalPersistence as _indexedDBLocalPersistence,
   initializeAuth as _initializeAuth,
   isSignInWithEmailLink as _isSignInWithEmailLink,
   linkWithCredential as _linkWithCredential,
@@ -54,6 +57,8 @@ import {
 } from 'firebase/auth';
 
 let __applyActionCode: typeof _applyActionCode = _applyActionCode;
+let __browserLocalPersistence: typeof _browserLocalPersistence = _browserLocalPersistence;
+let __browserSessionPersistence: typeof _browserSessionPersistence = _browserSessionPersistence;
 let __checkActionCode: typeof _checkActionCode = _checkActionCode;
 let __confirmPasswordReset: typeof _confirmPasswordReset = _confirmPasswordReset;
 let __connectAuthEmulator: typeof _connectAuthEmulator = _connectAuthEmulator;
@@ -66,6 +71,7 @@ let __getIdToken: typeof _getIdToken = _getIdToken;
 let __getIdTokenResult: typeof _getIdTokenResult = _getIdTokenResult;
 let __getMultiFactorResolver: typeof _getMultiFactorResolver = _getMultiFactorResolver;
 let __getRedirectResult: typeof _getRedirectResult = _getRedirectResult;
+let __indexedDBLocalPersistence: typeof _indexedDBLocalPersistence = _indexedDBLocalPersistence;
 let __initializeAuth: typeof _initializeAuth = _initializeAuth;
 let __isSignInWithEmailLink: typeof _isSignInWithEmailLink = _isSignInWithEmailLink;
 let __linkWithCredential: typeof _linkWithCredential = _linkWithCredential;
@@ -107,6 +113,8 @@ let __verifyPasswordResetCode: typeof _verifyPasswordResetCode = _verifyPassword
 if (typeof FastBoot !== 'undefined') {
   ({
     applyActionCode: __applyActionCode,
+    browserLocalPersistence: __browserLocalPersistence,
+    browserSessionPersistence: __browserSessionPersistence,
     checkActionCode: __checkActionCode,
     confirmPasswordReset: __confirmPasswordReset,
     connectAuthEmulator: __connectAuthEmulator,
@@ -119,6 +127,7 @@ if (typeof FastBoot !== 'undefined') {
     getIdTokenResult: __getIdTokenResult,
     getMultiFactorResolver: __getMultiFactorResolver,
     getRedirectResult: __getRedirectResult,
+    indexedDBLocalPersistence: __indexedDBLocalPersistence,
     initializeAuth: __initializeAuth,
     isSignInWithEmailLink: __isSignInWithEmailLink,
     linkWithCredential: __linkWithCredential,
@@ -160,6 +169,8 @@ if (typeof FastBoot !== 'undefined') {
 }
 
 export const applyActionCode = __applyActionCode;
+export const browserLocalPersistence = __browserLocalPersistence;
+export const browserSessionPersistence = __browserSessionPersistence;
 export const checkActionCode = __checkActionCode;
 export const confirmPasswordReset = __confirmPasswordReset;
 export const connectAuthEmulator = __connectAuthEmulator;
@@ -172,6 +183,7 @@ export const getIdToken = __getIdToken;
 export const getIdTokenResult = __getIdTokenResult;
 export const getMultiFactorResolver = __getMultiFactorResolver;
 export const getRedirectResult = __getRedirectResult;
+export const indexedDBLocalPersistence = __indexedDBLocalPersistence;
 export const initializeAuth = __initializeAuth;
 export const isSignInWithEmailLink = __isSignInWithEmailLink;
 export const linkWithCredential = __linkWithCredential;
