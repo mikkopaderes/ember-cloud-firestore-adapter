@@ -2,26 +2,7 @@ import * as fs from 'fs';
 
 import { keys } from 'ts-transformer-keys';
 
-async function buildFastBootWrappers(
-  moduleName: string,
-  moduleExports: string[],
-  outputFileName: string,
-  moduleExportsToSkip: string[] = [],
-): Promise<void> {
-  const module = await import(moduleName);
-  const outputExports = Object.keys(module).filter((key) => {
-    if (
-      typeof module[key] === 'function'
-      && moduleExports.includes(key)
-      && key.charAt(0) === key.charAt(0).toLowerCase()
-      && !moduleExportsToSkip.includes(key)
-    ) {
-      return true;
-    }
-
-    return false;
-  });
-
+function createFile(outputExports: string[], outputFileName: string, moduleName: string): void {
   fs.writeFile(
     `./addon/firebase/${outputFileName}.ts`,
     `/* eslint-disable max-len */
@@ -43,6 +24,31 @@ ${outputExports.map((api) => `export const ${api} = __${api};`).join('\n')}\n`,
       // do nothing
     },
   );
+}
+
+async function buildFastBootWrappers(
+  moduleName: string,
+  moduleExports: string[],
+  outputFileName: string,
+  moduleExportsToSkip: string[] = [],
+): Promise<void> {
+  const module = await import(moduleName);
+  const outputExports = Object.keys(module).filter((key) => {
+    if (
+      typeof module[key] === 'function'
+      && moduleExports.includes(key)
+      && key.charAt(0) === key.charAt(0).toLowerCase()
+      && !moduleExportsToSkip.includes(key)
+    ) {
+      return true;
+    }
+
+    return false;
+  });
+
+  fs.mkdir('./addon/firebase', { recursive: true }, () => {
+    createFile(outputExports, outputFileName, moduleName);
+  });
 }
 
 buildFastBootWrappers('firebase/app', keys<typeof import('firebase/app')>(), 'app');

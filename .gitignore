@@ -28,3 +28,6 @@ vim.exe.stackdump
 /.node_modules.ember-try/
 /bower.json.ember-try
 /package.json.ember-try
+
+# addon auto generated files
+/addon/firebase/
