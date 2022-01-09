@@ -16,8 +16,8 @@
     "test": "tests"
   },
   "scripts": {
-    "build:wrappers": "ttsc -p tsconfig.build-wrappers.json && node ./scripts/build-wrappers.js && rimraf ./scripts/build-wrappers.js",
     "build": "npm run build:wrappers && ember build --environment=production",
+    "build:wrappers": "ttsc -p tsconfig.build-wrappers.json && node ./scripts/build-wrappers.js && rimraf ./scripts/build-wrappers.js",
     "lint": "npm-run-all --aggregate-output --continue-on-error --parallel \"lint:!(fix)\"",
     "lint:fix": "npm-run-all --aggregate-output --continue-on-error --parallel lint:*:fix",
     "lint:hbs": "ember-template-lint .",
@@ -25,10 +25,10 @@
     "lint:js": "eslint . --cache",
     "lint:js:fix": "eslint . --fix",
     "start": "npm run build:wrappers && firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember serve\"",
-    "test": "npm-run-all build:wrappers lint test:*",
-    "test:ember": "firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember test\"",
-    "test:ember-compatibility": "firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember try:each\"",
-    "prepack": "ember ts:precompile",
+    "test": "npm-run-all lint test:*",
+    "test:ember": "npm run build:wrappers && firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember test\"",
+    "test:ember-compatibility": "npm run build:wrappers && firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember try:each\"",
+    "prepack": "npm run build:wrappers && ember ts:precompile",
     "postpack": "ember ts:clean"
   },
   "dependencies": {
