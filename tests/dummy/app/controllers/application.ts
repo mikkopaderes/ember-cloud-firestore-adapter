@@ -14,7 +14,7 @@ export default class ApplicationController extends Controller {
   @service
   declare public session: SessionService;
 
-  public updateRecordParam: string = Math.random().toString(32).slice(2).substr(0, 5);
+  public updateRecordParam: string = Math.random().toString(32).slice(2).substring(0, 5);
 
   @action
   login(): void {

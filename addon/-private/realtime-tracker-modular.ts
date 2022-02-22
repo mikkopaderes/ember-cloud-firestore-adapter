@@ -148,7 +148,7 @@ export default class RealtimeTracker {
     recordArray: DS.AdapterPopulatedRecordArray<unknown>,
     queryId?: string,
   ): void {
-    const finalQueryId = queryId || Math.random().toString(32).slice(2).substr(0, 5);
+    const finalQueryId = queryId || Math.random().toString(32).slice(2).substring(0, 5);
 
     if (!Object.prototype.hasOwnProperty.call(this.queryTracker, finalQueryId)) {
       this.queryTracker[finalQueryId] = {
