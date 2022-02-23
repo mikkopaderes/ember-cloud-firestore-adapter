@@ -35,6 +35,7 @@ interface RelationshipDefinition {
   type: string;
   options: {
     buildReference?(db: firebase.firestore.Firestore): CollectionReference
+    polymorphic?: boolean;
   };
 }
 
@@ -130,7 +131,9 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
       const db = this.firebase.firestore();
       const docId = json[relationship.key] as string;
 
-      if (relationship.options.buildReference) {
+      if (relationship.options.polymorphic) {
+        this.serializePolymorphicType(snapshot, json, relationship);
+      } else if (relationship.options.buildReference) {
         json[relationship.key] = doc(relationship.options.buildReference(db), docId);
       } else {
         const collectionName = buildCollectionName(relationship.type);
@@ -138,6 +141,25 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
 
         json[relationship.key] = doc(db, path);
       }
+    }
+  }
+
+  public serializePolymorphicType(
+    snapshot: DS.Snapshot,
+    json: Record<string, unknown>,
+    relationship: RelationshipDefinition,
+  ): void {
+    const db = this.firebase.firestore();
+    const { key } = relationship;
+    const belongsTo = snapshot.belongsTo(key);
+
+    if (isNone(belongsTo)) {
+      json[key] = null;
+    } else {
+      const collectionName = buildCollectionName(belongsTo.modelName as string);
+      const belongsToId = snapshot.belongsTo(key, { id: true });
+      const path = `${collectionName}/${belongsToId}`;
+      json[key] = db.doc(path);
     }
   }
 

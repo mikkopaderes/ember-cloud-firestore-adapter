@@ -67,6 +67,23 @@ module('Unit | Serializer | cloud-firestore modular', function (hooks) {
         },
       });
     });
+
+    test('should serialize polymorphic relationships', function (assert) {
+      // Arrange
+      const store = this.owner.lookup('service:store') as Store;
+      const user = store.createRecord('user', {
+        id: 'user_a',
+      })
+      const event = store.createRecord('event', {
+        owner: user,
+      })
+
+      // Act
+      const result: any = event.serialize();
+
+      // Assert
+      assert.strictEqual(result?.owner?.path, 'users/user_a');
+    });
   });
 
   // NOTE: Other public methods are hard to test because they rely on private APIs from ember-data
