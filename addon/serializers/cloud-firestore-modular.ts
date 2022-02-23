@@ -103,12 +103,20 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
     return super.extractRelationships(modelClass, newResourceHash);
   }
 
-  public extractPolymorphicRelationship(relationshipModelName: string, relationshipHash: Record<string, unknown>, relationshipOptions: Record<string, unknown>): Record<string, unknown> {
+  public extractPolymorphicRelationship(
+    relationshipModelName: string,
+    relationshipHash: Record<string, unknown>,
+    relationshipOptions: Record<string, unknown>,
+  ): Record<string, unknown> {
     if (relationshipHash) {
       const [collectionName] = (relationshipHash.path as string).split('/');
       relationshipModelName = dasherize(singularize(collectionName));
     }
-    return super.extractPolymorphicRelationship(relationshipModelName, relationshipHash, relationshipOptions);
+    return super.extractPolymorphicRelationship(
+      relationshipModelName,
+      relationshipHash,
+      relationshipOptions,
+    );
   }
 
   public serializeBelongsTo(

@@ -36,9 +36,7 @@ module('Unit | Serializer | cloud-firestore modular', function (hooks) {
     test('should extract polymorphic relationships', function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store') as Store;
-      const serializer = this.owner.lookup(
-        'serializer:cloud-firestore-modular'
-      ) as CloudFirestoreSerializer;
+      const serializer = this.owner.lookup('serializer:cloud-firestore-modular') as CloudFirestoreSerializer;
       const payload = {
         id: 'event_a',
         owner: {
