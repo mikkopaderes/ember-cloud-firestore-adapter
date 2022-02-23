@@ -6,15 +6,16 @@
 */
 
 import DS from 'ember-data';
-import Model, { attr, hasMany } from '@ember-data/model';
+import { attr, hasMany } from '@ember-data/model';
 
 import { Query } from 'firebase/firestore';
 
 import { limit, query } from 'ember-cloud-firestore-adapter/firebase/firestore';
+import OwnerModel from './owner';
 import PostModel from './post';
 import UserModel from './user';
 
-export default class GroupModel extends Model {
+export default class GroupModel extends OwnerModel {
   @attr('string')
   declare public name: string;
 

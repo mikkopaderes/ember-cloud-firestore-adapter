@@ -10,6 +10,8 @@ import { isNone } from '@ember/utils';
 import DS from 'ember-data';
 import JSONSerializer from '@ember-data/serializer/json';
 import Store from '@ember-data/store';
+import { singularize } from 'ember-inflector';
+import { dasherize } from '@ember/string';
 
 import { CollectionReference, DocumentReference } from 'firebase/firestore';
 import firebase from 'firebase/compat/app';
@@ -42,6 +44,9 @@ interface ModelClass {
   eachRelationship(callback: (name: string, descriptor: {
     kind: string,
     type: string,
+    options: {
+      polymorphic?: boolean;
+    };
   }) => void): void;
 }
 
@@ -70,9 +75,11 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
     modelClass.eachRelationship((name, descriptor) => {
       if (descriptor.kind === 'belongsTo') {
         if (resourceHash[name]) {
-          const data = resourceHash[name] as CollectionReference;
+          if (!descriptor.options.polymorphic) {
+            const data = resourceHash[name] as CollectionReference;
 
-          links[name] = data.path;
+            links[name] = data.path;
+          }
         }
       } else {
         const cardinality = modelClass.determineRelationshipType(descriptor, this.store);
@@ -94,6 +101,14 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
     newResourceHash.links = links;
 
     return super.extractRelationships(modelClass, newResourceHash);
+  }
+
+  public extractPolymorphicRelationship(relationshipModelName: string, relationshipHash: Record<string, unknown>, relationshipOptions: Record<string, unknown>): Record<string, unknown> {
+    if (relationshipHash) {
+      const [collectionName] = (relationshipHash.path as string).split('/');
+      relationshipModelName = dasherize(singularize(collectionName));
+    }
+    return super.extractPolymorphicRelationship(relationshipModelName, relationshipHash, relationshipOptions);
   }
 
   public serializeBelongsTo(

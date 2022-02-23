@@ -5,12 +5,13 @@
 */
 
 import DS from 'ember-data';
-import Model, { attr, hasMany } from '@ember-data/model';
+import { attr, hasMany } from '@ember-data/model';
 
+import OwnerModel from './owner';
 import GroupModel from './group';
 import PostModel from './post';
 
-export default class UserModel extends Model {
+export default class UserModel extends OwnerModel {
   @attr('string')
   declare public name: string;
 

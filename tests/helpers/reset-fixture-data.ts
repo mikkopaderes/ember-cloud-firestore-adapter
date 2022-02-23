@@ -50,6 +50,10 @@ export default async function resetFixtureData(db: firebase.firestore.Firestore)
       author: db.doc('users/user_a'),
       group: db.doc('groups/group_a'),
     },
+    'events/event_a': {
+      body: 'event_a',
+      owner: db.doc('users/user_a'),
+    },
   };
 
   const keys = Object.keys(testData) as Array<keyof unknown>;
