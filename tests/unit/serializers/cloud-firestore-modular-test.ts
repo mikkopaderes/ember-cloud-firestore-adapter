@@ -1,8 +1,5 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import Store from '@ember-data/store';
-
-import CloudFirestoreSerializer from 'ember-cloud-firestore-adapter/serializers/cloud-firestore-modular';
 
 module('Unit | Serializer | cloud-firestore modular', function (hooks) {
   setupTest(hooks);
@@ -35,8 +32,8 @@ module('Unit | Serializer | cloud-firestore modular', function (hooks) {
 
     test('should extract polymorphic relationships', function (assert) {
       // Arrange
-      const store = this.owner.lookup('service:store') as Store;
-      const serializer = this.owner.lookup('serializer:cloud-firestore-modular') as CloudFirestoreSerializer;
+      const store = this.owner.lookup('service:store');
+      const serializer = this.owner.lookup('serializer:cloud-firestore-modular');
       const payload = {
         id: 'event_a',
         owner: {
@@ -70,13 +67,13 @@ module('Unit | Serializer | cloud-firestore modular', function (hooks) {
 
     test('should serialize polymorphic relationships', function (assert) {
       // Arrange
-      const store = this.owner.lookup('service:store') as Store;
+      const store = this.owner.lookup('service:store');
       const user = store.createRecord('user', {
         id: 'user_a',
-      })
+      });
       const event = store.createRecord('event', {
         owner: user,
-      })
+      });
 
       // Act
       const result: any = event.serialize();
