@@ -23,6 +23,8 @@ export default class GroupModel extends Model {
 
   @hasMany('post', {
     // @ts-ignore: TODO - find a way to set custom property in RelationshipOptions interface
+    isRealtime: true,
+
     filter(reference: Query) {
       return query(reference, limit(1));
     },
