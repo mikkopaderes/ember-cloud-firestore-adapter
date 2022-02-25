@@ -273,12 +273,16 @@ export default class FirestoreDataManager extends Service {
     recordArray: DS.AdapterPopulatedRecordArray<unknown>,
   ): void {
     // Schedule for next runloop to avoid race condition errors. This can happen when a listener
-    // exists for a record that's part of the hasMany array. When that happens, doing a reload
-    // in the hasMany array while the record is being unloaded from store can cause an error.
+    // exists for a record that's part of the query array. When that happens, doing an update
+    // in the query array while the record is being unloaded from store can cause an error.
     // To avoid the issue, we run the reload in the next runloop so that we allow the unload
     // to happen first.
     next(() => {
-      recordArray.update().then(() => this.queryListeners[queryId]())
+      const unsubscribe = this.queryListeners[queryId];
+
+      // New listener will be set after the update
+      delete this.queryListeners[queryId];
+      recordArray.update().then(() => unsubscribe());
     });
   }
 
@@ -290,8 +294,11 @@ export default class FirestoreDataManager extends Service {
     // to happen first.
     next(() => {
       const hasManyRef = this.store.peekRecord(config.modelName, config.id).hasMany(config.field);
+      const unsubscribe = this.hasManyListeners[queryId];
 
-      hasManyRef.reload().then(() => this.hasManyListeners[queryId]());
+      // New listener will be set after the reload
+      delete this.hasManyListeners[queryId];
+      hasManyRef.reload().then(() => unsubscribe());
     });
   }
 
