@@ -30,10 +30,6 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
     await resetFixtureData(db);
   });
 
-  hooks.afterEach(async function () {
-    await resetFixtureData(db);
-  });
-
   module('findRecord()', function () {
     test('should return fetched record', async function (assert) {
       // Arrange
