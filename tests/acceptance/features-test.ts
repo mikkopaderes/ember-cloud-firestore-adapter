@@ -17,10 +17,6 @@ module('Acceptance | features', function (hooks) {
     await resetFixtureData(db);
   });
 
-  hooks.afterEach(async function () {
-    await resetFixtureData(db);
-  });
-
   test('should create record with ID', async function (assert) {
     assert.expect(3);
 

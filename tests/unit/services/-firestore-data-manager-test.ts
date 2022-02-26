@@ -3,6 +3,7 @@ import { setupTest } from 'ember-qunit';
 import { waitUntil } from '@ember/test-helpers';
 // eslint-disable-next-line ember/use-ember-data-rfc-395-imports
 import DS from 'ember-data';
+import RSVP from 'rsvp';
 import Store from '@ember-data/store';
 
 import firebase from 'firebase/compat/app';
@@ -26,10 +27,6 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
   hooks.beforeEach(async function () {
     db = this.owner.lookup('service:-firebase').firestore();
 
-    await resetFixtureData(db);
-  });
-
-  hooks.afterEach(async function () {
     await resetFixtureData(db);
   });
 
@@ -242,7 +239,9 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
         queryRef,
         modelName: 'user',
         referenceKeyName: 'referenceTo',
-        recordArray: {} as DS.AdapterPopulatedRecordArray<unknown>,
+        recordArray: {
+          update: () => DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
+        } as unknown as DS.AdapterPopulatedRecordArray<unknown>,
       };
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
@@ -265,7 +264,9 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
         queryRef,
         modelName: 'user',
         referenceKeyName: 'referenceTo',
-        recordArray: {} as DS.AdapterPopulatedRecordArray<unknown>,
+        recordArray: {
+          update: () => DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
+        } as unknown as DS.AdapterPopulatedRecordArray<unknown>,
       };
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
@@ -290,12 +291,11 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
         modelName: 'user',
         referenceKeyName: 'referenceTo',
         queryId: 'test',
-        recordArray: {} as DS.AdapterPopulatedRecordArray<unknown>,
+        recordArray: {
+          update: () => DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
+        } as unknown as DS.AdapterPopulatedRecordArray<unknown>,
       };
-      const updateStub = sinon.stub().returns(Promise.resolve());
-
-      config.recordArray.update = updateStub;
-
+      const updateSpy = sinon.spy(config.recordArray, 'update');
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
       ) as FirestoreDataManager;
@@ -305,7 +305,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       await updateDoc(docRef, { name: 'new_user_a' });
 
       // Assert
-      await waitUntil(() => updateStub.calledOnce);
+      await waitUntil(() => updateSpy.calledOnce);
       assert.ok(true);
     });
   });

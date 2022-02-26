@@ -24,7 +24,6 @@ module('Unit | Authenticator | firebase', function (hooks) {
 
   hooks.afterEach(async function () {
     await signOut(auth);
-    await resetFixtureData(db);
   });
 
   module('authenticate()', function () {

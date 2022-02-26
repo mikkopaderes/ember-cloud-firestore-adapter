@@ -17,10 +17,6 @@ module('Unit | Transform | timestamp', function (hooks) {
     await resetFixtureData(db);
   });
 
-  hooks.afterEach(async function () {
-    await resetFixtureData(db);
-  });
-
   module('deserialize()', function () {
     test('should return result of value.toDate when value is an instance of firebase.firestore.Timestamp', async function (assert) {
       // Arrange

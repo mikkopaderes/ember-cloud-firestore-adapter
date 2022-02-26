@@ -27,10 +27,6 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     await resetFixtureData(db);
   });
 
-  hooks.afterEach(async function () {
-    await resetFixtureData(db);
-  });
-
   module('function: generateIdForRecord', function () {
     test('should generate ID for record', function (assert) {
       // Arrange
