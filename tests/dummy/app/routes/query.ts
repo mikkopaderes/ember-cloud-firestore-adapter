@@ -6,9 +6,9 @@ import Store from '@ember-data/store';
 import { CollectionReference } from 'firebase/firestore';
 
 import {
+  limit,
   query,
   orderBy,
-  limit,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
 
 import GroupModel from '../models/group';
@@ -19,6 +19,7 @@ export default class QueryRoute extends Route {
 
   public async model(): Promise<ArrayProxy<GroupModel>> {
     return this.store.query('group', {
+      isRealtime: true,
       filter(reference: CollectionReference) {
         return query(reference, orderBy('name'), limit(1));
       },

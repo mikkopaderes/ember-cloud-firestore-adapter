@@ -22,6 +22,8 @@ import firebase from 'firebase/compat/app';
 import {
   collection,
   doc,
+  getDoc,
+  getDocs,
   query,
   where,
   writeBatch,
@@ -157,7 +159,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
         const docRef = doc(colRef, id);
         const docSnapshot = snapshot.adapterOptions?.isRealtime && !this.isFastBoot
           ? await this.firestoreDataManager.findRecordRealtime(type.modelName, docRef)
-          : await this.firestoreDataManager.findRecord(docRef);
+          : await getDoc(docRef);
 
         if (docSnapshot.exists()) {
           resolve(flattenDocSnapshot(docSnapshot));
@@ -182,7 +184,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
         const colRef = collection(db, buildCollectionName(type.modelName));
         const querySnapshot = snapshotRecordArray?.adapterOptions?.isRealtime && !this.isFastBoot
           ? await this.firestoreDataManager.findAllRealtime(type.modelName, colRef)
-          : await this.firestoreDataManager.findAll(colRef);
+          : await getDocs(colRef);
 
         const result = querySnapshot.docs.map((docSnapshot) => flattenDocSnapshot(docSnapshot));
 
@@ -212,7 +214,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
         };
         const docSnapshots = queryOption.isRealtime && !this.isFastBoot
           ? await this.firestoreDataManager.queryRealtime(config)
-          : await this.firestoreDataManager.query(config);
+          : await this.firestoreDataManager.queryWithReferenceTo(queryRef, this.referenceKeyName);
 
         const result = docSnapshots.map((docSnapshot) => (flattenDocSnapshot(docSnapshot)));
 
@@ -241,7 +243,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
         const modelName = relationship.type;
         const docSnapshot = relationship.options.isRealtime && !this.isFastBoot
           ? await this.firestoreDataManager.findRecordRealtime(modelName, docRef)
-          : await this.firestoreDataManager.findRecord(docRef);
+          : await getDoc(docRef);
 
         if (docSnapshot.exists()) {
           resolve(flattenDocSnapshot(docSnapshot));
@@ -272,7 +274,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
         };
         const documentSnapshots = relationship.options.isRealtime && !this.isFastBoot
           ? await this.firestoreDataManager.findHasManyRealtime(config)
-          : await this.firestoreDataManager.query(config);
+          : await this.firestoreDataManager.queryWithReferenceTo(queryRef, this.referenceKeyName);
 
         const result = documentSnapshots.map((docSnapshot) => (flattenDocSnapshot(docSnapshot)));
 
