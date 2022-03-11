@@ -30,23 +30,6 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
     await resetFixtureData(db);
   });
 
-  module('findRecord()', function () {
-    test('should return fetched record', async function (assert) {
-      // Arrange
-      const docRef = doc(db, 'users', 'user_a');
-      const firestoreDataManager = this.owner.lookup(
-        'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
-
-      // Act
-      const result = await firestoreDataManager.findRecord(docRef);
-
-      // Assert
-      assert.equal(result.id, 'user_a');
-      assert.deepEqual(result.data(), { name: 'user_a', age: 15, username: 'user_a' });
-    });
-  });
-
   module('findRecordRealtime()', function () {
     test('should return fetched record', async function (assert) {
       // Arrange
@@ -101,24 +84,6 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       // Assert
       await waitUntil(() => unloadRecordSpy.called);
       assert.ok(true);
-    });
-  });
-
-  module('findAll()', function () {
-    test('should return fetched records', async function (assert) {
-      // Arrange
-      const colRef = collection(db, 'users');
-      const firestoreDataManager = this.owner.lookup(
-        'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
-
-      // Act
-      const result = await firestoreDataManager.findAll(colRef);
-
-      // Assert
-      assert.equal(result.size, 3);
-      assert.equal(result.docs[0].id, 'user_a');
-      assert.deepEqual(result.docs[0].data(), { name: 'user_a', age: 15, username: 'user_a' });
     });
   });
 
@@ -179,54 +144,6 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       // Assert
       await waitUntil(() => unloadRecordSpy.calledOnce);
       assert.ok(true);
-    });
-  });
-
-  module('query()', function () {
-    test('should return fetched records', async function (assert) {
-      // Arrange
-      const colRef = collection(db, 'users');
-      const queryRef = query(colRef);
-      const config = {
-        queryRef,
-        modelName: 'user',
-        referenceKeyName: 'referenceTo',
-        recordArray: {} as DS.AdapterPopulatedRecordArray<unknown>,
-      };
-      const firestoreDataManager = this.owner.lookup(
-        'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
-
-      // Act
-      const result = await firestoreDataManager.query(config);
-
-      // Assert
-      assert.equal(result.length, 3);
-      assert.equal(result[0].id, 'user_a');
-      assert.deepEqual(result[0].data(), { name: 'user_a', age: 15, username: 'user_a' });
-    });
-
-    test('should return fetched records with referenceTo indicators', async function (assert) {
-      // Arrange
-      const colRef = collection(db, 'users/user_a/groups');
-      const queryRef = query(colRef);
-      const config = {
-        queryRef,
-        modelName: 'group',
-        referenceKeyName: 'referenceTo',
-        recordArray: {} as DS.AdapterPopulatedRecordArray<unknown>,
-      };
-      const firestoreDataManager = this.owner.lookup(
-        'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
-
-      // Act
-      const result = await firestoreDataManager.query(config);
-
-      // Assert
-      assert.equal(result.length, 1);
-      assert.equal(result[0].id, 'group_a');
-      assert.deepEqual(result[0].data(), { name: 'group_a' });
     });
   });
 
@@ -394,6 +311,44 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       // Assert
       await waitUntil(() => reloadStub.calledOnce);
       assert.ok(true);
+    });
+  });
+
+  module('queryWithReferenceTo()', function () {
+    test('should return fetched records', async function (assert) {
+      // Arrange
+      const colRef = collection(db, 'users');
+      const queryRef = query(colRef);
+      const referenceKeyName = 'referenceTo';
+      const firestoreDataManager = this.owner.lookup(
+        'service:-firestore-data-manager',
+      ) as FirestoreDataManager;
+
+      // Act
+      const result = await firestoreDataManager.queryWithReferenceTo(queryRef, referenceKeyName);
+
+      // Assert
+      assert.equal(result.length, 3);
+      assert.equal(result[0].id, 'user_a');
+      assert.deepEqual(result[0].data(), { name: 'user_a', age: 15, username: 'user_a' });
+    });
+
+    test('should return fetched records with referenceTo indicators', async function (assert) {
+      // Arrange
+      const colRef = collection(db, 'users/user_a/groups');
+      const queryRef = query(colRef);
+      const referenceKeyName = 'referenceTo';
+      const firestoreDataManager = this.owner.lookup(
+        'service:-firestore-data-manager',
+      ) as FirestoreDataManager;
+
+      // Act
+      const result = await firestoreDataManager.queryWithReferenceTo(queryRef, referenceKeyName);
+
+      // Assert
+      assert.equal(result.length, 1);
+      assert.equal(result[0].id, 'group_a');
+      assert.deepEqual(result[0].data(), { name: 'group_a' });
     });
   });
 });
