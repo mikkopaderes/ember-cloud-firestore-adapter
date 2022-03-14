@@ -18,6 +18,7 @@ import {
   WriteBatch,
 } from 'firebase/firestore';
 import firebase from 'firebase/compat/app';
+import { FirebaseError } from 'firebase/app';
 
 import {
   collection,
@@ -164,7 +165,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
         if (docSnapshot.exists()) {
           resolve(flattenDocSnapshot(docSnapshot));
         } else {
-          reject(new Error(`Record ${id} for model type ${type.modelName} doesn't exist`));
+          reject(new FirebaseError('not-found', `Record ${id} for model type ${type.modelName} doesn't exist`));
         }
       } catch (error) {
         reject(error);
@@ -248,7 +249,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
         if (docSnapshot.exists()) {
           resolve(flattenDocSnapshot(docSnapshot));
         } else {
-          reject(new Error(`Record ${id} for model type ${modelName} doesn't exist`));
+          reject(new FirebaseError('not-found', `Record ${id} for model type ${modelName} doesn't exist`));
         }
       } catch (error) {
         reject(error);
