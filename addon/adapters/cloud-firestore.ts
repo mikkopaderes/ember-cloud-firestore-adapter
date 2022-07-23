@@ -15,6 +15,7 @@ import FirebaseService from 'ember-cloud-firestore-adapter/services/-firebase';
 import firebase from 'firebase/compat/app';
 
 import { collection, doc } from 'ember-cloud-firestore-adapter/firebase/firestore';
+import { AdapterRecordNotFoundError } from 'ember-cloud-firestore-adapter/utils/custom-errors';
 import RealtimeTracker from 'ember-cloud-firestore-adapter/-private/realtime-tracker';
 import buildCollectionName from 'ember-cloud-firestore-adapter/-private/build-collection-name';
 import flattenDocSnapshot from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
@@ -292,7 +293,7 @@ export default class CloudFirestoreAdapter extends Adapter {
 
           resolve(flattenDocSnapshot(docSnapshot));
         } else {
-          reject(new Error(`Record ${id} for model type ${type.modelName} doesn't exist`));
+          reject(new AdapterRecordNotFoundError(`Record ${id} for model type ${type.modelName} doesn't exist`));
         }
 
         unsubscribe();

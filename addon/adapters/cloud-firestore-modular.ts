@@ -28,6 +28,7 @@ import {
   where,
   writeBatch,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
+import { AdapterRecordNotFoundError } from 'ember-cloud-firestore-adapter/utils/custom-errors';
 import FirebaseService from 'ember-cloud-firestore-adapter/services/-firebase';
 import FirestoreDataManager from 'ember-cloud-firestore-adapter/services/-firestore-data-manager';
 import buildCollectionName from 'ember-cloud-firestore-adapter/-private/build-collection-name';
@@ -166,7 +167,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
         if (docSnapshot.exists()) {
           resolve(flattenDocSnapshot(docSnapshot));
         } else {
-          reject(new Error(`Record ${id} for model type ${type.modelName} doesn't exist`));
+          reject(new AdapterRecordNotFoundError(`Record ${id} for model type ${type.modelName} doesn't exist`));
         }
       } catch (error) {
         reject(error);
@@ -250,7 +251,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
         if (docSnapshot.exists()) {
           resolve(flattenDocSnapshot(docSnapshot));
         } else {
-          reject(new Error(`Record ${id} for model type ${modelName} doesn't exist`));
+          reject(new AdapterRecordNotFoundError(`Record ${id} for model type ${modelName} doesn't exist`));
         }
       } catch (error) {
         reject(error);
