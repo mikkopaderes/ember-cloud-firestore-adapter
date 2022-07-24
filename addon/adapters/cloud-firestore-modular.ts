@@ -44,6 +44,8 @@ interface AdapterOption {
   buildReference?(db: firebase.firestore.Firestore): CollectionReference;
   filter?(db: CollectionReference): Query;
   include?(batch: WriteBatch, db: firebase.firestore.Firestore): void;
+
+  [key: string]: unknown;
 }
 
 interface Snapshot extends DS.Snapshot {
