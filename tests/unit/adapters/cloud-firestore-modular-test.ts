@@ -14,6 +14,7 @@ import {
   query,
   where,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
+import { AdapterRecordNotFoundError } from 'ember-cloud-firestore-adapter/utils/custom-errors';
 import resetFixtureData from '../../helpers/reset-fixture-data';
 
 module('Unit | Adapter | cloud firestore modular', function (hooks) {
@@ -298,7 +299,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
 
     test('should throw an error when record does not exists', async function (assert) {
       // Arrange
-      assert.expect(1);
+      assert.expect(2);
 
       const store = { normalize: sinon.stub(), push: sinon.stub() };
       const modelClass = { modelName: 'user' };
@@ -311,6 +312,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         await adapter.findRecord(store, modelClass, modelId, snapshot);
       } catch (error) {
         // Assert
+        assert.ok(error instanceof AdapterRecordNotFoundError);
         assert.strictEqual(error.message, 'Record user_100 for model type user doesn\'t exist');
       }
     });

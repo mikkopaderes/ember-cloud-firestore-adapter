@@ -40,6 +40,22 @@ Hook for providing a custom collection reference on where you want to fetch the 
 | ---- | ------------------------------------------------------------------------------------------------------------ | ----------- |
 | db   | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore) |             |
 
+### Error Handling
+
+When finding a single record, you can catch for `AdapterRecordNotFoundError` error when the record doesn't exist.
+
+```javascript
+import { AdapterRecordNotFoundError } from 'ember-cloud-firestore-adapter/utils/custom-errors';
+
+this.store.findRecord('user', 'user_1').then((record) => {
+  // Do something
+}).catch((error) => {
+  if (error instanceof AdapterRecordNotFoundError) {
+    // Do something
+  }
+});
+```
+
 ## `findAll`
 
 The optional configs are available through the `adapterOptions` property.
