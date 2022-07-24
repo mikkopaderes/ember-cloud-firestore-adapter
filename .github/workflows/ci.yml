@@ -77,4 +77,4 @@ jobs:
       - name: Install Dependencies
         run: npm ci
       - name: Run Tests
-        run: npm run build:wrappers && npx firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project "./node_modules/.bin/ember try:one ${{ matrix.try-scenario }} --skip-cleanup"
+        run: npm run build:wrappers && npx firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project "./node_modules/.bin/ember try:one ${{ matrix.try-scenario }}"
