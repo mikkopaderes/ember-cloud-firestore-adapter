@@ -1,5 +1,4 @@
-ember-cloud-firestore-adapter
-==============================================================================
+# ember-cloud-firestore-adapter
 
 This is an unofficial Ember Data Adapter and Serializer for Cloud Firestore. It's completely unrelated to [EmberFire](https://github.com/firebase/emberfire) but its purpose is of the same.
 
@@ -19,16 +18,14 @@ This was built becase EmberFire development is super slow or may even be abandon
 
 In order to continue development with Ember and Cloud Firestore, I had to build this addon and opted to make it generic enough to be used by other developers too.
 
-Compatibility
-------------------------------------------------------------------------------
+## Compatibility
 
 * Ember.js v3.24 or above
 * Ember CLI v3.24 or above
 * Node.js v12 or above
 * Firebase v9 or above
 
-Installation
-------------------------------------------------------------------------------
+## Installation
 
 This addon requires some peer dependencies. Install the correct versions of each package, which are listed by the command:
 
@@ -47,13 +44,11 @@ Getting Started
 
 Checkout the docs [here](docs/getting-started.md).
 
-Contributing
-------------------------------------------------------------------------------
+## Contributing
 
 See the [Contributing](CONTRIBUTING.md) guide for details.
 
 
-License
-------------------------------------------------------------------------------
+## License
 
 This project is licensed under the [MIT License](LICENSE.md).
