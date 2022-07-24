@@ -43,7 +43,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const result = await firestoreDataManager.findRecordRealtime(modelName, docRef);
 
       // Assert
-      assert.equal(result.id, 'user_a');
+      assert.strictEqual(result.id, 'user_a');
       assert.deepEqual(result.data(), { name: 'user_a', age: 15, username: 'user_a' });
     });
 
@@ -100,8 +100,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const result = await firestoreDataManager.findAllRealtime(modelName, colRef);
 
       // Assert
-      assert.equal(result.size, 3);
-      assert.equal(result.docs[0].id, 'user_a');
+      assert.strictEqual(result.size, 3);
+      assert.strictEqual(result.docs[0].id, 'user_a');
       assert.deepEqual(result.docs[0].data(), { name: 'user_a', age: 15, username: 'user_a' });
     });
 
@@ -168,8 +168,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const result = await firestoreDataManager.queryRealtime(config);
 
       // Assert
-      assert.equal(result.length, 3);
-      assert.equal(result[0].id, 'user_a');
+      assert.strictEqual(result.length, 3);
+      assert.strictEqual(result[0].id, 'user_a');
       assert.deepEqual(result[0].data(), { name: 'user_a', age: 15, username: 'user_a' });
     });
 
@@ -193,8 +193,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const result = await firestoreDataManager.queryRealtime(config);
 
       // Assert
-      assert.equal(result.length, 1);
-      assert.equal(result[0].id, 'group_a');
+      assert.strictEqual(result.length, 1);
+      assert.strictEqual(result[0].id, 'group_a');
       assert.deepEqual(result[0].data(), { name: 'group_a' });
     });
 
@@ -252,8 +252,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const result = await firestoreDataManager.findHasManyRealtime(config);
 
       // Assert
-      assert.equal(result.length, 1);
-      assert.equal(result[0].id, 'post_b');
+      assert.strictEqual(result.length, 1);
+      assert.strictEqual(result[0].id, 'post_b');
       assert.deepEqual(result[0].get('title'), 'post_b');
     });
 
@@ -276,8 +276,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const result = await firestoreDataManager.findHasManyRealtime(config);
 
       // Assert
-      assert.equal(result.length, 1);
-      assert.equal(result[0].id, 'group_a');
+      assert.strictEqual(result.length, 1);
+      assert.strictEqual(result[0].id, 'group_a');
       assert.deepEqual(result[0].data(), { name: 'group_a' });
     });
 
@@ -328,8 +328,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const result = await firestoreDataManager.queryWithReferenceTo(queryRef, referenceKeyName);
 
       // Assert
-      assert.equal(result.length, 3);
-      assert.equal(result[0].id, 'user_a');
+      assert.strictEqual(result.length, 3);
+      assert.strictEqual(result[0].id, 'user_a');
       assert.deepEqual(result[0].data(), { name: 'user_a', age: 15, username: 'user_a' });
     });
 
@@ -346,8 +346,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const result = await firestoreDataManager.queryWithReferenceTo(queryRef, referenceKeyName);
 
       // Assert
-      assert.equal(result.length, 1);
-      assert.equal(result[0].id, 'group_a');
+      assert.strictEqual(result.length, 1);
+      assert.strictEqual(result[0].id, 'group_a');
       assert.deepEqual(result[0].data(), { name: 'group_a' });
     });
   });
