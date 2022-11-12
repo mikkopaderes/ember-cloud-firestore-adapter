@@ -299,13 +299,18 @@ export default class FirestoreDataManager extends Service {
     // Schedule for next runloop to avoid race condition errors. This can happen when a listener
     // exists for a record that's part of the query array. When that happens, doing an update
     // in the query array while the record is being unloaded from store can cause an error.
-    // To avoid the issue, we run the reload in the next runloop so that we allow the unload
+    // To avoid the issue, we run .update() in the next runloop so that we allow the unload
     // to happen first.
     next(() => {
-      const { unsubscribe } = this.queryListeners[queryId];
+      // In case multiple docs within the query were updated, this block can potentially happen
+      // multiple times. Race condition can happen where queryId no longer exists inside
+      // queryListeners so we have this check.
+      if (Object.prototype.hasOwnProperty.call(this.queryListeners, queryId)) {
+        const { unsubscribe } = this.queryListeners[queryId];
 
-      delete this.queryListeners[queryId];
-      recordArray.update().then(() => unsubscribe());
+        delete this.queryListeners[queryId];
+        recordArray.update().then(() => unsubscribe());
+      }
     });
   }
 
@@ -328,7 +333,7 @@ export default class FirestoreDataManager extends Service {
     // Schedule for next runloop to avoid race condition errors. This can happen when a listener
     // exists for a record that's part of the hasMany array. When that happens, doing a reload
     // in the hasMany array while the record is being unloaded from store can cause an error.
-    // To avoid the issue, we run the reload in the next runloop so that we allow the unload
+    // To avoid the issue, we run .reload() in the next runloop so that we allow the unload
     // to happen first.
     next(() => {
       const hasManyRef = this.store.peekRecord(config.modelName, config.id).hasMany(config.field);
