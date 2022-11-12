@@ -27,7 +27,6 @@ interface AuthAddonConfig {
 }
 
 interface AddonConfig {
-  useModularSdkInstance: boolean;
   firebaseConfig: FirebaseOptions,
   firestore: FirestoreAddonConfig;
   auth: AuthAddonConfig;
