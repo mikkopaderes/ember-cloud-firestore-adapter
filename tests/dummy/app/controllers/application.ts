@@ -2,8 +2,8 @@ import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
 
+import { Auth } from 'firebase/auth';
 import SessionService from 'ember-simple-auth/services/session';
-import firebase from 'firebase/compat/app';
 
 import {
   createUserWithEmailAndPassword,
@@ -18,7 +18,7 @@ export default class ApplicationController extends Controller {
 
   @action
   login(): void {
-    this.session.authenticate('authenticator:firebase', (auth: firebase.auth.Auth) => (
+    this.session.authenticate('authenticator:firebase', (auth: Auth) => (
       createUserWithEmailAndPassword(auth, 'foo@gmail.com', 'foobar')
     ).then((credential) => credential.user).catch(() => (
       signInWithEmailAndPassword(auth, 'foo@gmail.com', 'foobar')

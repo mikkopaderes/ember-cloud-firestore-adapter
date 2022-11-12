@@ -6,13 +6,14 @@ import DS from 'ember-data';
 import RSVP from 'rsvp';
 import Store from '@ember-data/store';
 
-import firebase from 'firebase/compat/app';
+import { Firestore } from 'firebase/firestore';
 import sinon from 'sinon';
 
 import {
   collection,
   deleteDoc,
   doc,
+  getFirestore,
   query,
   updateDoc,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
@@ -20,12 +21,12 @@ import FirestoreDataManager from 'ember-cloud-firestore-adapter/services/-firest
 import resetFixtureData from '../../helpers/reset-fixture-data';
 
 module('Unit | Service | -firestore-data-manager', function (hooks) {
-  let db: firebase.firestore.Firestore;
+  let db: Firestore;
 
   setupTest(hooks);
 
   hooks.beforeEach(async function () {
-    db = this.owner.lookup('service:-firebase').firestore();
+    db = getFirestore();
 
     await resetFixtureData(db);
   });

@@ -4,7 +4,7 @@ We use [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator
 
 ## Setup Addon to Use Emulator
 
-Add an `ember-cloud-firestore-adapter.firestore.emulator` property in your `config/environment.js` and make sure to disable it in production environment.
+Add an `ember-cloud-firestore-adapter.firestore.emulator` property in your `config/environment.js` and **make sure to disable it in production environment**.
 
 ```javascript
 let ENV = {

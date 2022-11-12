@@ -3,13 +3,13 @@ import { setupTest } from 'ember-qunit';
 import EmberObject from '@ember/object';
 
 import { CollectionReference, Firestore, WriteBatch } from 'firebase/firestore';
-import firebase from 'firebase/compat/app';
 import sinon from 'sinon';
 
 import {
   collection,
   doc,
   getDoc,
+  getFirestore,
   limit,
   query,
   where,
@@ -18,12 +18,12 @@ import { AdapterRecordNotFoundError } from 'ember-cloud-firestore-adapter/utils/
 import resetFixtureData from '../../helpers/reset-fixture-data';
 
 module('Unit | Adapter | cloud firestore modular', function (hooks) {
-  let db: firebase.firestore.Firestore;
+  let db: Firestore;
 
   setupTest(hooks);
 
   hooks.beforeEach(async function () {
-    db = this.owner.lookup('service:-firebase').firestore();
+    db = getFirestore();
 
     await resetFixtureData(db);
   });

@@ -1,18 +1,20 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 
-import firebase from 'firebase/compat/app';
+import { Firestore } from 'firebase/firestore';
 
-import { serverTimestamp } from 'ember-cloud-firestore-adapter/firebase/firestore';
+import {
+  doc, getDoc, getFirestore, serverTimestamp,
+} from 'ember-cloud-firestore-adapter/firebase/firestore';
 import resetFixtureData from 'dummy/tests/helpers/reset-fixture-data';
 
 module('Unit | Transform | timestamp', function (hooks) {
-  let db: firebase.firestore.Firestore;
+  let db: Firestore;
 
   setupTest(hooks);
 
   hooks.beforeEach(async function () {
-    db = this.owner.lookup('service:-firebase').firestore();
+    db = getFirestore();
 
     await resetFixtureData(db);
   });
@@ -20,7 +22,7 @@ module('Unit | Transform | timestamp', function (hooks) {
   module('deserialize()', function () {
     test('should return result of value.toDate when value is an instance of firebase.firestore.Timestamp', async function (assert) {
       // Arrange
-      const post = await db.doc('posts/post_a').get();
+      const post = await getDoc(doc(db, 'posts/post_a'));
       const transform = this.owner.lookup('transform:timestamp');
 
       // Act

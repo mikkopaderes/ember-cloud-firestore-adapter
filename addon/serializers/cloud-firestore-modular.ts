@@ -5,17 +5,14 @@
   no-param-reassign: off,
 */
 
-import { inject as service } from '@ember/service';
 import { isNone } from '@ember/utils';
 import DS from 'ember-data';
 import JSONSerializer from '@ember-data/serializer/json';
 import Store from '@ember-data/store';
 
-import { CollectionReference, DocumentReference } from 'firebase/firestore';
-import firebase from 'firebase/compat/app';
+import { CollectionReference, DocumentReference, Firestore } from 'firebase/firestore';
 
-import { doc } from 'ember-cloud-firestore-adapter/firebase/firestore';
-import FirebaseService from 'ember-cloud-firestore-adapter/services/-firebase';
+import { doc, getFirestore } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import buildCollectionName from 'ember-cloud-firestore-adapter/-private/build-collection-name';
 
 interface Links {
@@ -32,7 +29,7 @@ interface RelationshipDefinition {
   key: string;
   type: string;
   options: {
-    buildReference?(db: firebase.firestore.Firestore): CollectionReference
+    buildReference?(db: Firestore): CollectionReference
   };
 }
 
@@ -46,9 +43,6 @@ interface ModelClass {
 }
 
 export default class CloudFirestoreSerializer extends JSONSerializer {
-  @service('-firebase')
-  private firebase!: FirebaseService;
-
   public extractRelationship(
     relationshipModelName: string,
     relationshipHash: DocumentReference,
@@ -104,7 +98,7 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
     super.serializeBelongsTo(snapshot, json, relationship);
 
     if (json[relationship.key]) {
-      const db = this.firebase.firestore();
+      const db = getFirestore();
       const docId = json[relationship.key] as string;
 
       if (relationship.options.buildReference) {

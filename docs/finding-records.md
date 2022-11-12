@@ -38,7 +38,7 @@ Hook for providing a custom collection reference on where you want to fetch the 
 
 | Name | Type                                                                                                         | Description |
 | ---- | ------------------------------------------------------------------------------------------------------------ | ----------- |
-| db   | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore) |             |
+| db   | [`Firestore`](https://firebase.google.com/docs/reference/js/firestore_.firestore) |             |
 
 ### Error Handling
 
@@ -130,7 +130,7 @@ Hook for providing a custom collection reference on where you want to fetch the 
 
 | Name | Type                                                                                                         | Description |
 | ---- | ------------------------------------------------------------------------------------------------------------ | ----------- |
-| db   | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore) |             |
+| db   | [`Firestore`](https://firebase.google.com/docs/reference/js/firestore_.firestore) |             |
 
 ### `filter`
 
