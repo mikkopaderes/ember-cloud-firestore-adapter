@@ -47,14 +47,16 @@ The config object of your Firebase web app project. You can get this in the Proj
 
 This contains the settings related to Firestore. The available properties are:
 
-- `settings` (optional) - An object representing [`firebase.firestore.Settings`](https://firebase.google.com/docs/reference/js/v8/firebase.firestore.Settings). Any settings available there, you can set it here.
-- `emulator` (optional) - Use this object property if you want to use [Firebase Emulator](https://firebase.google.com/docs/emulator-suite) for your local development. The available properties are `hostname` and `port`.
+- `isCustomSetup` (optional) - A boolean to indicate whether you want to setup your Firestore instance on your own.
+- `settings` (optional) - An object representing [`FirestoreSettings`](https://firebase.google.com/docs/reference/js/firestore_.firestoresettings.md#firestoresettings_interface). Any settings available there, you can set it here.
+- `emulator` (optional) - Use this object property if you want to use [Firebase Emulator](https://firebase.google.com/docs/emulator-suite) for your local development. The available properties are `hostname`, `port`, and `options`.
 
 #### `auth`
 
 This contains the settings related to Auth. The available properties are:
 
-- `emulator` (optional) - Use this object property if you want to use [Firebase Emulator](https://firebase.google.com/docs/emulator-suite) for your local development. The available properties are `hostname` and `port`.
+- `isCustomSetup` (optional) - A boolean to indicate whether you want to setup your Auth instance on your own.
+- `emulator` (optional) - Use this object property if you want to use [Firebase Emulator](https://firebase.google.com/docs/emulator-suite) for your local development. The available properties are `hostname`, `port`, and `options`.
 
 ## 2. Create Your Application Adapter
 
@@ -80,10 +82,6 @@ These are the settings currently available:
 
   - `referenceKeyName` - Name of the field that will indicate whether a document is a reference to another one. (Defaults to `'referenceTo'`)
 
-> **NOTE:** This addon is in a transition phase towards Firebase Modular SDK. In order to support it alongside the Compat SDK, we've created a new `cloud-firestore-modular` adapter. Compat SDK adapter is now in maintenance mode until Firebase v10 so we recommend everyone to use the Modular SDK adapter instead moving forward.
->
-> To view the Compat SDK docs, click [here](https://github.com/mikkopaderes/ember-cloud-firestore-adapter/blob/v2.0.2/docs/getting-started.md).
-
 ## 3. Create Your Application Serializer
 
 Create an application serializer by running:
@@ -99,10 +97,6 @@ import CloudFirestoreSerializer from 'ember-cloud-firestore-adapter/serializers/
 
 export default class ApplicationSerializer extends CloudFirestoreSerializer { }
 ```
-
-> **NOTE:** This addon is in a transition phase towards Firebase Modular SDK. In order to support it alongside the Compat SDK, we've created a new `cloud-firestore-modular` serializer. Compat SDK serializer is now in maintenance mode until Firebase v10 so we recommend everyone to use the Modular SDK serializer instead moving forward.
->
-> To view the Compat SDK docs, click [here](https://github.com/mikkopaderes/ember-cloud-firestore-adapter/blob/v2.0.2/docs/getting-started.md).
 
 ## 4. Firebase and Auth Modular API Imports
 

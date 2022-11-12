@@ -1,47 +1,42 @@
 import { getOwner } from '@ember/application';
-import { inject as service } from '@ember/service';
 
-import { User, UserCredential } from 'firebase/auth';
+import { Auth, User, UserCredential } from 'firebase/auth';
 import BaseAuthenticator from 'ember-simple-auth/authenticators/base';
-import firebase from 'firebase/compat/app';
 
 import {
+  getAuth,
   getRedirectResult,
   onAuthStateChanged,
   signInWithCustomToken,
   signOut,
 } from 'ember-cloud-firestore-adapter/firebase/auth';
-import FirebaseService from 'ember-cloud-firestore-adapter/services/-firebase';
 
 interface AuthenticateCallback {
-  (auth: firebase.auth.Auth): Promise<UserCredential>;
+  (auth: Auth): Promise<UserCredential>;
 }
 
 export default class FirebaseAuthenticator extends BaseAuthenticator {
-  @service('-firebase')
-  private firebase!: FirebaseService;
-
   /* eslint-disable @typescript-eslint/no-explicit-any */
   private get fastboot(): any {
     return getOwner(this).lookup('service:fastboot');
   }
 
   public async authenticate(callback: AuthenticateCallback): Promise<{ user: User | null }> {
-    const auth = this.firebase.auth();
+    const auth = getAuth();
     const credential = await callback(auth);
 
     return { user: credential.user };
   }
 
   public invalidate(): Promise<void> {
-    const auth = this.firebase.auth();
+    const auth = getAuth();
 
     return signOut(auth);
   }
 
   public restore(): Promise<{ user: User | null }> {
     return new Promise((resolve, reject) => {
-      const auth = this.firebase.auth();
+      const auth = getAuth();
 
       if (
         this.fastboot?.isFastBoot

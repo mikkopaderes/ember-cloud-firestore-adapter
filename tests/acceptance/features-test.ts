@@ -2,17 +2,18 @@ import { click, visit, waitFor } from '@ember/test-helpers';
 import { module, test } from 'qunit';
 import { setupApplicationTest } from 'ember-qunit';
 
-import firebase from 'firebase/compat/app';
+import { Firestore } from 'firebase/firestore';
 
+import { doc, getDoc, getFirestore } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import resetFixtureData from '../helpers/reset-fixture-data';
 
 module('Acceptance | features', function (hooks) {
-  let db: firebase.firestore.Firestore;
+  let db: Firestore;
 
   setupApplicationTest(hooks);
 
   hooks.beforeEach(async function () {
-    db = this.owner.lookup('service:-firebase').firestore();
+    db = getFirestore();
 
     await resetFixtureData(db);
   });
@@ -80,7 +81,7 @@ module('Acceptance | features', function (hooks) {
     assert.dom('[data-test-name="user_a"]').hasText('user_a');
     assert.dom('[data-test-age="user_a"]').hasNoText();
 
-    const createdRecord = await db.doc('posts/new_post').get();
+    const createdRecord = await getDoc(doc(db, 'posts/new_post'));
 
     assert.strictEqual(createdRecord.get('publisher').path, 'publishers/user_a');
   });

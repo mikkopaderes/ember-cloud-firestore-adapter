@@ -8,7 +8,7 @@
 import DS from 'ember-data';
 import Model, { attr, belongsTo } from '@ember-data/model';
 
-import firebase from 'firebase/compat/app';
+import { Firestore } from 'firebase/firestore';
 
 import { collection } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import TimestampTransform from 'ember-cloud-firestore-adapter/transforms/timestamp';
@@ -32,7 +32,7 @@ export default class PostModel extends Model {
     inverse: null,
 
     // @ts-ignore: TODO - find a way to set custom property in RelationshipOptions interface
-    buildReference(db: firebase.firestore.Firestore) {
+    buildReference(db: Firestore) {
       return collection(db, 'publishers');
     },
   })

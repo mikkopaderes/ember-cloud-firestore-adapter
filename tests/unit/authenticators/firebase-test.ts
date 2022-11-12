@@ -1,22 +1,22 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 
-import firebase from 'firebase/compat/app';
+import { Auth } from 'firebase/auth';
+import { Firestore } from 'firebase/firestore';
 
-import { signInAnonymously, signOut } from 'ember-cloud-firestore-adapter/firebase/auth';
+import { getAuth, signInAnonymously, signOut } from 'ember-cloud-firestore-adapter/firebase/auth';
+import { getFirestore } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import resetFixtureData from '../../helpers/reset-fixture-data';
 
 module('Unit | Authenticator | firebase', function (hooks) {
-  let auth: firebase.auth.Auth;
-  let db: firebase.firestore.Firestore;
+  let auth: Auth;
+  let db: Firestore;
 
   setupTest(hooks);
 
   hooks.beforeEach(async function () {
-    const app = this.owner.lookup('service:-firebase');
-
-    auth = app.auth();
-    db = app.firestore();
+    auth = getAuth();
+    db = getFirestore();
 
     await signInAnonymously(auth);
     await resetFixtureData(db);

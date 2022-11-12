@@ -14,22 +14,22 @@ import Store from '@ember-data/store';
 import {
   CollectionReference,
   DocumentReference,
+  Firestore,
   Query,
   WriteBatch,
 } from 'firebase/firestore';
-import firebase from 'firebase/compat/app';
 
 import {
   collection,
   doc,
   getDoc,
   getDocs,
+  getFirestore,
   query,
   where,
   writeBatch,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import { AdapterRecordNotFoundError } from 'ember-cloud-firestore-adapter/utils/custom-errors';
-import FirebaseService from 'ember-cloud-firestore-adapter/services/-firebase';
 import FirestoreDataManager from 'ember-cloud-firestore-adapter/services/-firestore-data-manager';
 import buildCollectionName from 'ember-cloud-firestore-adapter/-private/build-collection-name';
 import flattenDocSnapshot from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
@@ -42,9 +42,9 @@ interface AdapterOption {
   isRealtime?: boolean;
   queryId?: string;
 
-  buildReference?(db: firebase.firestore.Firestore): CollectionReference;
+  buildReference?(db: Firestore): CollectionReference;
   filter?(db: CollectionReference): Query;
-  include?(batch: WriteBatch, db: firebase.firestore.Firestore): void;
+  include?(batch: WriteBatch, db: Firestore): void;
 
   [key: string]: unknown;
 }
@@ -68,15 +68,12 @@ interface HasManyRelationshipMeta {
   options: {
     isRealtime?: boolean,
 
-    buildReference?(db: firebase.firestore.Firestore, record: unknown): CollectionReference,
+    buildReference?(db: Firestore, record: unknown): CollectionReference,
     filter?(db: CollectionReference | Query, record: unknown): Query,
   };
 }
 
 export default class CloudFirestoreModularAdapter extends Adapter {
-  @service('-firebase')
-  protected declare firebase: FirebaseService;
-
   @service('-firestore-data-manager')
   private declare firestoreDataManager: FirestoreDataManager;
 
@@ -89,7 +86,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
   }
 
   public generateIdForRecord(_store: Store, type: string): string {
-    const db = this.firebase.firestore();
+    const db = getFirestore();
     const collectionName = buildCollectionName(type);
 
     return doc(collection(db, collectionName)).id;
@@ -134,7 +131,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     snapshot: Snapshot,
   ): RSVP.Promise<unknown> {
     return new RSVP.Promise((resolve, reject) => {
-      const db = this.firebase.firestore();
+      const db = getFirestore();
       const collectionRef = this.buildCollectionRef(type.modelName, snapshot.adapterOptions);
       const docRef = doc(collectionRef, snapshot.id);
       const batch = writeBatch(db);
@@ -183,7 +180,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
   ): RSVP.Promise<unknown> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
-        const db = this.firebase.firestore();
+        const db = getFirestore();
         const colRef = collection(db, buildCollectionName(type.modelName));
         const querySnapshot = snapshotRecordArray?.adapterOptions?.isRealtime && !this.isFastBoot
           ? await this.firestoreDataManager.findAllRealtime(type.modelName, colRef)
@@ -241,7 +238,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
 
         urlNodes.pop();
 
-        const db = this.firebase.firestore();
+        const db = getFirestore();
         const docRef = doc(db, urlNodes.join('/'), id);
         const modelName = relationship.type;
         const docSnapshot = relationship.options.isRealtime && !this.isFastBoot
@@ -292,7 +289,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     modelName: string,
     adapterOptions?: AdapterOption,
   ): CollectionReference {
-    const db = this.firebase.firestore();
+    const db = getFirestore();
 
     return adapterOptions?.buildReference?.(db) || collection(db, buildCollectionName(modelName));
   }
@@ -308,13 +305,13 @@ export default class CloudFirestoreModularAdapter extends Adapter {
   }
 
   private addIncludeToWriteBatch(batch: WriteBatch, adapterOptions?: AdapterOption): void {
-    const db = this.firebase.firestore();
+    const db = getFirestore();
 
     adapterOptions?.include?.(batch, db);
   }
 
   private buildWriteBatch(docRef: DocumentReference, snapshot: Snapshot): WriteBatch {
-    const db = this.firebase.firestore();
+    const db = getFirestore();
     const batch = writeBatch(db);
 
     this.addDocRefToWriteBatch(batch, docRef, snapshot);
@@ -329,7 +326,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     url: string,
     relationship: HasManyRelationshipMeta,
   ): CollectionReference | Query {
-    const db = this.firebase.firestore();
+    const db = getFirestore();
 
     if (relationship.options.buildReference) {
       const collectionRef = relationship.options.buildReference(db, snapshot.record);

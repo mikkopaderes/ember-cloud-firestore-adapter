@@ -1,6 +1,7 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 
+import { doc, getDoc, getFirestore } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import flattenDocSnapshot from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
 
 module('Unit | -Private | flatten-doc-snapshot-data', function (hooks) {
@@ -8,10 +9,9 @@ module('Unit | -Private | flatten-doc-snapshot-data', function (hooks) {
 
   test('should return a merged doc snapshot ID and data in a single object', async function (assert) {
     // Arrange
-    const firebase = this.owner.lookup('service:-firebase');
-    const db = firebase.firestore();
+    const db = getFirestore();
 
-    const snapshot = await db.doc('users/user_a').get();
+    const snapshot = await getDoc(doc(db, 'users/user_a'));
 
     // Act
     const result = flattenDocSnapshot(snapshot);

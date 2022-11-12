@@ -5,8 +5,7 @@ import Controller from '@ember/controller';
 import EmberArray from '@ember/array';
 import Store from '@ember-data/store';
 
-import { CollectionReference } from 'firebase/firestore';
-import firebase from 'firebase/compat/app';
+import { CollectionReference, Firestore } from 'firebase/firestore';
 
 import { collection, query, where } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import UserModel from '../models/user';
@@ -103,7 +102,7 @@ export default class FeaturesController extends Controller {
   @action
   public async handleQuery1Click(): Promise<void> {
     const users = await this.store.query('user', {
-      buildReference(db: firebase.firestore.Firestore) {
+      buildReference(db: Firestore) {
         return collection(db, 'users');
       },
 
@@ -118,7 +117,7 @@ export default class FeaturesController extends Controller {
   @action
   public async handleQuery2Click(): Promise<void> {
     const users = await this.store.query('user', {
-      buildReference(db: firebase.firestore.Firestore) {
+      buildReference(db: Firestore) {
         return collection(db, 'users/user_a/foobar');
       },
     });
