@@ -40,7 +40,7 @@ Hook for providing a custom collection reference on where you want to save the d
 
 | Name | Type                                                                                                         | Description |
 | ---- | ------------------------------------------------------------------------------------------------------------ | ----------- |
-| db   | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore) |             |
+| db   | [`Firestore`](https://firebase.google.com/docs/reference/js/firestore_.firestore) |             |
 
 ### `include`
 
@@ -53,7 +53,7 @@ Hook for providing additional documents to batch write
 | Name  | Type                                                                                                           | Description |
 | ----- | -------------------------------------------------------------------------------------------------------------- | ----------- |
 | batch | [`WriteBatch`](https://firebase.google.com/docs/reference/js/firestore_.writebatch) |             |
-| db    | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore)   |             |
+| db    | [`Firestore`](https://firebase.google.com/docs/reference/js/firestore_.firestore)   |             |
 
 ## `deleteRecord`
 
@@ -84,7 +84,7 @@ Hook for providing a custom collection reference on where the document to be del
 
 | Name | Type                                                                                                         | Description |
 | ---- | ------------------------------------------------------------------------------------------------------------ | ----------- |
-| db   | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore) |             |
+| db   | [`Firestore`](https://firebase.google.com/docs/reference/js/firestore_.firestore) |             |
 
 ### `include`
 
@@ -97,7 +97,7 @@ Hook for providing additional documents to batch write
 | Name  | Type                                                                                                           | Description |
 | ----- | -------------------------------------------------------------------------------------------------------------- | ----------- |
 | batch | [`WriteBatch`](https://firebase.google.com/docs/reference/js/firestore_.writebatch) |             |
-| db    | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore)   |             |
+| db    | [`Firestore`](https://firebase.google.com/docs/reference/js/firestore_.firestore)   |             |
 
 ## `destroyRecord`
 
@@ -127,7 +127,7 @@ Hook for providing a custom collection reference on where the document to be del
 
 | Name | Type                                                                                                         | Description |
 | ---- | ------------------------------------------------------------------------------------------------------------ | ----------- |
-| db   | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore) |             |
+| db   | [`Firestore`](https://firebase.google.com/docs/reference/js/firestore_.firestore) |             |
 
 ### `include`
 
@@ -140,7 +140,7 @@ Hook for providing additional documents to batch write
 | Name  | Type                                                                                                           | Description |
 | ----- | -------------------------------------------------------------------------------------------------------------- | ----------- |
 | batch | [`WriteBatch`](https://firebase.google.com/docs/reference/js/firestore_.writebatch) |             |
-| db    | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore)   |             |
+| db    | [`Firestore`](https://firebase.google.com/docs/reference/js/firestore_.firestore)   |             |
 
 ## Updating a record
 
@@ -179,7 +179,7 @@ Hook for providing a custom collection reference on where the document to be upd
 
 | Name | Type                                                                                                         | Description |
 | ---- | ------------------------------------------------------------------------------------------------------------ | ----------- |
-| db   | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore) |             |
+| db   | [`Firestore`](https://firebase.google.com/docs/reference/js/firestore_.firestore) |             |
 
 ### `include`
 
@@ -192,7 +192,7 @@ Hook for providing additional documents to batch write
 | Name  | Type                                                                                                           | Description |
 | ----- | -------------------------------------------------------------------------------------------------------------- | ----------- |
 | batch | [`WriteBatch`](https://firebase.google.com/docs/reference/js/firestore_.writebatch) |             |
-| db    | [`firebase.firestore.Firestore`](https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore)   |             |
+| db    | [`Firestore`](https://firebase.google.com/docs/reference/js/firestore_.firestore)   |             |
 
 ## Saving relationships
 
