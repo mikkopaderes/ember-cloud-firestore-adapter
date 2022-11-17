@@ -28,8 +28,8 @@ interface AuthAddonConfig {
 
 interface AddonConfig {
   firebaseConfig: FirebaseOptions,
-  firestore: FirestoreAddonConfig;
-  auth: AuthAddonConfig;
+  firestore?: FirestoreAddonConfig;
+  auth?: AuthAddonConfig;
 }
 
 function getDb(app: FirebaseApp, config: FirestoreAddonConfig): Firestore {
@@ -61,11 +61,11 @@ function setupAuth(app: FirebaseApp, config: AuthAddonConfig) {
 function setupModularInstance(config: AddonConfig) {
   const app = initializeApp(config.firebaseConfig);
 
-  if (!config.firestore.isCustomSetup) {
+  if (config.firestore && !config.firestore.isCustomSetup) {
     setupFirestore(app, config.firestore);
   }
 
-  if (!config.auth.isCustomSetup) {
+  if (config.auth && !config.auth?.isCustomSetup) {
     setupAuth(app, config.auth);
   }
 }
