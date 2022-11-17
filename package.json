@@ -1,6 +1,6 @@
 {
   "name": "ember-cloud-firestore-adapter",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Unofficial Ember Data Adapter and Serializer for Cloud Firestore",
   "keywords": [
     "ember-addon",
@@ -44,13 +44,6 @@
     "@glimmer/component": "^1.1.2",
     "@glimmer/tracking": "^1.1.2",
     "@types/ember": "^3.16.2",
-    "@types/ember-data": "^3.16.15",
-    "@types/ember-data__adapter": "^3.16.1",
-    "@types/ember-data__model": "^3.16.2",
-    "@types/ember-data__serializer": "^3.16.1",
-    "@types/ember-data__store": "^3.16.1",
-    "@types/ember-qunit": "^3.4.14",
-    "@types/ember-resolver": "^5.0.10",
     "@types/ember__application": "^3.16.3",
     "@types/ember__array": "^3.16.4",
     "@types/ember__component": "^3.16.6",
@@ -68,6 +61,13 @@
     "@types/ember__test": "^3.16.1",
     "@types/ember__test-helpers": "^2.0.2",
     "@types/ember__utils": "^3.16.2",
+    "@types/ember-data": "^3.16.15",
+    "@types/ember-data__adapter": "^3.16.1",
+    "@types/ember-data__model": "^3.16.2",
+    "@types/ember-data__serializer": "^3.16.1",
+    "@types/ember-data__store": "^3.16.1",
+    "@types/ember-qunit": "^3.4.14",
+    "@types/ember-resolver": "^5.0.10",
     "@types/htmlbars-inline-precompile": "^1.0.1",
     "@types/node": "^16.10.3",
     "@types/qunit": "^2.11.2",
@@ -106,7 +106,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-qunit": "^7.2.0",
-    "firebase": "^9.9.1",
+    "firebase": "^9.14.0",
     "firebase-tools": "^11.2.2",
     "loader.js": "^4.7.0",
     "npm-run-all": "^4.1.5",
@@ -122,7 +122,7 @@
   "peerDependencies": {
     "ember-auto-import": "2.x",
     "ember-simple-auth": "4.x",
-    "firebase": "9.x"
+    "firebase": "9.14.x"
   },
   "engines": {
     "node": "12.* || 14.* || >= 16"
