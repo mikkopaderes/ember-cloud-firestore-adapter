@@ -29,7 +29,7 @@ interface RelationshipDefinition {
   key: string;
   type: string;
   options: {
-    buildReference?(db: Firestore): CollectionReference
+    buildReference?(db: Firestore, record: unknown): CollectionReference
   };
 }
 
@@ -102,7 +102,10 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
       const docId = json[relationship.key] as string;
 
       if (relationship.options.buildReference) {
-        json[relationship.key] = doc(relationship.options.buildReference(db), docId);
+        json[relationship.key] = doc(
+          relationship.options.buildReference(db, snapshot.record),
+          docId,
+        );
       } else {
         const collectionName = buildCollectionName(relationship.type);
         const path = `${collectionName}/${docId}`;
