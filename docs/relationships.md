@@ -32,6 +32,7 @@ Hook for providing a custom collection reference.
 | Name   | Type                                                                                                         | Description       |
 | -------| ------------------------------------------------------------------------------------------------------------ | ----------------- |
 | db     | [`Firestore`](https://firebase.google.com/docs/reference/js/firestore_.firestore) |                   |
+| record | Object | The record itself |
 
 ## `hasMany`
 
@@ -75,6 +76,7 @@ Hook for providing a custom collection reference.
 | Name   | Type                                                                                                         | Description       |
 | -------| ------------------------------------------------------------------------------------------------------------ | ----------------- |
 | db     | [`Firestore`](https://firebase.google.com/docs/reference/js/firestore_.firestore) |                   |
+| record | Object | The record itself |
 
 ### `filter`
 
