@@ -34,6 +34,10 @@ interface CherryPickedUser {
   tenantId: string | null;
 }
 
+interface AuthenticatedData {
+  user: CherryPickedUser;
+}
+
 function parseCherryPickedUser(user: User): CherryPickedUser {
   return {
     displayName: user.displayName,
@@ -56,9 +60,7 @@ export default class FirebaseAuthenticator extends BaseAuthenticator {
     return getOwner(this).lookup('service:fastboot');
   }
 
-  public async authenticate(
-    callback: AuthenticateCallback,
-  ): Promise<{ user: CherryPickedUser | null }> {
+  public async authenticate(callback: AuthenticateCallback): Promise<AuthenticatedData> {
     const auth = getAuth();
     const credential = await callback(auth);
 
@@ -71,7 +73,7 @@ export default class FirebaseAuthenticator extends BaseAuthenticator {
     return signOut(auth);
   }
 
-  public restore(): Promise<{ user: CherryPickedUser | null }> {
+  public restore(): Promise<AuthenticatedData> {
     return new Promise((resolve, reject) => {
       const auth = getAuth();
 
