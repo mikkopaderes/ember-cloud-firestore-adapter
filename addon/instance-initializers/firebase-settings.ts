@@ -82,7 +82,7 @@ function setupFunctions(app: FirebaseApp, config: FunctionsAddonConfig) {
   if (config.emulator) {
     const { hostname, port } = config.emulator;
 
-    connectFunctionsEmulator(getFunctions(), hostname, port);
+    connectFunctionsEmulator(getFunctions(app), hostname, port);
   }
 }
 
@@ -90,7 +90,7 @@ function setupStorage(app: FirebaseApp, config: StorageAddonConfig) {
   if (config.emulator) {
     const { hostname, port } = config.emulator;
 
-    connectStorageEmulator(getStorage(), hostname, port);
+    connectStorageEmulator(getStorage(app), hostname, port);
   }
 }
 
