@@ -6,6 +6,8 @@ import { Firestore } from 'firebase/firestore';
 import { initializeApp } from 'ember-cloud-firestore-adapter/firebase/app';
 import { connectFirestoreEmulator, getFirestore, initializeFirestore } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import { connectAuthEmulator, getAuth } from 'ember-cloud-firestore-adapter/firebase/auth';
+import { connectStorageEmulator, getStorage } from 'ember-cloud-firestore-adapter/firebase/storage';
+import { connectFunctionsEmulator, getFunctions } from 'ember-cloud-firestore-adapter/firebase/functions';
 
 interface FirestoreAddonConfig {
   isCustomSetup?: boolean;
@@ -26,10 +28,30 @@ interface AuthAddonConfig {
   };
 }
 
+interface StorageAddonConfig {
+  isCustomSetup?: boolean;
+  emulator?: {
+    hostname: string,
+    port: number,
+    options?: { disableWarnings: boolean }
+  };
+}
+
+interface FunctionsAddonConfig {
+  isCustomSetup?: boolean;
+  emulator?: {
+    hostname: string,
+    port: number,
+    options?: { disableWarnings: boolean }
+  };
+}
+
 interface AddonConfig {
   firebaseConfig: FirebaseOptions,
   firestore?: FirestoreAddonConfig;
   auth?: AuthAddonConfig;
+  storage?: StorageAddonConfig;
+  functions?: FunctionsAddonConfig;
 }
 
 function getDb(app: FirebaseApp, config: FirestoreAddonConfig): Firestore {
@@ -58,6 +80,22 @@ function setupAuth(app: FirebaseApp, config: AuthAddonConfig) {
   }
 }
 
+function setupStorage(app: FirebaseApp, config: StorageAddonConfig) {
+  if (config.emulator) {
+    const { hostname, port } = config.emulator;
+
+    connectStorageEmulator(getStorage(app), `http://${hostname}:${port}`, config.emulator.options);
+  }
+}
+
+function setupFunctions(app: FirebaseApp, config: FunctionsAddonConfig) {
+  if (config.emulator) {
+    const { hostname, port } = config.emulator;
+
+    connectFunctionsEmulator(getFunctions(app), `http://${hostname}:${port}`, config.emulator.options);
+  }
+}
+
 function setupModularInstance(config: AddonConfig) {
   const app = initializeApp(config.firebaseConfig);
 
@@ -67,6 +105,14 @@ function setupModularInstance(config: AddonConfig) {
 
   if (config.auth && !config.auth?.isCustomSetup) {
     setupAuth(app, config.auth);
+  }
+
+  if (config.storage && !config.storage?.isCustomSetup) {
+    setupStorage(app, config.storage);
+  }
+
+  if (config.functions && !config.functions?.isCustomSetup) {
+    setupFunctions(app, config.functions);
   }
 }
 
