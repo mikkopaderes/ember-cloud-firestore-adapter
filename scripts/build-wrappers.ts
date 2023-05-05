@@ -58,3 +58,5 @@ buildFastBootWrappers('firebase/auth', keys<typeof import('firebase/auth')>(), '
   'prodErrorMap',
 ]);
 buildFastBootWrappers('firebase/firestore', keys<typeof import('firebase/firestore')>(), 'firestore');
+buildFastBootWrappers('firebase/functions', keys<typeof import('firebase/functions')>(), 'functions');
+buildFastBootWrappers('firebase/storage', keys<typeof import('firebase/storage')>(), 'storage');
