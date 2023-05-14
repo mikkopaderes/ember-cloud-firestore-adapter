@@ -1,7 +1,7 @@
 import ApplicationInstance from '@ember/application/instance';
 
 import { FirebaseApp, FirebaseOptions } from 'firebase/app';
-import { Firestore } from 'firebase/firestore';
+import { Firestore, EmulatorMockTokenOptions } from 'firebase/firestore';
 
 import { initializeApp } from 'ember-cloud-firestore-adapter/firebase/app';
 import { connectFirestoreEmulator, getFirestore, initializeFirestore } from 'ember-cloud-firestore-adapter/firebase/firestore';
@@ -41,6 +41,7 @@ interface StorageAddonConfig {
   emulator?: {
     hostname: string,
     port: number,
+    options?: { mockUserToken?: EmulatorMockTokenOptions | string }
   };
 }
 
@@ -90,7 +91,7 @@ function setupStorage(app: FirebaseApp, config: StorageAddonConfig) {
   if (config.emulator) {
     const { hostname, port } = config.emulator;
 
-    connectStorageEmulator(getStorage(app), hostname, port);
+    connectStorageEmulator(getStorage(app), hostname, port, config.emulator.options);
   }
 }
 
