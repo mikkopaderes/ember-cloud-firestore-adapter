@@ -73,9 +73,9 @@ function setupFirestore(app: FirebaseApp, config: FirestoreAddonConfig): void {
 
 function setupAuth(app: FirebaseApp, config: AuthAddonConfig) {
   if (config.emulator) {
-    const { hostname, port } = config.emulator;
+    const { hostname, port, options } = config.emulator;
 
-    connectAuthEmulator(getAuth(app), `http://${hostname}:${port}`, config.emulator.options);
+    connectAuthEmulator(getAuth(app), `http://${hostname}:${port}`, options);
   }
 }
 
@@ -89,9 +89,9 @@ function setupFunctions(app: FirebaseApp, config: FunctionsAddonConfig) {
 
 function setupStorage(app: FirebaseApp, config: StorageAddonConfig) {
   if (config.emulator) {
-    const { hostname, port } = config.emulator;
+    const { hostname, port, options } = config.emulator;
 
-    connectStorageEmulator(getStorage(app), hostname, port, config.emulator.options);
+    connectStorageEmulator(getStorage(app), hostname, port, options);
   }
 }
 
