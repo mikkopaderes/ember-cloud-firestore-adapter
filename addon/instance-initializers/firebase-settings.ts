@@ -1,11 +1,13 @@
 import ApplicationInstance from '@ember/application/instance';
 
 import { FirebaseApp, FirebaseOptions } from 'firebase/app';
-import { Firestore } from 'firebase/firestore';
+import { Firestore, EmulatorMockTokenOptions } from 'firebase/firestore';
 
 import { initializeApp } from 'ember-cloud-firestore-adapter/firebase/app';
 import { connectFirestoreEmulator, getFirestore, initializeFirestore } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import { connectAuthEmulator, getAuth } from 'ember-cloud-firestore-adapter/firebase/auth';
+import { connectFunctionsEmulator, getFunctions } from 'ember-cloud-firestore-adapter/firebase/functions';
+import { connectStorageEmulator, getStorage } from 'ember-cloud-firestore-adapter/firebase/storage';
 
 interface FirestoreAddonConfig {
   isCustomSetup?: boolean;
@@ -26,10 +28,29 @@ interface AuthAddonConfig {
   };
 }
 
+interface FunctionsAddonConfig {
+  isCustomSetup?: boolean;
+  emulator?: {
+    hostname: string,
+    port: number,
+  };
+}
+
+interface StorageAddonConfig {
+  isCustomSetup?: boolean;
+  emulator?: {
+    hostname: string,
+    port: number,
+    options?: { mockUserToken?: EmulatorMockTokenOptions | string }
+  };
+}
+
 interface AddonConfig {
   firebaseConfig: FirebaseOptions,
   firestore?: FirestoreAddonConfig;
   auth?: AuthAddonConfig;
+  functions?: FunctionsAddonConfig;
+  storage?: StorageAddonConfig;
 }
 
 function getDb(app: FirebaseApp, config: FirestoreAddonConfig): Firestore {
@@ -52,9 +73,25 @@ function setupFirestore(app: FirebaseApp, config: FirestoreAddonConfig): void {
 
 function setupAuth(app: FirebaseApp, config: AuthAddonConfig) {
   if (config.emulator) {
+    const { hostname, port, options } = config.emulator;
+
+    connectAuthEmulator(getAuth(app), `http://${hostname}:${port}`, options);
+  }
+}
+
+function setupFunctions(app: FirebaseApp, config: FunctionsAddonConfig) {
+  if (config.emulator) {
     const { hostname, port } = config.emulator;
 
-    connectAuthEmulator(getAuth(app), `http://${hostname}:${port}`, config.emulator.options);
+    connectFunctionsEmulator(getFunctions(app), hostname, port);
+  }
+}
+
+function setupStorage(app: FirebaseApp, config: StorageAddonConfig) {
+  if (config.emulator) {
+    const { hostname, port, options } = config.emulator;
+
+    connectStorageEmulator(getStorage(app), hostname, port, options);
   }
 }
 
@@ -67,6 +104,14 @@ function setupModularInstance(config: AddonConfig) {
 
   if (config.auth && !config.auth?.isCustomSetup) {
     setupAuth(app, config.auth);
+  }
+
+  if (config.functions && !config.functions?.isCustomSetup) {
+    setupFunctions(app, config.functions);
+  }
+
+  if (config.storage && !config.storage?.isCustomSetup) {
+    setupStorage(app, config.storage);
   }
 }
 
