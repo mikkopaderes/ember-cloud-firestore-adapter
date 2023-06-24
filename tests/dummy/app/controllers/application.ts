@@ -20,7 +20,7 @@ export default class ApplicationController extends Controller {
   login(): void {
     this.session.authenticate('authenticator:firebase', (auth: Auth) => (
       createUserWithEmailAndPassword(auth, 'foo@gmail.com', 'foobar')
-    ).then((credential) => credential.user).catch(() => (
+    ).then((credential) => credential).catch(() => (
       signInWithEmailAndPassword(auth, 'foo@gmail.com', 'foobar')
     )));
   }

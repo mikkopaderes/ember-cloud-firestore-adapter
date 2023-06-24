@@ -34,10 +34,26 @@ module('Unit | Authenticator | firebase', function (hooks) {
       const authenticator = this.owner.lookup('authenticator:firebase');
 
       // Act
-      const result = await authenticator.authenticate(() => Promise.resolve({ user: 'foo' }));
+      const result = await authenticator.authenticate(() => Promise.resolve({
+        user: { displayName: 'foo' },
+      }));
 
       // Assert
-      assert.deepEqual(result, { user: 'foo' });
+      assert.deepEqual(result, {
+        user: {
+          displayName: 'foo',
+          email: undefined,
+          emailVerified: undefined,
+          isAnonymous: undefined,
+          phoneNumber: undefined,
+          photoURL: undefined,
+          providerData: undefined,
+          providerId: undefined,
+          refreshToken: undefined,
+          tenantId: undefined,
+          uid: undefined,
+        },
+      });
     });
   });
 
