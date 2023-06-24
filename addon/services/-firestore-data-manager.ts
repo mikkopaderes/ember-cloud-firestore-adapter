@@ -160,8 +160,9 @@ export default class FirestoreDataManager extends Service {
           this.handleSubsequentDocRealtimeUpdates(docSnapshot, modelName, listenerKey);
         } else {
           this.handleInitialDocRealtimeUpdates(docSnapshot, listenerKey, unsubscribe);
-          resolve();
         }
+
+        resolve();
       }, (error) => {
         this.destroyListener('doc', listenerKey);
         reject(error);
@@ -180,9 +181,9 @@ export default class FirestoreDataManager extends Service {
           this.handleSubsequentColRealtimeUpdates(modelName, listenerKey, querySnapshot);
         } else {
           this.colListeners[listenerKey] = { unsubscribe, snapshot: querySnapshot };
-
-          resolve();
         }
+
+        resolve();
       }, (error) => {
         this.destroyListener('col', listenerKey);
         reject(error);
@@ -195,6 +196,7 @@ export default class FirestoreDataManager extends Service {
       const unsubscribe = onSnapshot(config.queryRef, (querySnapshot) => {
         if (Object.prototype.hasOwnProperty.call(this.queryListeners, queryId)) {
           this.handleSubsequentQueryRealtimeUpdates(queryId, config.recordArray);
+          resolve();
         } else {
           this.handleInitialQueryRealtimeUpdates(
             queryId,
@@ -217,6 +219,7 @@ export default class FirestoreDataManager extends Service {
       const unsubscribe = onSnapshot(config.queryRef, (querySnapshot) => {
         if (Object.prototype.hasOwnProperty.call(this.hasManyListeners, queryId)) {
           this.handleSubsequentHasManyRealtimeUpdates(config);
+          resolve();
         } else {
           this.handleInitialHasManyRealtimeUpdates(
             queryId,
