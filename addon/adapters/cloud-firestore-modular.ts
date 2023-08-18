@@ -334,10 +334,11 @@ export default class CloudFirestoreModularAdapter extends Adapter {
       return relationship.options.filter?.(collectionRef, snapshot.record) || collectionRef;
     }
 
-    const cardinality = snapshot.type.determineRelationshipType(relationship, store);
+    const modelType = store.modelFor(snapshot.modelName);
+    const cardinality = modelType.determineRelationshipType(relationship, store);
 
     if (cardinality === 'manyToOne') {
-      const inverse = snapshot.type.inverseFor(relationship.key, store);
+      const inverse = modelType.inverseFor(relationship.key, store);
       const snapshotCollectionName = buildCollectionName(snapshot.modelName.toString());
       const snapshotDocRef = doc(db, `${snapshotCollectionName}/${snapshot.id}`);
       const collectionRef = collection(db, url);
