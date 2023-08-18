@@ -35,7 +35,6 @@ interface RelationshipDefinition {
 
 interface ModelClass {
   modelName: string;
-  determineRelationshipType(descriptor: { kind: string, type: string }, store: Store): string;
   eachRelationship(callback: (name: string, descriptor: {
     kind: string,
     type: string,
@@ -69,7 +68,8 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
           links[name] = data.path;
         }
       } else {
-        const cardinality = modelClass.determineRelationshipType(descriptor, this.store);
+        const modelType = this.store.modelFor(modelClass.modelName);
+        const cardinality = modelType.determineRelationshipType(descriptor, this.store);
         let hasManyPath;
 
         if (cardinality === 'manyToOne') {
