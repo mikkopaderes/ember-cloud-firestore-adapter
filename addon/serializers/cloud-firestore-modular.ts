@@ -8,7 +8,6 @@
 import { isNone } from '@ember/utils';
 import DS from 'ember-data';
 import JSONSerializer from '@ember-data/serializer/json';
-import Store from '@ember-data/store';
 
 import { CollectionReference, DocumentReference, Firestore } from 'firebase/firestore';
 
