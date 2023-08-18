@@ -396,6 +396,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       store.push = sinon.stub();
       const determineRelationshipTypeStub = sinon.stub().returns('manyToNone');
       const snapshot = {
+        modelName: 'user',
         record: EmberObject.create({
           referenceTo: doc(db, 'users/user_a'),
         }),
