@@ -14,10 +14,10 @@ export default class UserModel extends Model {
   @attr('string')
   declare public name: string;
 
-  @hasMany('group')
+  @hasMany('group', { async: true, inverse: 'members' })
   declare public groups: DS.PromiseManyArray<GroupModel>;
 
-  @hasMany('post')
+  @hasMany('post', { async: true, inverse: 'author' })
   declare public posts: DS.PromiseManyArray<PostModel>;
 }
 
