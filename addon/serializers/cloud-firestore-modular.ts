@@ -55,7 +55,6 @@ interface AttributeSchema {
 
 interface ModelClass {
   modelName: string;
-  determineRelationshipType(descriptor: { kind: string, type: string }, store: Store): string;
   fields: Map<string, 'attribute' | 'belongsTo' | 'hasMany'>;
   attributes: Map<string, AttributeSchema>;
   relationshipsByName: Map<string, RelationshipSchema>;
@@ -71,6 +70,7 @@ interface ModelClass {
     callback: (this: T, key: string, relationship: RelationshipSchema) => void,
     binding?: T
   ): void;
+  determineRelationshipType(descriptor: { kind: string, type: string }, store: Store): string;
 }
 
 export default class CloudFirestoreSerializer extends JSONSerializer {
