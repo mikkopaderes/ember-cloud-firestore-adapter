@@ -33,13 +33,44 @@ interface RelationshipDefinition {
   };
 }
 
+interface RelationshipSchema {
+  name: string;
+  kind: 'belongsTo' | 'hasMany';
+  type: string;
+  options: {
+    async: boolean;
+    polymorphic?: boolean;
+    as?: string;
+    inverse: string | null;
+    [key: string]: unknown;
+  };
+}
+
+interface AttributeSchema {
+  name: string;
+  kind?: 'attribute';
+  options?: Record<string, unknown>;
+  type?: string;
+}
+
 interface ModelClass {
   modelName: string;
   determineRelationshipType(descriptor: { kind: string, type: string }, store: Store): string;
-  eachRelationship(callback: (name: string, descriptor: {
-    kind: string,
-    type: string,
-  }) => void): void;
+  fields: Map<string, 'attribute' | 'belongsTo' | 'hasMany'>;
+  attributes: Map<string, AttributeSchema>;
+  relationshipsByName: Map<string, RelationshipSchema>;
+  eachAttribute<T>(
+    callback: (this: T, key: string, attribute: AttributeSchema) => void,
+    binding?: T
+  ): void;
+  eachRelationship<T>(
+    callback: (this: T, key: string, relationship: RelationshipSchema) => void,
+    binding?: T
+  ): void;
+  eachTransformedAttribute<T>(
+    callback: (this: T, key: string, relationship: RelationshipSchema) => void,
+    binding?: T
+  ): void;
 }
 
 export default class CloudFirestoreSerializer extends JSONSerializer {
