@@ -32,6 +32,7 @@ export default class PostModel extends Model {
   @belongsTo('user', {
     async: true,
     inverse: null,
+
     buildReference(db: Firestore) {
       return collection(db, 'publishers');
     },
