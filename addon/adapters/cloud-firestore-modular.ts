@@ -82,10 +82,9 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     return fastboot && fastboot.isFastBoot;
   }
 
-  // @ts-expect-error EmberData types incorrect
-  public generateIdForRecord(_store: Store, type: string): string {
+  public generateIdForRecord(_store: Store, type: unknown): string {
     const db = getFirestore();
-    const collectionName = buildCollectionName(type);
+    const collectionName = buildCollectionName(type as string); // TODO: EmberData types incorrect
 
     return doc(collection(db, collectionName)).id;
   }
