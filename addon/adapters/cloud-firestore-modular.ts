@@ -282,7 +282,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     });
   }
 
-  private buildCollectionRef(
+  protected buildCollectionRef(
     modelName: keyof ModelRegistry,
     adapterOptions?: AdapterOption,
   ): CollectionReference {
