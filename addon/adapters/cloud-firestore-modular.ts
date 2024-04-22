@@ -8,6 +8,7 @@ import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
 import Adapter from '@ember-data/adapter';
 import DS from 'ember-data';
+import ModelRegistry from 'ember-data/types/registries/model';
 import RSVP from 'rsvp';
 import Store from '@ember-data/store';
 
@@ -34,9 +35,9 @@ import FirestoreDataManager from 'ember-cloud-firestore-adapter/services/-firest
 import buildCollectionName from 'ember-cloud-firestore-adapter/-private/build-collection-name';
 import flattenDocSnapshot from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
 
-interface ModelClass {
-  modelName: string;
-}
+type ModelClass<K extends keyof ModelRegistry> = ModelRegistry[K] & {
+  modelName: K;
+};
 
 interface AdapterOption {
   isRealtime?: boolean;
@@ -53,12 +54,12 @@ interface Snapshot extends DS.Snapshot {
   adapterOptions: AdapterOption;
 }
 
-interface SnapshotRecordArray extends DS.SnapshotRecordArray<string | number> {
+interface SnapshotRecordArray extends DS.SnapshotRecordArray<keyof ModelRegistry> {
   adapterOptions: AdapterOption;
 }
 
 interface BelongsToRelationshipMeta {
-  type: string;
+  type: keyof ModelRegistry;
   options: { isRealtime?: boolean };
 }
 
@@ -85,6 +86,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     return fastboot && fastboot.isFastBoot;
   }
 
+  // @ts-expect-error EmberData types are incorrect
   public generateIdForRecord(_store: Store, type: string): string {
     const db = getFirestore();
     const collectionName = buildCollectionName(type);
@@ -92,17 +94,17 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     return doc(collection(db, collectionName)).id;
   }
 
-  public createRecord(
+  public createRecord<K extends keyof ModelRegistry>(
     store: Store,
-    type: ModelClass,
+    type: ModelClass<K>,
     snapshot: Snapshot,
   ): RSVP.Promise<unknown> {
     return this.updateRecord(store, type, snapshot);
   }
 
-  public updateRecord(
+  public updateRecord<K extends keyof ModelRegistry>(
     _store: Store,
-    type: ModelClass,
+    type: ModelClass<K>,
     snapshot: Snapshot,
   ): RSVP.Promise<unknown> {
     return new RSVP.Promise((resolve, reject) => {
@@ -125,9 +127,9 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     });
   }
 
-  public deleteRecord(
+  public deleteRecord<K extends keyof ModelRegistry>(
     _store: Store,
-    type: ModelClass,
+    type: ModelClass<K>,
     snapshot: Snapshot,
   ): RSVP.Promise<unknown> {
     return new RSVP.Promise((resolve, reject) => {
@@ -147,9 +149,9 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     });
   }
 
-  public findRecord(
+  public findRecord<K extends keyof ModelRegistry>(
     _store: Store,
-    type: ModelClass,
+    type: ModelClass<K>,
     id: string,
     snapshot: Snapshot,
   ): RSVP.Promise<unknown> {
@@ -172,9 +174,9 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     });
   }
 
-  public findAll(
+  public findAll<K extends keyof ModelRegistry>(
     _store: Store,
-    type: ModelClass,
+    type: ModelClass<K>,
     _sinceToken: string,
     snapshotRecordArray?: SnapshotRecordArray,
   ): RSVP.Promise<unknown> {
@@ -195,9 +197,9 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     });
   }
 
-  public query(
+  public query<K extends keyof ModelRegistry>(
     _store: Store,
-    type: ModelClass,
+    type: ModelClass<K>,
     queryOption: AdapterOption,
     recordArray: DS.AdapterPopulatedRecordArray<unknown>,
   ): RSVP.Promise<unknown> {
@@ -267,7 +269,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
         const queryRef = this.buildHasManyCollectionRef(store, snapshot, url, relationship);
         const config = {
           queryRef,
-          modelName: snapshot.modelName as string,
+          modelName: snapshot.modelName,
           id: snapshot.id,
           field: relationship.key,
           referenceKeyName: this.referenceKeyName,
@@ -334,10 +336,10 @@ export default class CloudFirestoreModularAdapter extends Adapter {
       return relationship.options.filter?.(collectionRef, snapshot.record) || collectionRef;
     }
 
-    const cardinality = snapshot.type.determineRelationshipType(relationship, store);
+    const cardinality = (snapshot.type as any).determineRelationshipType(relationship, store);
 
     if (cardinality === 'manyToOne') {
-      const inverse = snapshot.type.inverseFor(relationship.key, store);
+      const inverse = (snapshot.type as any).inverseFor(relationship.key, store);
       const snapshotCollectionName = buildCollectionName(snapshot.modelName.toString());
       const snapshotDocRef = doc(db, `${snapshotCollectionName}/${snapshot.id}`);
       const collectionRef = collection(db, url);

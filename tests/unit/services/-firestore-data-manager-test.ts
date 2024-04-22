@@ -155,7 +155,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const queryRef = query(colRef);
       const config = {
         queryRef,
-        modelName: 'user',
+        modelName: 'user' as const,
         referenceKeyName: 'referenceTo',
         recordArray: {
           update: () => DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
@@ -180,7 +180,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const queryRef = query(colRef);
       const config = {
         queryRef,
-        modelName: 'user',
+        modelName: 'user' as const,
         referenceKeyName: 'referenceTo',
         recordArray: {
           update: () => DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
@@ -206,7 +206,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const queryRef = query(colRef);
       const config = {
         queryRef,
-        modelName: 'user',
+        modelName: 'user' as const,
         referenceKeyName: 'referenceTo',
         queryId: 'test',
         recordArray: {
@@ -240,7 +240,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const queryRef = query(colRef);
       const config = {
         queryRef,
-        modelName: 'user',
+        modelName: 'user' as const,
         id: 'user_a',
         field: 'posts',
         referenceKeyName: 'referenceTo',
@@ -264,7 +264,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const queryRef = query(colRef);
       const config = {
         queryRef,
-        modelName: 'user',
+        modelName: 'user' as const,
         id: 'user_a',
         field: 'groups',
         referenceKeyName: 'referenceTo',
@@ -296,7 +296,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const queryRef = query(colRef);
       const config = {
         queryRef,
-        modelName: 'user',
+        modelName: 'user' as const,
         id: 'user_a',
         field: 'groups',
         referenceKeyName: 'referenceTo',
