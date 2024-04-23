@@ -1,8 +1,3 @@
-/*
-  eslint
-  ember/use-ember-data-rfc-395-imports: off
-*/
-
 import { next } from '@ember/runloop';
 import DS from 'ember-data';
 import ModelRegistry from 'ember-data/types/registries/model';

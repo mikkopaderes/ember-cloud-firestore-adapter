@@ -1,8 +1,6 @@
 /*
   eslint
   import/no-cycle: off,
-  @typescript-eslint/ban-ts-comment: off,
-  ember/use-ember-data-rfc-395-imports: off,
 */
 
 import DS from 'ember-data';
@@ -22,7 +20,6 @@ export default class GroupModel extends Model {
   declare public members: DS.PromiseManyArray<UserModel>;
 
   @hasMany('post', {
-    // @ts-ignore: TODO - find a way to set custom property in RelationshipOptions interface
     isRealtime: true,
 
     filter(reference: Query) {

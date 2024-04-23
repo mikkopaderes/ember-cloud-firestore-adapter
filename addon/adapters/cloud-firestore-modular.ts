@@ -1,9 +1,3 @@
-/*
-  eslint
-  ember/use-ember-data-rfc-395-imports: off,
-  ember/no-ember-super-in-es-classes: off
-*/
-
 import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
 import Adapter from '@ember-data/adapter';
@@ -70,7 +64,7 @@ interface HasManyRelationshipMeta {
   };
 }
 
-export default class CloudFirestoreModularAdapter extends Adapter {
+export default class CloudFirestoreAdapter extends Adapter {
   @service('-firestore-data-manager')
   protected declare firestoreDataManager: FirestoreDataManager;
 
@@ -353,6 +347,6 @@ export default class CloudFirestoreModularAdapter extends Adapter {
 
 declare module 'ember-data/types/registries/adapter' {
   export default interface AdapterRegistry {
-    'cloud-firestore-modular': CloudFirestoreModularAdapter;
+    'cloud-firestore-modular': CloudFirestoreAdapter;
   }
 }
