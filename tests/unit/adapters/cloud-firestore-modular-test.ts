@@ -1,7 +1,13 @@
+/*
+  eslint
+  max-classes-per-file: off
+*/
+
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import EmberObject from '@ember/object';
 
+import Store from '@ember-data/store';
 import { CollectionReference, Firestore, WriteBatch } from 'firebase/firestore';
 import sinon from 'sinon';
 
@@ -354,19 +360,24 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
   module('function: findHasMany', function () {
     test('should fetch many-to-one cardinality', async function (assert) {
       // Arrange
+      const determineRelationshipTypeStub = sinon.stub().returns('manyToOne');
+      const inverseForStub = sinon.stub().returns({ name: 'author' });
+      this.owner.register('service:store', class extends Store {
+        modelFor() {
+          return {
+            determineRelationshipType: determineRelationshipTypeStub,
+            inverseFor: inverseForStub,
+          };
+        }
+      });
+
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
       store.push = sinon.stub();
-      const determineRelationshipTypeStub = sinon.stub().returns('manyToOne');
-      const inverseForStub = sinon.stub().returns({ name: 'author' });
       const snapshot = {
         id: 'user_a',
         modelName: 'user',
         record: EmberObject.create(),
-        type: {
-          determineRelationshipType: determineRelationshipTypeStub,
-          inverseFor: inverseForStub,
-        },
       };
       const url = 'posts';
       const relationship = {
@@ -392,17 +403,23 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
 
     test('should fetch many-to-whatever cardinality', async function (assert) {
       // Arrange
+      const determineRelationshipTypeStub = sinon.stub().returns('manyToNone');
+      this.owner.register('service:store', class extends Store {
+        modelFor() {
+          return {
+            determineRelationshipType: determineRelationshipTypeStub,
+          };
+        }
+      });
+
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
       store.push = sinon.stub();
-      const determineRelationshipTypeStub = sinon.stub().returns('manyToNone');
       const snapshot = {
+        modelName: 'user',
         record: EmberObject.create({
           referenceTo: doc(db, 'users/user_a'),
         }),
-        type: {
-          determineRelationshipType: determineRelationshipTypeStub,
-        },
       };
       const url = 'users/user_a/friends';
       const relationship = {
@@ -432,21 +449,26 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
 
     test('should be able to fetch with filter using a record property', async function (assert) {
       // Arrange
+      const determineRelationshipTypeStub = sinon.stub().returns('manyToOne');
+      const inverseForStub = sinon.stub().returns({ name: 'author' });
+      this.owner.register('service:store', class extends Store {
+        modelFor() {
+          return {
+            determineRelationshipType: determineRelationshipTypeStub,
+            inverseFor: inverseForStub,
+          };
+        }
+      });
+
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
       store.push = sinon.stub();
-      const determineRelationshipTypeStub = sinon.stub().returns('manyToOne');
-      const inverseForStub = sinon.stub().returns({ name: 'author' });
       const snapshot = {
         id: 'user_a',
         modelName: 'user',
         record: EmberObject.create({
           id: 'user_a',
         }),
-        type: {
-          determineRelationshipType: determineRelationshipTypeStub,
-          inverseFor: inverseForStub,
-        },
       };
       const url = 'posts';
       const relationship = {
