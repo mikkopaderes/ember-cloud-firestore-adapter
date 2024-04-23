@@ -1,9 +1,3 @@
-/*
-  eslint
-  ember/use-ember-data-rfc-395-imports: off,
-  ember/no-ember-super-in-es-classes: off
-*/
-
 import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
 import Adapter from '@ember-data/adapter';

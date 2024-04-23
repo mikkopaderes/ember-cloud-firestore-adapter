@@ -1,7 +1,6 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import { waitUntil } from '@ember/test-helpers';
-// eslint-disable-next-line ember/use-ember-data-rfc-395-imports
 import DS from 'ember-data';
 import RSVP from 'rsvp';
 import Store from '@ember-data/store';

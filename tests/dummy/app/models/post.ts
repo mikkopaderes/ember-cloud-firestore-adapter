@@ -1,8 +1,6 @@
 /*
   eslint
   import/no-cycle: off,
-  @typescript-eslint/ban-ts-comment: off,
-  ember/use-ember-data-rfc-395-imports: off,
 */
 
 import DS from 'ember-data';
@@ -31,7 +29,6 @@ export default class PostModel extends Model {
   @belongsTo('user', {
     inverse: null,
 
-    // @ts-ignore: TODO - find a way to set custom property in RelationshipOptions interface
     buildReference(db: Firestore) {
       return collection(db, 'publishers');
     },
