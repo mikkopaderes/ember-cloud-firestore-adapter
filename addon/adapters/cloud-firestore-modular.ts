@@ -72,11 +72,11 @@ interface HasManyRelationshipMeta {
 
 export default class CloudFirestoreModularAdapter extends Adapter {
   @service('-firestore-data-manager')
-  private declare firestoreDataManager: FirestoreDataManager;
+  protected declare firestoreDataManager: FirestoreDataManager;
 
   protected referenceKeyName = 'referenceTo';
 
-  private get isFastBoot(): boolean {
+  protected get isFastBoot(): boolean {
     const fastboot = getOwner(this).lookup('service:fastboot');
 
     return fastboot && fastboot.isFastBoot;
