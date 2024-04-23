@@ -35,7 +35,7 @@ import FirestoreDataManager from 'ember-cloud-firestore-adapter/services/-firest
 import buildCollectionName from 'ember-cloud-firestore-adapter/-private/build-collection-name';
 import flattenDocSnapshot from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
 
-interface AdapterOption {
+export interface AdapterOption {
   isRealtime?: boolean;
   queryId?: string;
 
