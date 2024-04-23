@@ -64,7 +64,7 @@ interface HasManyRelationshipMeta {
   };
 }
 
-export default class CloudFirestoreModularAdapter extends Adapter {
+export default class CloudFirestoreAdapter extends Adapter {
   @service('-firestore-data-manager')
   protected declare firestoreDataManager: FirestoreDataManager;
 
@@ -347,6 +347,6 @@ export default class CloudFirestoreModularAdapter extends Adapter {
 
 declare module 'ember-data/types/registries/adapter' {
   export default interface AdapterRegistry {
-    'cloud-firestore-modular': CloudFirestoreModularAdapter;
+    'cloud-firestore-modular': CloudFirestoreAdapter;
   }
 }
