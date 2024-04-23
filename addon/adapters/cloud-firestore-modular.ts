@@ -35,7 +35,7 @@ import FirestoreDataManager from 'ember-cloud-firestore-adapter/services/-firest
 import buildCollectionName from 'ember-cloud-firestore-adapter/-private/build-collection-name';
 import flattenDocSnapshot from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
 
-interface AdapterOption {
+export interface AdapterOption {
   isRealtime?: boolean;
   queryId?: string;
 
@@ -72,11 +72,11 @@ interface HasManyRelationshipMeta {
 
 export default class CloudFirestoreModularAdapter extends Adapter {
   @service('-firestore-data-manager')
-  private declare firestoreDataManager: FirestoreDataManager;
+  protected declare firestoreDataManager: FirestoreDataManager;
 
   protected referenceKeyName = 'referenceTo';
 
-  private get isFastBoot(): boolean {
+  protected get isFastBoot(): boolean {
     const fastboot = getOwner(this).lookup('service:fastboot');
 
     return fastboot && fastboot.isFastBoot;
@@ -282,7 +282,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     });
   }
 
-  private buildCollectionRef(
+  protected buildCollectionRef(
     modelName: keyof ModelRegistry,
     adapterOptions?: AdapterOption,
   ): CollectionReference {

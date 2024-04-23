@@ -6,7 +6,7 @@
 */
 
 import { isNone } from '@ember/utils';
-import DS from 'ember-data';
+import DS, { ModelSchema } from 'ember-data';
 import JSONSerializer from '@ember-data/serializer/json';
 import Store from '@ember-data/store';
 
@@ -33,43 +33,8 @@ interface RelationshipDefinition {
   };
 }
 
-interface RelationshipSchema {
-  name: string;
-  kind: 'belongsTo' | 'hasMany';
-  type: string;
-  options: {
-    async: boolean;
-    polymorphic?: boolean;
-    as?: string;
-    inverse: string | null;
-    [key: string]: unknown;
-  };
-}
-
-interface AttributeSchema {
-  name: string;
-  kind?: 'attribute';
-  options?: Record<string, unknown>;
-  type?: string;
-}
-
-interface ModelClass {
-  modelName: string;
-  fields: Map<string, 'attribute' | 'belongsTo' | 'hasMany'>;
-  attributes: Map<string, AttributeSchema>;
-  relationshipsByName: Map<string, RelationshipSchema>;
-  eachAttribute<T>(
-    callback: (this: T, key: string, attribute: AttributeSchema) => void,
-    binding?: T
-  ): void;
-  eachTransformedAttribute<T>(
-    callback: (this: T, key: string, relationship: RelationshipSchema) => void,
-    binding?: T
-  ): void;
+type ModelClass = ModelSchema & {
   determineRelationshipType(descriptor: { kind: string, type: string }, store: Store): string;
-  eachRelationship<T>(callback: (this: T, name: string, descriptor: RelationshipSchema) => void,
-    binding?: T
-  ): void;
 }
 
 export default class CloudFirestoreSerializer extends JSONSerializer {
@@ -105,7 +70,7 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
         if (cardinality === 'manyToOne') {
           hasManyPath = buildCollectionName(descriptor.type);
         } else {
-          const collectionName = buildCollectionName(modelClass.modelName);
+          const collectionName = buildCollectionName(modelClass.modelName as string);
           const docId = resourceHash.id;
 
           hasManyPath = `${collectionName}/${docId}/${name}`;
