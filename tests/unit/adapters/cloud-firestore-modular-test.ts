@@ -20,7 +20,7 @@ import {
   query,
   where,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
-import { AdapterRecordNotFoundError } from 'ember-cloud-firestore-adapter/utils/custom-errors';
+import AdapterRecordNotFoundError from 'ember-cloud-firestore-adapter/utils/custom-errors';
 import resetFixtureData from '../../helpers/reset-fixture-data';
 
 module('Unit | Adapter | cloud firestore modular', function (hooks) {

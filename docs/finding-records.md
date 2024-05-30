@@ -45,7 +45,7 @@ Hook for providing a custom collection reference on where you want to fetch the 
 When finding a single record, you can catch for `AdapterRecordNotFoundError` error when the record doesn't exist.
 
 ```javascript
-import { AdapterRecordNotFoundError } from 'ember-cloud-firestore-adapter/utils/custom-errors';
+import AdapterRecordNotFoundError from 'ember-cloud-firestore-adapter/utils/custom-errors';
 
 this.store.findRecord('user', 'user_1').then((record) => {
   // Do something
