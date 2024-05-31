@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 
-import { AdapterRecordNotFoundError } from 'ember-cloud-firestore-adapter/utils/custom-errors';
+import AdapterRecordNotFoundError from 'ember-cloud-firestore-adapter/utils/custom-errors';
 
 module('Unit | Utility | custom-errors', function () {
   module('class: AdapterRecordNotFoundError', function () {

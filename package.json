@@ -1,6 +1,6 @@
 {
   "name": "ember-cloud-firestore-adapter",
-  "version": "3.2.4",
+  "version": "4.0.0",
   "description": "Unofficial Ember Data Adapter and Serializer for Cloud Firestore",
   "keywords": [
     "ember-addon",
@@ -78,7 +78,7 @@
     "broccoli-asset-rev": "^3.0.0",
     "ember-cli": "~4.4.0",
     "ember-cli-dependency-checker": "^3.3.1",
-    "ember-cli-fastboot": "^3.3.2",
+    "ember-cli-fastboot": "^4.1.2",
     "ember-cli-inject-live-reload": "^2.1.0",
     "ember-cli-sri": "^2.1.1",
     "ember-cli-terser": "^4.0.2",
@@ -120,7 +120,7 @@
   },
   "peerDependencies": {
     "ember-auto-import": "2.x",
-    "ember-simple-auth": "4.x || 5.x",
+    "ember-simple-auth": "4.x || 5.x || 6.x",
     "firebase": "9.14.x"
   },
   "engines": {

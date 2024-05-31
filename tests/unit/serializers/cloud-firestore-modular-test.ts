@@ -1,6 +1,8 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 
+import CloudFirestoreSerializer from 'ember-cloud-firestore-adapter/serializers/cloud-firestore-modular';
+
 module('Unit | Serializer | cloud-firestore modular', function (hooks) {
   setupTest(hooks);
 
@@ -28,6 +30,35 @@ module('Unit | Serializer | cloud-firestore modular', function (hooks) {
 
       // Assert
       assert.deepEqual(result, null);
+    });
+  });
+
+  module('extractRelationships()', function () {
+    test('should return object containing manyToMany and manyToOne links', function (assert) {
+      // Arrange
+      const serializer = this.owner.lookup('serializer:cloud-firestore-modular') as CloudFirestoreSerializer;
+      const store = this.owner.lookup('service:store');
+      serializer.store = store; // TODO: injected store on serializer is undefined in tests
+
+      // Act
+      const result = serializer.extractRelationships(store.modelFor('user'), {
+        id: 'user_a',
+        links: {},
+      });
+
+      // Assert
+      assert.deepEqual(result, {
+        groups: {
+          links: {
+            related: 'users/user_a/groups',
+          },
+        },
+        posts: {
+          links: {
+            related: 'posts',
+          },
+        },
+      });
     });
   });
 
