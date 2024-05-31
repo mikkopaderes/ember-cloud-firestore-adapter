@@ -17,7 +17,6 @@ module.exports = function (defaults) {
 
   const { maybeEmbroider } = require('@embroider/test-setup');
   return maybeEmbroider(app, {
-    staticEmberSource: false, // ember-cli-fastboot accesses ember without import https://github.com/ember-fastboot/ember-cli-fastboot/issues/925
     skipBabel: [
       {
         package: 'qunit',
