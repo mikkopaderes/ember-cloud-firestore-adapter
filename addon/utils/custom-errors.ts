@@ -1,6 +1,4 @@
-/* eslint-disable import/prefer-default-export */
-
-export class AdapterRecordNotFoundError extends Error {
+export default class AdapterRecordNotFoundError extends Error {
   public cause: string | undefined;
 
   constructor(message?: string, options?: { cause: string }) {
