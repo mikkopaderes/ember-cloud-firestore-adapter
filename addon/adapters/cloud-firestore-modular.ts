@@ -24,7 +24,7 @@ import {
   where,
   writeBatch,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
-import { AdapterRecordNotFoundError } from 'ember-cloud-firestore-adapter/utils/custom-errors';
+import AdapterRecordNotFoundError from 'ember-cloud-firestore-adapter/utils/custom-errors';
 import FirestoreDataManager from 'ember-cloud-firestore-adapter/services/-firestore-data-manager';
 import buildCollectionName from 'ember-cloud-firestore-adapter/-private/build-collection-name';
 import flattenDocSnapshot from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
