@@ -26,7 +26,6 @@ export default class PostModel extends Model {
   @belongsTo('group', { async: true, inverse: 'posts' })
   declare public group: DS.PromiseObject<GroupModel>;
 
-  // @ts-ignore: TODO - find a way to set custom property in RelationshipOptions interface
   @belongsTo('user', {
     async: true,
     inverse: null,
