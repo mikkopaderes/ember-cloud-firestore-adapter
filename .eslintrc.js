@@ -52,6 +52,7 @@ module.exports = {
     }],
     'class-methods-use-this': 'off',
     'no-underscore-dangle': 'off',
+    'ember/use-ember-data-rfc-395-imports': 'off',
   },
   overrides: [
     // node files
@@ -77,7 +78,6 @@ module.exports = {
       plugins: ['node'],
       extends: ['plugin:node/recommended']
     },
-    // test files
     {
       // test files
       files: ['tests/**/*-test.{js,ts}'],

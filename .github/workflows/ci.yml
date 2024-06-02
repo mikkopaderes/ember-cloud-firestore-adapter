@@ -60,12 +60,8 @@ jobs:
           - ember-beta
           - ember-canary
           - ember-classic
-          # Disable Embroider builds as Acceptance Tests are failing with the error:
-          # Attempting to inject an unknown injection: 'service:session'
-          # I believe this is something that has to do with ember-simple-auth and not our
-          # our addon itself.
-          # - embroider-safe
-          # - embroider-optimized
+          - embroider-safe
+          - embroider-optimized
 
     steps:
       - uses: actions/checkout@v3

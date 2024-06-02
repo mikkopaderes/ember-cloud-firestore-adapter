@@ -1,8 +1,6 @@
 /*
   eslint
   import/no-cycle: off,
-  @typescript-eslint/ban-ts-comment: off,
-  ember/use-ember-data-rfc-395-imports: off,
 */
 
 import DS from 'ember-data';

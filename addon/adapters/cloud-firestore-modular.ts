@@ -1,13 +1,8 @@
-/*
-  eslint
-  ember/use-ember-data-rfc-395-imports: off,
-  ember/no-ember-super-in-es-classes: off
-*/
-
 import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
 import Adapter from '@ember-data/adapter';
-import DS from 'ember-data';
+import DS, { ModelSchema } from 'ember-data';
+import ModelRegistry from 'ember-data/types/registries/model';
 import RSVP from 'rsvp';
 import Store from '@ember-data/store';
 
@@ -29,16 +24,12 @@ import {
   where,
   writeBatch,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
-import { AdapterRecordNotFoundError } from 'ember-cloud-firestore-adapter/utils/custom-errors';
+import AdapterRecordNotFoundError from 'ember-cloud-firestore-adapter/utils/custom-errors';
 import FirestoreDataManager from 'ember-cloud-firestore-adapter/services/-firestore-data-manager';
 import buildCollectionName from 'ember-cloud-firestore-adapter/-private/build-collection-name';
 import flattenDocSnapshot from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
 
-interface ModelClass {
-  modelName: string;
-}
-
-interface AdapterOption {
+export interface AdapterOption {
   isRealtime?: boolean;
   queryId?: string;
 
@@ -53,12 +44,12 @@ interface Snapshot extends DS.Snapshot {
   adapterOptions: AdapterOption;
 }
 
-interface SnapshotRecordArray extends DS.SnapshotRecordArray<string | number> {
+interface SnapshotRecordArray extends DS.SnapshotRecordArray<keyof ModelRegistry> {
   adapterOptions: AdapterOption;
 }
 
 interface BelongsToRelationshipMeta {
-  type: string;
+  type: keyof ModelRegistry;
   options: { isRealtime?: boolean };
 }
 
@@ -73,28 +64,28 @@ interface HasManyRelationshipMeta {
   };
 }
 
-export default class CloudFirestoreModularAdapter extends Adapter {
+export default class CloudFirestoreAdapter extends Adapter {
   @service('-firestore-data-manager')
-  private declare firestoreDataManager: FirestoreDataManager;
+  protected declare firestoreDataManager: FirestoreDataManager;
 
   protected referenceKeyName = 'referenceTo';
 
-  private get isFastBoot(): boolean {
+  protected get isFastBoot(): boolean {
     const fastboot = getOwner(this).lookup('service:fastboot');
 
     return fastboot && fastboot.isFastBoot;
   }
 
-  public generateIdForRecord(_store: Store, type: string): string {
+  public generateIdForRecord(_store: Store, type: unknown): string {
     const db = getFirestore();
-    const collectionName = buildCollectionName(type);
+    const collectionName = buildCollectionName(type as string); // TODO: EmberData types incorrect
 
     return doc(collection(db, collectionName)).id;
   }
 
   public createRecord(
     store: Store,
-    type: ModelClass,
+    type: ModelSchema,
     snapshot: Snapshot,
   ): RSVP.Promise<unknown> {
     return this.updateRecord(store, type, snapshot);
@@ -102,7 +93,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
 
   public updateRecord(
     _store: Store,
-    type: ModelClass,
+    type: ModelSchema,
     snapshot: Snapshot,
   ): RSVP.Promise<unknown> {
     return new RSVP.Promise((resolve, reject) => {
@@ -127,7 +118,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
 
   public deleteRecord(
     _store: Store,
-    type: ModelClass,
+    type: ModelSchema,
     snapshot: Snapshot,
   ): RSVP.Promise<unknown> {
     return new RSVP.Promise((resolve, reject) => {
@@ -149,7 +140,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
 
   public findRecord(
     _store: Store,
-    type: ModelClass,
+    type: ModelSchema,
     id: string,
     snapshot: Snapshot,
   ): RSVP.Promise<unknown> {
@@ -174,14 +165,14 @@ export default class CloudFirestoreModularAdapter extends Adapter {
 
   public findAll(
     _store: Store,
-    type: ModelClass,
+    type: ModelSchema,
     _sinceToken: string,
     snapshotRecordArray?: SnapshotRecordArray,
   ): RSVP.Promise<unknown> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
         const db = getFirestore();
-        const colRef = collection(db, buildCollectionName(type.modelName));
+        const colRef = collection(db, buildCollectionName(type.modelName as string));
         const querySnapshot = snapshotRecordArray?.adapterOptions?.isRealtime && !this.isFastBoot
           ? await this.firestoreDataManager.findAllRealtime(type.modelName, colRef)
           : await getDocs(colRef);
@@ -197,7 +188,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
 
   public query(
     _store: Store,
-    type: ModelClass,
+    type: ModelSchema,
     queryOption: AdapterOption,
     recordArray: DS.AdapterPopulatedRecordArray<unknown>,
   ): RSVP.Promise<unknown> {
@@ -267,7 +258,7 @@ export default class CloudFirestoreModularAdapter extends Adapter {
         const queryRef = this.buildHasManyCollectionRef(store, snapshot, url, relationship);
         const config = {
           queryRef,
-          modelName: snapshot.modelName as string,
+          modelName: snapshot.modelName,
           id: snapshot.id,
           field: relationship.key,
           referenceKeyName: this.referenceKeyName,
@@ -285,13 +276,14 @@ export default class CloudFirestoreModularAdapter extends Adapter {
     });
   }
 
-  private buildCollectionRef(
-    modelName: string,
+  protected buildCollectionRef(
+    modelName: keyof ModelRegistry,
     adapterOptions?: AdapterOption,
   ): CollectionReference {
     const db = getFirestore();
 
-    return adapterOptions?.buildReference?.(db) || collection(db, buildCollectionName(modelName));
+    return adapterOptions?.buildReference?.(db)
+      || collection(db, buildCollectionName(modelName as string));
   }
 
   private addDocRefToWriteBatch(
@@ -334,10 +326,11 @@ export default class CloudFirestoreModularAdapter extends Adapter {
       return relationship.options.filter?.(collectionRef, snapshot.record) || collectionRef;
     }
 
-    const cardinality = snapshot.type.determineRelationshipType(relationship, store);
+    const modelClass = store.modelFor(snapshot.modelName);
+    const cardinality = modelClass.determineRelationshipType(relationship, store);
 
     if (cardinality === 'manyToOne') {
-      const inverse = snapshot.type.inverseFor(relationship.key, store);
+      const inverse = modelClass.inverseFor(relationship.key, store);
       const snapshotCollectionName = buildCollectionName(snapshot.modelName.toString());
       const snapshotDocRef = doc(db, `${snapshotCollectionName}/${snapshot.id}`);
       const collectionRef = collection(db, url);
@@ -354,6 +347,6 @@ export default class CloudFirestoreModularAdapter extends Adapter {
 
 declare module 'ember-data/types/registries/adapter' {
   export default interface AdapterRegistry {
-    'cloud-firestore-modular': CloudFirestoreModularAdapter;
+    'cloud-firestore-modular': CloudFirestoreAdapter;
   }
 }

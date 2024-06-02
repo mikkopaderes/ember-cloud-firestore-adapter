@@ -1,7 +1,6 @@
 /*
   eslint
   import/no-cycle: off,
-  ember/use-ember-data-rfc-395-imports: off,
 */
 
 import DS from 'ember-data';

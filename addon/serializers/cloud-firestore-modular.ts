@@ -1,12 +1,10 @@
 /*
   eslint
-  @typescript-eslint/ban-types: off,
-  ember/use-ember-data-rfc-395-imports: off,
   no-param-reassign: off,
 */
 
 import { isNone } from '@ember/utils';
-import DS from 'ember-data';
+import DS, { ModelSchema } from 'ember-data';
 import JSONSerializer from '@ember-data/serializer/json';
 import Store from '@ember-data/store';
 
@@ -33,20 +31,15 @@ interface RelationshipDefinition {
   };
 }
 
-interface ModelClass {
-  modelName: string;
+type ModelClass = ModelSchema & {
   determineRelationshipType(descriptor: { kind: string, type: string }, store: Store): string;
-  eachRelationship(callback: (name: string, descriptor: {
-    kind: string,
-    type: string,
-  }) => void): void;
 }
 
 export default class CloudFirestoreSerializer extends JSONSerializer {
   public extractRelationship(
     relationshipModelName: string,
     relationshipHash: DocumentReference,
-  ): { id: string, type: string } | {} {
+  ): { id: string, type: string } | Record<string, unknown> {
     if (isNone(relationshipHash)) {
       return super.extractRelationship(relationshipModelName, relationshipHash);
     }
@@ -57,7 +50,10 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
     return { id: belongsToId, type: relationshipModelName };
   }
 
-  public extractRelationships(modelClass: ModelClass, resourceHash: ResourceHash): {} {
+  public extractRelationships(
+    modelClass: ModelClass,
+    resourceHash: ResourceHash,
+  ): Record<string, unknown> {
     const newResourceHash = { ...resourceHash };
     const links: { [key: string]: string } = {};
 
@@ -75,7 +71,7 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
         if (cardinality === 'manyToOne') {
           hasManyPath = buildCollectionName(descriptor.type);
         } else {
-          const collectionName = buildCollectionName(modelClass.modelName);
+          const collectionName = buildCollectionName(modelClass.modelName as string);
           const docId = resourceHash.id;
 
           hasManyPath = `${collectionName}/${docId}/${name}`;
@@ -115,7 +111,10 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
     }
   }
 
-  public serialize(snapshot: DS.Snapshot, options: {}): {} {
+  public serialize(
+    snapshot: DS.Snapshot,
+    options: Record<string, unknown>,
+  ): Record<string, unknown> {
     const json: { [key: string]: unknown } = { ...super.serialize(snapshot, options) };
 
     snapshot.eachRelationship((name: string, relationship) => {
