@@ -19,7 +19,6 @@ export default class GroupModel extends Model {
   @hasMany('user', { async: true, inverse: 'groups' })
   declare public members: DS.PromiseManyArray<UserModel>;
 
-  // @ts-ignore: TODO - find a way to set custom property in RelationshipOptions interface
   @hasMany('post', {
     async: true,
     inverse: 'group',
