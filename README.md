@@ -25,7 +25,6 @@ In order to continue development with Ember and Cloud Firestore, I had to build 
 * Node.js v14 or above
 * Firebase v9.14.x
 
-
 ## Installation
 
 This addon requires some peer dependencies. Install the correct versions of each package, which are listed by the command:
