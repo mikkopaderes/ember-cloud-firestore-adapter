@@ -49,6 +49,7 @@ module.exports = {
     'class-methods-use-this': 'off',
     'no-underscore-dangle': 'off',
     'ember/use-ember-data-rfc-395-imports': 'off',
+    'no-restricted-exports': 'off',
   },
   overrides: [
     // node files

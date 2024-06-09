@@ -6,12 +6,13 @@
   width: 100%;
 }
 
-.test-table td, .test-table th {
-  border: 1px solid #dddddd;
+.test-table td,
+.test-table th {
+  border: 1px solid #ddd;
   text-align: left;
   padding: 8px;
 }
 
 .test-table tr:nth-child(even) {
-  background-color: #dddddd;
+  background-color: #ddd;
 }
