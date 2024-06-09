@@ -5,7 +5,7 @@
 Configurations can be set under the `ember-cloud-firestore-adapter` like this:
 
 ```javascript
-let ENV = {
+const ENV = {
   ...
 
   'ember-cloud-firestore-adapter': {
@@ -34,7 +34,7 @@ let ENV = {
   },
 
   ...
-}
+};
 ```
 
 ### Available Configurations
