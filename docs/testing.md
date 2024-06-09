@@ -7,7 +7,7 @@ We use [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator
 Add an `ember-cloud-firestore-adapter.firestore.emulator` property in your `config/environment.js` and **make sure to disable it in production environment**.
 
 ```javascript
-let ENV = {
+const ENV = {
   ...
 
   'ember-cloud-firestore-adapter': {
@@ -16,13 +16,13 @@ let ENV = {
     firestore: {
       emulator: {
         hostname: 'localhost',
-        port: 8080
-      }
-    }
+        port: 8080,
+      },
+    },
   },
 
   ...
-}
+};
 
 if (environment === 'production') {
   ENV['ember-cloud-firestore-adapter'].firestore.emulator = null;
