@@ -40,7 +40,6 @@
     "ember-cli-typescript": "^4.2.1"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.21.3",
     "@babel/plugin-proposal-decorators": "^7.21.0",
     "@ember/optional-features": "^2.0.0",
     "@ember/string": "^3.0.1",
@@ -77,8 +76,8 @@
     "@types/qunit": "^2.11.2",
     "@types/rsvp": "^4.0.4",
     "@types/sinon": "^9.0.8",
-    "@typescript-eslint/eslint-plugin": "^4.8.1",
-    "@typescript-eslint/parser": "^4.8.1",
+    "@typescript-eslint/eslint-plugin": "^7.12.0",
+    "@typescript-eslint/parser": "^7.12.0",
     "broccoli-asset-rev": "^3.0.0",
     "concurrently": "^8.0.1",
     "ember-cli": "~4.12.3",
@@ -101,7 +100,7 @@
     "ember-template-lint": "^5.7.2",
     "ember-try": "^3.0.0",
     "eslint": "^8.37.0",
-    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-ember": "^11.5.0",
     "eslint-plugin-import": "^2.7.0",
