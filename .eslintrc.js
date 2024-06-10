@@ -48,6 +48,9 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'ember/use-ember-data-rfc-395-imports': 'off',
     'no-restricted-exports': 'off',
+    'lines-between-class-members': 'off',
+    'array-callback-return': 'off',
+    'func-names': 'off',
   },
   overrides: [
     // node files
@@ -71,7 +74,15 @@ module.exports = {
         node: true,
       },
       plugins: ['node'],
-      extends: ['plugin:node/recommended']
+      extends: ['plugin:node/recommended'],
+      rules: {
+        '@typescript-eslint/no-var-requires': 'off',
+        'global-require': 'off',
+        'prefer-object-spread': 'off',
+        'prefer-rest-params': 'off',
+        strict: 'off',
+        'node/no-extraneous-require': 'off',
+      },
     },
     {
       // test files

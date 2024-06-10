@@ -1,3 +1,6 @@
+/* global importScripts, firebase */
+/* eslint-disable no-restricted-globals, no-restricted-syntax */
+
 import {
   firebaseVersion,
   firebaseConfig,
