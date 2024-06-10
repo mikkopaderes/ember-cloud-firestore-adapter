@@ -71,7 +71,8 @@ export default class CloudFirestoreAdapter extends Adapter {
   protected referenceKeyName = 'referenceTo';
 
   protected get isFastBoot(): boolean {
-    const fastboot = getOwner(this).lookup('service:fastboot');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const fastboot = getOwner(this).lookup('service:fastboot') as any;
 
     return fastboot && fastboot.isFastBoot;
   }

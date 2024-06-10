@@ -53,6 +53,10 @@ interface AddonConfig {
   storage?: StorageAddonConfig;
 }
 
+interface Config {
+  'ember-cloud-firestore-adapter': AddonConfig;
+}
+
 function getDb(app: FirebaseApp, config: FirestoreAddonConfig): Firestore {
   if (config.settings) {
     return initializeFirestore(app, config.settings);
@@ -116,8 +120,8 @@ function setupModularInstance(config: AddonConfig) {
 }
 
 export function initialize(appInstance: ApplicationInstance): void {
-  const config = appInstance.resolveRegistration('config:environment');
-  const addonConfig: AddonConfig = config['ember-cloud-firestore-adapter'];
+  const config = appInstance.resolveRegistration('config:environment') as Config;
+  const addonConfig = config['ember-cloud-firestore-adapter'];
 
   try {
     setupModularInstance(addonConfig);
