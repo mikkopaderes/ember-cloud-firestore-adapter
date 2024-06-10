@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 'use strict';
 
 module.exports = {
@@ -12,10 +10,7 @@ module.exports = {
       legacyDecorators: true,
     },
   },
-  plugins: [
-    '@typescript-eslint',
-    'ember',
-  ],
+  plugins: ['@typescript-eslint', 'ember'],
   extends: [
     'airbnb-base',
     'plugin:@typescript-eslint/recommended',
@@ -30,26 +25,25 @@ module.exports = {
   settings: {
     'import/resolver': {
       node: {
-        extensions: ['.mjs', '.js', '.json', '.ts']
-      }
+        extensions: ['.mjs', '.js', '.json', '.ts'],
+      },
     },
-    'import/extensions': [
-      '.js',
-      '.mjs',
-      '.jsx',
-      '.ts',
-    ],
+    'import/extensions': ['.js', '.mjs', '.jsx', '.ts'],
   },
   rules: {
-    'semi': 'off', // enforced by @typescript-eslint/semi
+    semi: 'off', // enforced by @typescript-eslint/semi
     'import/no-unresolved': 'off',
     'import/no-extraneous-dependencies': 'off',
-    'import/extensions': ['error', 'ignorePackages', {
-      js: 'never',
-      mjs: 'never',
-      jsx: 'never',
-      ts: 'never',
-    }],
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        js: 'never',
+        mjs: 'never',
+        jsx: 'never',
+        ts: 'never',
+      },
+    ],
     'class-methods-use-this': 'off',
     'no-underscore-dangle': 'off',
     'ember/use-ember-data-rfc-395-imports': 'off',
@@ -86,8 +80,8 @@ module.exports = {
       rules: {
         'prefer-arrow-callback': 'off',
         'func-names': 'off',
-        '@typescript-eslint/no-empty-function': 'off'
-      }
-    }
-  ]
+        '@typescript-eslint/no-empty-function': 'off',
+      },
+    },
+  ],
 };
