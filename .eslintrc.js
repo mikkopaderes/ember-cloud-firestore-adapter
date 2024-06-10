@@ -6,11 +6,7 @@ module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: 2018,
-    sourceType: 'module',
-    ecmaFeatures: {
-      legacyDecorators: true,
-    },
+    ecmaVersion: 'latest',
   },
   plugins: [
     '@typescript-eslint',
@@ -61,6 +57,7 @@ module.exports = {
       files: [
         './.eslintrc.js',
         './.prettierrc.js',
+        './.stylelintrc.js',
         './.template-lintrc.js',
         './ember-cli-build.js',
         './index.js',
@@ -76,8 +73,7 @@ module.exports = {
         browser: false,
         node: true,
       },
-      plugins: ['node'],
-      extends: ['plugin:node/recommended']
+      extends: ['plugin:n/recommended'],
     },
     {
       // test files
