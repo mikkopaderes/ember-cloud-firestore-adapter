@@ -1,3 +1,6 @@
+/* global importScripts, firebase */
+/* eslint-disable no-restricted-globals, no-restricted-syntax */
+
 import {
   firebaseVersion,
   firebaseConfig,
@@ -14,18 +17,18 @@ function getIdToken() {
       unsubscribe();
 
       if (user) {
-        user.getIdToken().then(idToken => resolve(idToken)).catch(() => resolve(null));
+        user.getIdToken().then((idToken) => resolve(idToken)).catch(() => resolve(null));
       } else {
         resolve(null);
       }
     });
   });
-};
+}
 
 function cloneHeaderWithIdToken(headersToClone, idToken) {
   const newHeaders = new Headers();
 
-  for (let entry of headersToClone.entries()) {
+  for (const entry of headersToClone.entries()) {
     newHeaders.append(entry[0], entry[1]);
   }
 
@@ -40,8 +43,8 @@ self.addEventListener('fetch', (event) => {
     const { origin: eventRequestUrlOrigin } = new URL(event.request.url);
 
     if (
-      self.location.origin == eventRequestUrlOrigin
-      && (self.location.protocol == 'https:' || self.location.hostname == 'localhost')
+      self.location.origin === eventRequestUrlOrigin
+      && (self.location.protocol === 'https:' || self.location.hostname === 'localhost')
       && idToken
     ) {
       const headers = cloneHeaderWithIdToken(req.headers, idToken);
@@ -49,7 +52,7 @@ self.addEventListener('fetch', (event) => {
       try {
         req = new Request(req.url, {
           method: req.method,
-          headers: headers,
+          headers,
           mode: 'same-origin',
           credentials: req.credentials,
           cache: req.cache,
@@ -57,7 +60,7 @@ self.addEventListener('fetch', (event) => {
           referrer: req.referrer,
           body: req.body,
           bodyUsed: req.bodyUsed,
-          context: req.context
+          context: req.context,
         });
       } catch (e) {
         // This will fail for CORS requests. We just continue with the

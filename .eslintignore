@@ -23,18 +23,3 @@
 /package.json.ember-try
 /package-lock.json.ember-try
 /yarn.lock.ember-try
-
-# ember generated files
-ember-cli-build.js
-index.js
-testem.js
-config/*.js
-tests/*.js
-tests/dummy/*.js
-tests/dummy/app/*.js
-tests/dummy/config/*.js
-
-# ember-cli-typescript generated files
-tests/dummy/app/config/environment.d.ts
-types/dummy/index.d.ts
-types/global.d.ts
