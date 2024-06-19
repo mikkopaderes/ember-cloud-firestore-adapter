@@ -20,9 +20,9 @@ In order to continue development with Ember and Cloud Firestore, I had to build 
 
 ## Compatibility
 
-* Ember.js v3.24 or above
-* Ember CLI v3.24 or above
-* Node.js v12 or above
+* Ember.js v4.8 or above
+* Ember CLI v4.8 or above
+* Node.js v18 or above
 * Firebase v9.14.x
 
 

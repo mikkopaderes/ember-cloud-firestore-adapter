@@ -54,6 +54,7 @@ module.exports = {
       files: [
         './.eslintrc.js',
         './.prettierrc.js',
+        './.stylelintrc.js',
         './.template-lintrc.js',
         './ember-cli-build.js',
         './index.js',
@@ -69,15 +70,14 @@ module.exports = {
         browser: false,
         node: true,
       },
-      plugins: ['node'],
-      extends: ['plugin:node/recommended'],
+      extends: ['plugin:n/recommended'],
       rules: {
         '@typescript-eslint/no-var-requires': 'off',
         'global-require': 'off',
         'prefer-object-spread': 'off',
         'prefer-rest-params': 'off',
         strict: 'off',
-        'node/no-extraneous-require': 'off',
+        'n/no-extraneous-require': 'off',
       },
     },
     {
@@ -88,6 +88,7 @@ module.exports = {
         'prefer-arrow-callback': 'off',
         'func-names': 'off',
         '@typescript-eslint/no-empty-function': 'off',
+        'qunit/require-expect': 'off',
       },
     },
   ],

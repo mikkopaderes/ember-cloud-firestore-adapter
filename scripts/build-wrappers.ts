@@ -1,3 +1,5 @@
+// eslint-disable
+
 import * as fs from 'fs';
 
 import { keys } from 'ts-transformer-keys';
