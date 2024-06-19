@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 'use strict';
 
 module.exports = {
@@ -8,10 +6,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
   },
-  plugins: [
-    '@typescript-eslint',
-    'ember',
-  ],
+  plugins: ['ember', '@typescript-eslint'],
   extends: [
     'airbnb-base',
     'plugin:@typescript-eslint/recommended',
@@ -26,30 +21,32 @@ module.exports = {
   settings: {
     'import/resolver': {
       node: {
-        extensions: ['.mjs', '.js', '.json', '.ts']
-      }
+        extensions: ['.mjs', '.js', '.json', '.ts'],
+      },
     },
-    'import/extensions': [
-      '.js',
-      '.mjs',
-      '.jsx',
-      '.ts',
-    ],
+    'import/extensions': ['.js', '.mjs', '.jsx', '.ts'],
   },
   rules: {
-    'semi': 'off', // enforced by @typescript-eslint/semi
+    semi: 'off', // enforced by @typescript-eslint/semi
     'import/no-unresolved': 'off',
     'import/no-extraneous-dependencies': 'off',
-    'import/extensions': ['error', 'ignorePackages', {
-      js: 'never',
-      mjs: 'never',
-      jsx: 'never',
-      ts: 'never',
-    }],
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        js: 'never',
+        mjs: 'never',
+        jsx: 'never',
+        ts: 'never',
+      },
+    ],
     'class-methods-use-this': 'off',
     'no-underscore-dangle': 'off',
     'ember/use-ember-data-rfc-395-imports': 'off',
     'no-restricted-exports': 'off',
+    'lines-between-class-members': 'off',
+    'array-callback-return': 'off',
+    'func-names': 'off',
   },
   overrides: [
     // node files
@@ -74,6 +71,14 @@ module.exports = {
         node: true,
       },
       extends: ['plugin:n/recommended'],
+      rules: {
+        '@typescript-eslint/no-var-requires': 'off',
+        'global-require': 'off',
+        'prefer-object-spread': 'off',
+        'prefer-rest-params': 'off',
+        strict: 'off',
+        'node/no-extraneous-require': 'off',
+      },
     },
     {
       // test files
@@ -82,8 +87,8 @@ module.exports = {
       rules: {
         'prefer-arrow-callback': 'off',
         'func-names': 'off',
-        '@typescript-eslint/no-empty-function': 'off'
-      }
-    }
-  ]
+        '@typescript-eslint/no-empty-function': 'off',
+      },
+    },
+  ],
 };
