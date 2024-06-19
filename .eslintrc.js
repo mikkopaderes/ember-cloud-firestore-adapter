@@ -77,7 +77,7 @@ module.exports = {
         'prefer-object-spread': 'off',
         'prefer-rest-params': 'off',
         strict: 'off',
-        'node/no-extraneous-require': 'off',
+        'n/no-extraneous-require': 'off',
       },
     },
     {
@@ -88,6 +88,7 @@ module.exports = {
         'prefer-arrow-callback': 'off',
         'func-names': 'off',
         '@typescript-eslint/no-empty-function': 'off',
+        'qunit/require-expect': 'off',
       },
     },
   ],
