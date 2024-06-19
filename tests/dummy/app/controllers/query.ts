@@ -10,6 +10,9 @@ import {
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
 
 export default class QueryController extends Controller {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  declare model: any;
+
   @action
   public async handleLoadMoreClick(): Promise<void> {
     this.model.set(

@@ -16,10 +16,12 @@ export default class GroupModel extends Model {
   @attr('string')
   declare public name: string;
 
-  @hasMany('user')
+  @hasMany('user', { async: true, inverse: 'groups' })
   declare public members: DS.PromiseManyArray<UserModel>;
 
   @hasMany('post', {
+    async: true,
+    inverse: 'group',
     isRealtime: true,
 
     filter(reference: Query) {

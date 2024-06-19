@@ -16,9 +16,9 @@ interface AuthenticateCallback {
 }
 
 export default class FirebaseAuthenticator extends BaseAuthenticator {
-  /* eslint-disable @typescript-eslint/no-explicit-any */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private get fastboot(): any {
-    return getOwner(this).lookup('service:fastboot');
+    return getOwner(this)?.lookup('service:fastboot');
   }
 
   public async authenticate(callback: AuthenticateCallback): Promise<{ user: User | null }> {

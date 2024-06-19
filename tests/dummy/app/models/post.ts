@@ -20,13 +20,14 @@ export default class PostModel extends Model {
   @attr('timestamp')
   declare public createdOn: TimestampTransform;
 
-  @belongsTo('user')
+  @belongsTo('user', { async: true, inverse: 'posts' })
   declare public author: DS.PromiseObject<UserModel>;
 
-  @belongsTo('group')
+  @belongsTo('group', { async: true, inverse: 'posts' })
   declare public group: DS.PromiseObject<GroupModel>;
 
   @belongsTo('user', {
+    async: true,
     inverse: null,
 
     buildReference(db: Firestore) {
