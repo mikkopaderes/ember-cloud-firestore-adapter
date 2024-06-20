@@ -4,7 +4,7 @@ const MergeTrees = require('broccoli-merge-trees');
 const Config = require('./lib/config');
 
 module.exports = {
-  name: require('./package').name,
+  name: 'ember-cloud-firestore-adapter',
 
   options: {
     'ember-cli-babel': { enableTypeScriptTransform: true },
