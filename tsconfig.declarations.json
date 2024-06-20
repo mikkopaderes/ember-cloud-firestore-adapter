@@ -6,5 +6,5 @@
     "noEmit": false,
     "rootDir": "."
   },
-  "include": ["addon", "addon-test-support"]
+  "include": ["addon", "addon-test-support", "types"]
 }
