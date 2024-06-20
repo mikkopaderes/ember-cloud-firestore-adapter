@@ -9,7 +9,11 @@ import { setupTest } from 'ember-qunit';
 import { Auth } from 'firebase/auth';
 import { Firestore } from 'firebase/firestore';
 
-import { getAuth, signInAnonymously, signOut } from 'ember-cloud-firestore-adapter/firebase/auth';
+import {
+  getAuth,
+  signInAnonymously,
+  signOut,
+} from 'ember-cloud-firestore-adapter/firebase/auth';
 import type FirebaseAuthenticator from 'ember-cloud-firestore-adapter/authenticators/firebase';
 import { getFirestore } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import resetFixtureData from '../../helpers/reset-fixture-data';
@@ -37,10 +41,14 @@ module('Unit | Authenticator | firebase', function (hooks) {
       assert.expect(1);
 
       // Arrange
-      const authenticator = this.owner.lookup('authenticator:firebase') as FirebaseAuthenticator;
+      const authenticator = this.owner.lookup(
+        'authenticator:firebase',
+      ) as FirebaseAuthenticator;
 
       // Act
-      const result = await authenticator.authenticate(() => Promise.resolve({ user: 'foo' }) as any);
+      const result = await authenticator.authenticate(
+        () => Promise.resolve({ user: 'foo' }) as any,
+      );
 
       // Assert
       assert.deepEqual(result, { user: 'foo' } as any);
@@ -52,7 +60,9 @@ module('Unit | Authenticator | firebase', function (hooks) {
       assert.expect(1);
 
       // Arrange
-      const authenticator = this.owner.lookup('authenticator:firebase') as FirebaseAuthenticator;
+      const authenticator = this.owner.lookup(
+        'authenticator:firebase',
+      ) as FirebaseAuthenticator;
 
       // Act
       await authenticator.invalidate();
@@ -67,7 +77,9 @@ module('Unit | Authenticator | firebase', function (hooks) {
       assert.expect(1);
 
       // Arrange
-      const authenticator = this.owner.lookup('authenticator:firebase') as FirebaseAuthenticator;
+      const authenticator = this.owner.lookup(
+        'authenticator:firebase',
+      ) as FirebaseAuthenticator;
 
       // Act
       const result = await authenticator.restore();

@@ -20,7 +20,9 @@ module('Unit | Session Store | firebase', function (hooks) {
       // Arrange
       this.owner.register('service:fastboot', FastBootStub);
 
-      const sessionStore = this.owner.lookup('session-store:firebase') as FirebaseStore;
+      const sessionStore = this.owner.lookup(
+        'session-store:firebase',
+      ) as FirebaseStore;
       const fastboot = this.owner.lookup('service:fastboot') as any;
 
       fastboot.set('request', {

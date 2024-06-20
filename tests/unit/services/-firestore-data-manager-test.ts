@@ -33,7 +33,9 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       // Arrange
       const modelName = 'user';
       const docRef = doc(db, 'users', 'user_a');
-      const firestoreDataManager = this.owner.lookup('service:-firestore-data-manager');
+      const firestoreDataManager = this.owner.lookup(
+        'service:-firestore-data-manager',
+      );
 
       // Act
       const result = await firestoreDataManager.findRecordRealtime(
@@ -56,7 +58,9 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const pushSpy = sinon.spy(store, 'push');
       const modelName = 'user';
       const docRef = doc(db, 'users', 'user_a');
-      const firestoreDataManager = this.owner.lookup('service:-firestore-data-manager');
+      const firestoreDataManager = this.owner.lookup(
+        'service:-firestore-data-manager',
+      );
 
       // Act
       await firestoreDataManager.findRecordRealtime(modelName, docRef);
@@ -73,7 +77,9 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const unloadRecordSpy = sinon.spy(store, 'unloadRecord');
       const modelName = 'user';
       const docRef = doc(db, 'users', 'user_a');
-      const firestoreDataManager = this.owner.lookup('service:-firestore-data-manager');
+      const firestoreDataManager = this.owner.lookup(
+        'service:-firestore-data-manager',
+      );
 
       // Act
       await firestoreDataManager.findRecordRealtime(modelName, docRef);
@@ -91,7 +97,9 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       // Arrange
       const modelName = 'user';
       const colRef = collection(db, 'users');
-      const firestoreDataManager = this.owner.lookup('service:-firestore-data-manager');
+      const firestoreDataManager = this.owner.lookup(
+        'service:-firestore-data-manager',
+      );
 
       // Act
       const result = await firestoreDataManager.findAllRealtime(
@@ -116,7 +124,9 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const modelName = 'user';
       const docRef = doc(db, 'users', 'user_a');
       const colRef = collection(db, 'users');
-      const firestoreDataManager = this.owner.lookup('service:-firestore-data-manager');
+      const firestoreDataManager = this.owner.lookup(
+        'service:-firestore-data-manager',
+      );
 
       // Act
       await firestoreDataManager.findAllRealtime(modelName, colRef);
@@ -134,7 +144,9 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const modelName = 'user';
       const docRef = doc(db, 'users', 'user_a');
       const colRef = collection(db, 'users');
-      const firestoreDataManager = this.owner.lookup('service:-firestore-data-manager');
+      const firestoreDataManager = this.owner.lookup(
+        'service:-firestore-data-manager',
+      );
 
       // Act
       await firestoreDataManager.findAllRealtime(modelName, colRef);
@@ -161,7 +173,9 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
             DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
         } as unknown as DS.AdapterPopulatedRecordArray<unknown>,
       };
-      const firestoreDataManager = this.owner.lookup('service:-firestore-data-manager');
+      const firestoreDataManager = this.owner.lookup(
+        'service:-firestore-data-manager',
+      );
 
       // Act
       const result = await firestoreDataManager.queryRealtime(config);
@@ -189,7 +203,9 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
             DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
         } as unknown as DS.AdapterPopulatedRecordArray<unknown>,
       };
-      const firestoreDataManager = this.owner.lookup('service:-firestore-data-manager');
+      const firestoreDataManager = this.owner.lookup(
+        'service:-firestore-data-manager',
+      );
 
       // Act
       const result = await firestoreDataManager.queryRealtime(config);
@@ -216,7 +232,9 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
         } as unknown as DS.AdapterPopulatedRecordArray<unknown>,
       };
       const updateSpy = sinon.spy(config.recordArray, 'update');
-      const firestoreDataManager = this.owner.lookup('service:-firestore-data-manager');
+      const firestoreDataManager = this.owner.lookup(
+        'service:-firestore-data-manager',
+      );
 
       // Act
       await firestoreDataManager.queryRealtime(config);
@@ -245,7 +263,9 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
         field: 'posts',
         referenceKeyName: 'referenceTo',
       };
-      const firestoreDataManager = this.owner.lookup('service:-firestore-data-manager');
+      const firestoreDataManager = this.owner.lookup(
+        'service:-firestore-data-manager',
+      );
 
       // Act
       const result = await firestoreDataManager.findHasManyRealtime(config);
@@ -267,7 +287,9 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
         field: 'groups',
         referenceKeyName: 'referenceTo',
       };
-      const firestoreDataManager = this.owner.lookup('service:-firestore-data-manager');
+      const firestoreDataManager = this.owner.lookup(
+        'service:-firestore-data-manager',
+      );
 
       // Act
       const result = await firestoreDataManager.findHasManyRealtime(config);
@@ -303,7 +325,9 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
         field: 'groups',
         referenceKeyName: 'referenceTo',
       };
-      const firestoreDataManager = this.owner.lookup('service:-firestore-data-manager');
+      const firestoreDataManager = this.owner.lookup(
+        'service:-firestore-data-manager',
+      );
 
       // Act
       await firestoreDataManager.findHasManyRealtime(config);
@@ -321,7 +345,9 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const colRef = collection(db, 'users');
       const queryRef = query(colRef);
       const referenceKeyName = 'referenceTo';
-      const firestoreDataManager = this.owner.lookup('service:-firestore-data-manager');
+      const firestoreDataManager = this.owner.lookup(
+        'service:-firestore-data-manager',
+      );
 
       // Act
       const result = await firestoreDataManager.queryWithReferenceTo(
@@ -344,7 +370,9 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const colRef = collection(db, 'users/user_a/groups');
       const queryRef = query(colRef);
       const referenceKeyName = 'referenceTo';
-      const firestoreDataManager = this.owner.lookup('service:-firestore-data-manager');
+      const firestoreDataManager = this.owner.lookup(
+        'service:-firestore-data-manager',
+      );
 
       // Act
       const result = await firestoreDataManager.queryWithReferenceTo(
