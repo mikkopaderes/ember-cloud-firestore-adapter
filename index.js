@@ -6,6 +6,10 @@ const Config = require('./lib/config');
 module.exports = {
   name: 'ember-cloud-firestore-adapter',
 
+  options: {
+    'ember-cli-babel': { enableTypeScriptTransform: true },
+  },
+
   included(app) {
     this._super.included.apply(this, arguments);
 
