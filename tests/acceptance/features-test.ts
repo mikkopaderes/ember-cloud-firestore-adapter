@@ -4,7 +4,11 @@ import { setupApplicationTest } from 'ember-qunit';
 
 import { Firestore } from 'firebase/firestore';
 
-import { doc, getDoc, getFirestore } from 'ember-cloud-firestore-adapter/firebase/firestore';
+import {
+  doc,
+  getDoc,
+  getFirestore,
+} from 'ember-cloud-firestore-adapter/firebase/firestore';
 import resetFixtureData from '../helpers/reset-fixture-data';
 
 module('Acceptance | features', function (hooks) {
@@ -57,7 +61,9 @@ module('Acceptance | features', function (hooks) {
     await visit('/features');
 
     // Act
-    await click('[data-test-button="create-record-without-belongs-to-relationship"]');
+    await click(
+      '[data-test-button="create-record-without-belongs-to-relationship"]',
+    );
 
     // Assert
     await waitFor('[data-test-id]', { timeout: 5000 });
@@ -73,7 +79,9 @@ module('Acceptance | features', function (hooks) {
     await visit('/features');
 
     // Act
-    await click('[data-test-button="create-record-with-belongs-to-build-reference"]');
+    await click(
+      '[data-test-button="create-record-with-belongs-to-build-reference"]',
+    );
 
     // Assert
     await waitFor('[data-test-id]', { timeout: 5000 });
@@ -83,7 +91,10 @@ module('Acceptance | features', function (hooks) {
 
     const createdRecord = await getDoc(doc(db, 'posts/new_post'));
 
-    assert.strictEqual(createdRecord.get('publisher').path, 'publishers/user_a');
+    assert.strictEqual(
+      createdRecord.get('publisher').path,
+      'publishers/user_a',
+    );
   });
 
   test('should update record', async function (assert) {

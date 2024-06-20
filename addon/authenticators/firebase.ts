@@ -21,7 +21,9 @@ export default class FirebaseAuthenticator extends BaseAuthenticator {
     return getOwner(this)?.lookup('service:fastboot');
   }
 
-  public async authenticate(callback: AuthenticateCallback): Promise<{ user: User | null }> {
+  public async authenticate(
+    callback: AuthenticateCallback,
+  ): Promise<{ user: User | null }> {
     const auth = getAuth();
     const credential = await callback(auth);
 
@@ -39,41 +41,53 @@ export default class FirebaseAuthenticator extends BaseAuthenticator {
       const auth = getAuth();
 
       if (
-        this.fastboot?.isFastBoot
-        && this.fastboot.request.headers.get('Authorization')?.startsWith('Bearer ')
+        this.fastboot?.isFastBoot &&
+        this.fastboot.request.headers
+          .get('Authorization')
+          ?.startsWith('Bearer ')
       ) {
-        const token = this.fastboot.request.headers.get('Authorization')?.split('Bearer ')[1];
+        const token = this.fastboot.request.headers
+          .get('Authorization')
+          ?.split('Bearer ')[1];
 
         if (token) {
-          signInWithCustomToken(auth, token).then((credential) => {
-            resolve({ user: credential.user });
-          }).catch(() => {
-            reject();
-          });
+          signInWithCustomToken(auth, token)
+            .then((credential) => {
+              resolve({ user: credential.user });
+            })
+            .catch(() => {
+              reject();
+            });
         } else {
           reject();
         }
       } else {
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-          unsubscribe();
+        const unsubscribe = onAuthStateChanged(
+          auth,
+          async (user) => {
+            unsubscribe();
 
-          if (user) {
-            resolve({ user });
-          } else {
-            getRedirectResult(auth).then((credential) => {
-              if (credential) {
-                resolve({ user: credential.user });
-              } else {
-                reject();
-              }
-            }).catch(() => {
-              reject();
-            });
-          }
-        }, () => {
-          reject();
-          unsubscribe();
-        });
+            if (user) {
+              resolve({ user });
+            } else {
+              getRedirectResult(auth)
+                .then((credential) => {
+                  if (credential) {
+                    resolve({ user: credential.user });
+                  } else {
+                    reject();
+                  }
+                })
+                .catch(() => {
+                  reject();
+                });
+            }
+          },
+          () => {
+            reject();
+            unsubscribe();
+          },
+        );
       }
     });
   }
