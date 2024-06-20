@@ -7,13 +7,10 @@ module.exports = function (environment) {
     rootURL: '/',
     locationType: 'history',
     EmberENV: {
+      EXTEND_PROTOTYPES: false,
       FEATURES: {
         // Here you can enable experimental features on an ember canary build
         // e.g. EMBER_NATIVE_DECORATOR_SUPPORT: true
-      },
-      EXTEND_PROTOTYPES: {
-        // Prevent Ember Data from overriding Date.parse.
-        Date: false,
       },
     },
 
@@ -29,8 +26,10 @@ module.exports = function (environment) {
     'ember-cloud-firestore-adapter': {
       firebaseConfig: {
         apiKey: '123qweasd',
-        authDomain: 'ember-cloud-firestore-adapter-test-project.firebaseapp.com',
-        databaseURL: 'https://ember-cloud-firestore-adapter-test-project.firebaseio.com',
+        authDomain:
+          'ember-cloud-firestore-adapter-test-project.firebaseapp.com',
+        databaseURL:
+          'https://ember-cloud-firestore-adapter-test-project.firebaseio.com',
         projectId: 'ember-cloud-firestore-adapter-test-project',
         storageBucket: 'ember-cloud-firestore-adapter-test-project.appspot.com',
         messagingSenderId: '123qweasd',

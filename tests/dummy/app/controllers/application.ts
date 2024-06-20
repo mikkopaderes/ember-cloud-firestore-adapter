@@ -12,17 +12,22 @@ import {
 
 export default class ApplicationController extends Controller {
   @service
-  declare public session: SessionService;
+  public declare session: SessionService;
 
-  public updateRecordParam: string = Math.random().toString(32).slice(2).substring(0, 5);
+  public updateRecordParam: string = Math.random()
+    .toString(32)
+    .slice(2)
+    .substring(0, 5);
 
   @action
   login(): void {
-    this.session.authenticate('authenticator:firebase', (auth: Auth) => (
+    this.session.authenticate('authenticator:firebase', (auth: Auth) =>
       createUserWithEmailAndPassword(auth, 'foo@gmail.com', 'foobar')
-    ).then((credential) => credential.user).catch(() => (
-      signInWithEmailAndPassword(auth, 'foo@gmail.com', 'foobar')
-    )));
+        .then((credential) => credential.user)
+        .catch(() =>
+          signInWithEmailAndPassword(auth, 'foo@gmail.com', 'foobar'),
+        ),
+    );
   }
 
   @action

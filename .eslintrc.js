@@ -1,25 +1,17 @@
-/* eslint-disable */
-
 'use strict';
 
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: 2018,
-    sourceType: 'module',
-    ecmaFeatures: {
-      legacyDecorators: true,
-    },
+    ecmaVersion: 'latest',
   },
-  plugins: [
-    '@typescript-eslint',
-    'ember',
-  ],
+  plugins: ['ember', '@typescript-eslint'],
   extends: [
     'airbnb-base',
-    'plugin:@typescript-eslint/recommended',
+    'eslint:recommended',
     'plugin:ember/recommended',
+    'plugin:prettier/recommended',
   ],
   env: {
     browser: true,
@@ -30,36 +22,49 @@ module.exports = {
   settings: {
     'import/resolver': {
       node: {
-        extensions: ['.mjs', '.js', '.json', '.ts']
-      }
+        extensions: ['.mjs', '.js', '.json', '.ts'],
+      },
     },
-    'import/extensions': [
-      '.js',
-      '.mjs',
-      '.jsx',
-      '.ts',
-    ],
+    'import/extensions': ['.js', '.mjs', '.jsx', '.ts'],
   },
   rules: {
-    'semi': 'off', // enforced by @typescript-eslint/semi
+    semi: 'off', // enforced by @typescript-eslint/semi
     'import/no-unresolved': 'off',
     'import/no-extraneous-dependencies': 'off',
-    'import/extensions': ['error', 'ignorePackages', {
-      js: 'never',
-      mjs: 'never',
-      jsx: 'never',
-      ts: 'never',
-    }],
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        js: 'never',
+        mjs: 'never',
+        jsx: 'never',
+        ts: 'never',
+      },
+    ],
     'class-methods-use-this': 'off',
     'no-underscore-dangle': 'off',
     'ember/use-ember-data-rfc-395-imports': 'off',
+    'no-restricted-exports': 'off',
+    'lines-between-class-members': 'off',
+    'array-callback-return': 'off',
+    'func-names': 'off',
   },
   overrides: [
+    // ts files
+    {
+      files: ['**/*.ts'],
+      extends: [
+        'plugin:@typescript-eslint/eslint-recommended',
+        'plugin:@typescript-eslint/recommended',
+      ],
+      rules: {},
+    },
     // node files
     {
       files: [
         './.eslintrc.js',
         './.prettierrc.js',
+        './.stylelintrc.js',
         './.template-lintrc.js',
         './ember-cli-build.js',
         './index.js',
@@ -75,8 +80,14 @@ module.exports = {
         browser: false,
         node: true,
       },
-      plugins: ['node'],
-      extends: ['plugin:node/recommended']
+      extends: ['plugin:n/recommended'],
+      rules: {
+        'global-require': 'off',
+        'prefer-object-spread': 'off',
+        'prefer-rest-params': 'off',
+        strict: 'off',
+        'n/no-extraneous-require': 'off',
+      },
     },
     {
       // test files
@@ -84,9 +95,8 @@ module.exports = {
       extends: ['plugin:qunit/recommended'],
       rules: {
         'prefer-arrow-callback': 'off',
-        'func-names': 'off',
-        '@typescript-eslint/no-empty-function': 'off'
-      }
-    }
-  ]
+        'qunit/require-expect': 'off',
+      },
+    },
+  ],
 };

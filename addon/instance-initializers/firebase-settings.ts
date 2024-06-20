@@ -4,53 +4,70 @@ import { FirebaseApp, FirebaseOptions } from 'firebase/app';
 import { Firestore, EmulatorMockTokenOptions } from 'firebase/firestore';
 
 import { initializeApp } from 'ember-cloud-firestore-adapter/firebase/app';
-import { connectFirestoreEmulator, getFirestore, initializeFirestore } from 'ember-cloud-firestore-adapter/firebase/firestore';
-import { connectAuthEmulator, getAuth } from 'ember-cloud-firestore-adapter/firebase/auth';
-import { connectFunctionsEmulator, getFunctions } from 'ember-cloud-firestore-adapter/firebase/functions';
-import { connectStorageEmulator, getStorage } from 'ember-cloud-firestore-adapter/firebase/storage';
+import {
+  connectFirestoreEmulator,
+  getFirestore,
+  initializeFirestore,
+} from 'ember-cloud-firestore-adapter/firebase/firestore';
+import {
+  connectAuthEmulator,
+  getAuth,
+} from 'ember-cloud-firestore-adapter/firebase/auth';
+import {
+  connectFunctionsEmulator,
+  getFunctions,
+} from 'ember-cloud-firestore-adapter/firebase/functions';
+import {
+  connectStorageEmulator,
+  getStorage,
+} from 'ember-cloud-firestore-adapter/firebase/storage';
 
 interface FirestoreAddonConfig {
   isCustomSetup?: boolean;
   settings?: { [key: string]: string };
   emulator?: {
-    hostname: string,
-    port: number,
-    options?: { [key: string]: unknown }
+    hostname: string;
+    port: number;
+    options?: { [key: string]: unknown };
   };
 }
 
 interface AuthAddonConfig {
   isCustomSetup?: boolean;
   emulator?: {
-    hostname: string,
-    port: number,
-    options?: { disableWarnings: boolean }
+    hostname: string;
+    port: number;
+    options?: { disableWarnings: boolean };
   };
 }
 
 interface FunctionsAddonConfig {
   isCustomSetup?: boolean;
   emulator?: {
-    hostname: string,
-    port: number,
+    hostname: string;
+    port: number;
   };
 }
 
 interface StorageAddonConfig {
   isCustomSetup?: boolean;
   emulator?: {
-    hostname: string,
-    port: number,
-    options?: { mockUserToken?: EmulatorMockTokenOptions | string }
+    hostname: string;
+    port: number;
+    options?: { mockUserToken?: EmulatorMockTokenOptions | string };
   };
 }
 
 interface AddonConfig {
-  firebaseConfig: FirebaseOptions,
+  firebaseConfig: FirebaseOptions;
   firestore?: FirestoreAddonConfig;
   auth?: AuthAddonConfig;
   functions?: FunctionsAddonConfig;
   storage?: StorageAddonConfig;
+}
+
+interface Config {
+  'ember-cloud-firestore-adapter': AddonConfig;
 }
 
 function getDb(app: FirebaseApp, config: FirestoreAddonConfig): Firestore {
@@ -116,14 +133,18 @@ function setupModularInstance(config: AddonConfig) {
 }
 
 export function initialize(appInstance: ApplicationInstance): void {
-  const config = appInstance.resolveRegistration('config:environment');
-  const addonConfig: AddonConfig = config['ember-cloud-firestore-adapter'];
+  const config = appInstance.resolveRegistration(
+    'config:environment',
+  ) as Config;
+  const addonConfig = config['ember-cloud-firestore-adapter'];
 
   try {
     setupModularInstance(addonConfig);
   } catch (e) {
     if (e.code !== 'failed-precondition') {
-      throw new Error(`There was a problem with initializing Firebase. Check if you've configured the addon properly. | Error: ${e}`);
+      throw new Error(
+        `There was a problem with initializing Firebase. Check if you've configured the addon properly. | Error: ${e}`,
+      );
     }
   }
 }

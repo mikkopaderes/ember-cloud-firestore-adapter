@@ -3,7 +3,6 @@ import { setupTest } from 'ember-qunit';
 import { waitUntil } from '@ember/test-helpers';
 import DS from 'ember-data';
 import RSVP from 'rsvp';
-import Store from '@ember-data/store';
 
 import { Firestore } from 'firebase/firestore';
 import sinon from 'sinon';
@@ -16,7 +15,6 @@ import {
   query,
   updateDoc,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
-import FirestoreDataManager from 'ember-cloud-firestore-adapter/services/-firestore-data-manager';
 import resetFixtureData from '../../helpers/reset-fixture-data';
 
 module('Unit | Service | -firestore-data-manager', function (hooks) {
@@ -37,25 +35,32 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const docRef = doc(db, 'users', 'user_a');
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
+      );
 
       // Act
-      const result = await firestoreDataManager.findRecordRealtime(modelName, docRef);
+      const result = await firestoreDataManager.findRecordRealtime(
+        modelName,
+        docRef,
+      );
 
       // Assert
       assert.strictEqual(result.id, 'user_a');
-      assert.deepEqual(result.data(), { name: 'user_a', age: 15, username: 'user_a' });
+      assert.deepEqual(result.data(), {
+        name: 'user_a',
+        age: 15,
+        username: 'user_a',
+      });
     });
 
     test('should push record to store when doc gets updated', async function (assert) {
       // Arrange
-      const store = this.owner.lookup('service:store') as Store;
+      const store = this.owner.lookup('service:store');
       const pushSpy = sinon.spy(store, 'push');
       const modelName = 'user';
       const docRef = doc(db, 'users', 'user_a');
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
+      );
 
       // Act
       await firestoreDataManager.findRecordRealtime(modelName, docRef);
@@ -68,13 +73,13 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
 
     test('should unload record from store when doc gets deleted', async function (assert) {
       // Arrange
-      const store = this.owner.lookup('service:store') as Store;
+      const store = this.owner.lookup('service:store');
       const unloadRecordSpy = sinon.spy(store, 'unloadRecord');
       const modelName = 'user';
       const docRef = doc(db, 'users', 'user_a');
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
+      );
 
       // Act
       await firestoreDataManager.findRecordRealtime(modelName, docRef);
@@ -94,27 +99,34 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const colRef = collection(db, 'users');
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
+      );
 
       // Act
-      const result = await firestoreDataManager.findAllRealtime(modelName, colRef);
+      const result = await firestoreDataManager.findAllRealtime(
+        modelName,
+        colRef,
+      );
 
       // Assert
       assert.strictEqual(result.size, 3);
       assert.strictEqual(result.docs[0].id, 'user_a');
-      assert.deepEqual(result.docs[0].data(), { name: 'user_a', age: 15, username: 'user_a' });
+      assert.deepEqual(result.docs[0].data(), {
+        name: 'user_a',
+        age: 15,
+        username: 'user_a',
+      });
     });
 
     test('should push every record to store when collection gets updated', async function (assert) {
       // Arrange
-      const store = this.owner.lookup('service:store') as Store;
+      const store = this.owner.lookup('service:store');
       const pushSpy = sinon.spy(store, 'push');
       const modelName = 'user';
       const docRef = doc(db, 'users', 'user_a');
       const colRef = collection(db, 'users');
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
+      );
 
       // Act
       await firestoreDataManager.findAllRealtime(modelName, colRef);
@@ -127,14 +139,14 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
 
     test('should unload every record from store when doc gets deleted', async function (assert) {
       // Arrange
-      const store = this.owner.lookup('service:store') as Store;
+      const store = this.owner.lookup('service:store');
       const unloadRecordSpy = sinon.spy(store, 'unloadRecord');
       const modelName = 'user';
       const docRef = doc(db, 'users', 'user_a');
       const colRef = collection(db, 'users');
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
+      );
 
       // Act
       await firestoreDataManager.findAllRealtime(modelName, colRef);
@@ -157,12 +169,13 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
         modelName: 'user',
         referenceKeyName: 'referenceTo',
         recordArray: {
-          update: () => DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
+          update: () =>
+            DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
         } as unknown as DS.AdapterPopulatedRecordArray<unknown>,
       };
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
+      );
 
       // Act
       const result = await firestoreDataManager.queryRealtime(config);
@@ -170,7 +183,11 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       // Assert
       assert.strictEqual(result.length, 3);
       assert.strictEqual(result[0].id, 'user_a');
-      assert.deepEqual(result[0].data(), { name: 'user_a', age: 15, username: 'user_a' });
+      assert.deepEqual(result[0].data(), {
+        name: 'user_a',
+        age: 15,
+        username: 'user_a',
+      });
     });
 
     test('should return fetched records with referenceTo indicators', async function (assert) {
@@ -182,12 +199,13 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
         modelName: 'user',
         referenceKeyName: 'referenceTo',
         recordArray: {
-          update: () => DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
+          update: () =>
+            DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
         } as unknown as DS.AdapterPopulatedRecordArray<unknown>,
       };
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
+      );
 
       // Act
       const result = await firestoreDataManager.queryRealtime(config);
@@ -209,13 +227,14 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
         referenceKeyName: 'referenceTo',
         queryId: 'test',
         recordArray: {
-          update: () => DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
+          update: () =>
+            DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
         } as unknown as DS.AdapterPopulatedRecordArray<unknown>,
       };
       const updateSpy = sinon.spy(config.recordArray, 'update');
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
+      );
 
       // Act
       await firestoreDataManager.queryRealtime(config);
@@ -246,7 +265,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       };
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
+      );
 
       // Act
       const result = await firestoreDataManager.findHasManyRealtime(config);
@@ -270,7 +289,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       };
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
+      );
 
       // Act
       const result = await firestoreDataManager.findHasManyRealtime(config);
@@ -286,9 +305,15 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const store = this.owner.lookup('service:store');
       const reloadStub = sinon.stub().returns(Promise.resolve());
 
-      sinon.stub(store, 'peekRecord').withArgs('user', 'user_a').returns({
-        hasMany: sinon.stub().withArgs('groups').returns({ reload: reloadStub }),
-      });
+      sinon
+        .stub(store, 'peekRecord')
+        .withArgs('user', 'user_a')
+        .returns({
+          hasMany: sinon
+            .stub()
+            .withArgs('groups')
+            .returns({ reload: reloadStub }),
+        });
 
       const docRef = doc(db, 'users/user_a/groups', 'group_a');
       const colRef = collection(db, 'users/user_a/groups');
@@ -302,7 +327,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       };
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
+      );
 
       // Act
       await firestoreDataManager.findHasManyRealtime(config);
@@ -322,15 +347,22 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const referenceKeyName = 'referenceTo';
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
+      );
 
       // Act
-      const result = await firestoreDataManager.queryWithReferenceTo(queryRef, referenceKeyName);
+      const result = await firestoreDataManager.queryWithReferenceTo(
+        queryRef,
+        referenceKeyName,
+      );
 
       // Assert
       assert.strictEqual(result.length, 3);
       assert.strictEqual(result[0].id, 'user_a');
-      assert.deepEqual(result[0].data(), { name: 'user_a', age: 15, username: 'user_a' });
+      assert.deepEqual(result[0].data(), {
+        name: 'user_a',
+        age: 15,
+        username: 'user_a',
+      });
     });
 
     test('should return fetched records with referenceTo indicators', async function (assert) {
@@ -340,10 +372,13 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const referenceKeyName = 'referenceTo';
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
-      ) as FirestoreDataManager;
+      );
 
       // Act
-      const result = await firestoreDataManager.queryWithReferenceTo(queryRef, referenceKeyName);
+      const result = await firestoreDataManager.queryWithReferenceTo(
+        queryRef,
+        referenceKeyName,
+      );
 
       // Assert
       assert.strictEqual(result.length, 1);

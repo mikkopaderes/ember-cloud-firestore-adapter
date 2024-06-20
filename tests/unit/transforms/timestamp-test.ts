@@ -4,8 +4,12 @@ import { setupTest } from 'ember-qunit';
 import { Firestore } from 'firebase/firestore';
 
 import {
-  doc, getDoc, getFirestore, serverTimestamp,
+  doc,
+  getDoc,
+  getFirestore,
+  serverTimestamp,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
+import type TimestampTransform from 'ember-cloud-firestore-adapter/transforms/timestamp';
 import resetFixtureData from 'dummy/tests/helpers/reset-fixture-data';
 
 module('Unit | Transform | timestamp', function (hooks) {
@@ -23,7 +27,9 @@ module('Unit | Transform | timestamp', function (hooks) {
     test('should return result of value.toDate when value is an instance of firebase.firestore.Timestamp', async function (assert) {
       // Arrange
       const post = await getDoc(doc(db, 'posts/post_a'));
-      const transform = this.owner.lookup('transform:timestamp');
+      const transform = this.owner.lookup(
+        'transform:timestamp',
+      ) as TimestampTransform;
 
       // Act
       const result = transform.deserialize(post.get('createdOn'));
@@ -35,7 +41,9 @@ module('Unit | Transform | timestamp', function (hooks) {
     test('should return value as-is when it is not an instance of firebase.firestore.Timestamp', function (assert) {
       // Arrange
       const date = new Date();
-      const transform = this.owner.lookup('transform:timestamp');
+      const transform = this.owner.lookup(
+        'transform:timestamp',
+      ) as TimestampTransform;
 
       // Act
       const result = transform.deserialize(date);
@@ -49,7 +57,9 @@ module('Unit | Transform | timestamp', function (hooks) {
     test('should return the value as-is when value is instance of Date type', function (assert) {
       // Arrange
       const date = new Date();
-      const transform = this.owner.lookup('transform:timestamp');
+      const transform = this.owner.lookup(
+        'transform:timestamp',
+      ) as TimestampTransform;
 
       // Act
       const result = transform.serialize(date);
@@ -60,7 +70,9 @@ module('Unit | Transform | timestamp', function (hooks) {
 
     test('should return a firestore server timestamp when value is not of Date type', function (assert) {
       // Arrange
-      const transform = this.owner.lookup('transform:timestamp');
+      const transform = this.owner.lookup(
+        'transform:timestamp',
+      ) as TimestampTransform;
 
       // Act
       const result = transform.serialize(null);
