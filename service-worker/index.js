@@ -6,8 +6,12 @@ import {
   firebaseConfig,
 } from 'ember-cloud-firestore-adapter/service-worker/config';
 
-importScripts(`https://www.gstatic.com/firebasejs/${firebaseVersion}/firebase-app-compat.js`);
-importScripts(`https://www.gstatic.com/firebasejs/${firebaseVersion}/firebase-auth-compat.js`);
+importScripts(
+  `https://www.gstatic.com/firebasejs/${firebaseVersion}/firebase-app-compat.js`,
+);
+importScripts(
+  `https://www.gstatic.com/firebasejs/${firebaseVersion}/firebase-auth-compat.js`,
+);
 
 firebase.initializeApp(firebaseConfig);
 
@@ -17,7 +21,10 @@ function getIdToken() {
       unsubscribe();
 
       if (user) {
-        user.getIdToken().then((idToken) => resolve(idToken)).catch(() => resolve(null));
+        user
+          .getIdToken()
+          .then((idToken) => resolve(idToken))
+          .catch(() => resolve(null));
       } else {
         resolve(null);
       }
@@ -43,9 +50,10 @@ self.addEventListener('fetch', (event) => {
     const { origin: eventRequestUrlOrigin } = new URL(event.request.url);
 
     if (
-      self.location.origin === eventRequestUrlOrigin
-      && (self.location.protocol === 'https:' || self.location.hostname === 'localhost')
-      && idToken
+      self.location.origin === eventRequestUrlOrigin &&
+      (self.location.protocol === 'https:' ||
+        self.location.hostname === 'localhost') &&
+      idToken
     ) {
       const headers = cloneHeaderWithIdToken(req.headers, idToken);
 
@@ -71,5 +79,7 @@ self.addEventListener('fetch', (event) => {
     return fetch(req);
   };
 
-  event.respondWith(getIdToken().then(requestProcessor).catch(requestProcessor));
+  event.respondWith(
+    getIdToken().then(requestProcessor).catch(requestProcessor),
+  );
 });

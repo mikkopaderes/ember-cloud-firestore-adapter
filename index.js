@@ -9,16 +9,21 @@ module.exports = {
   included(app) {
     this._super.included.apply(this, arguments);
 
-    if (Object.prototype.hasOwnProperty.call(app.options, 'esw-ember-cloud-firestore-adapter')) {
-      this.serviceWorkerOption = app.options['esw-ember-cloud-firestore-adapter'];
+    if (
+      Object.prototype.hasOwnProperty.call(
+        app.options,
+        'esw-ember-cloud-firestore-adapter',
+      )
+    ) {
+      this.serviceWorkerOption =
+        app.options['esw-ember-cloud-firestore-adapter'];
     } else {
       this.serviceWorkerOption = {};
     }
 
-    const {
-      firebaseConfig,
-      firebaseVersion,
-    } = this.project.config(app.env)['ember-cloud-firestore-adapter'];
+    const { firebaseConfig, firebaseVersion } = this.project.config(app.env)[
+      'ember-cloud-firestore-adapter'
+    ];
 
     this.serviceWorkerOption = Object.assign({}, this.serviceWorkerOption, {
       firebaseConfig,

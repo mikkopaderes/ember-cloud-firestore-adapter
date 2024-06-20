@@ -13,7 +13,11 @@ import {
   Unsubscribe,
 } from 'firebase/firestore';
 
-import { getDoc, getDocs, onSnapshot } from 'ember-cloud-firestore-adapter/firebase/firestore';
+import {
+  getDoc,
+  getDocs,
+  onSnapshot,
+} from 'ember-cloud-firestore-adapter/firebase/firestore';
 import flattenDocSnapshot from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
 
 interface DocListeners {
@@ -41,8 +45,8 @@ interface QueryFetchConfig {
   modelName: keyof ModelRegistry;
   referenceKeyName: string;
   recordArray: DS.AdapterPopulatedRecordArray<unknown>;
-  queryRef: Query,
-  queryId?: string,
+  queryRef: Query;
+  queryId?: string;
 }
 
 interface HasManyFetchConfig {
@@ -68,10 +72,18 @@ export default class FirestoreDataManager extends Service {
   public willDestroy(): void {
     super.willDestroy();
 
-    Object.values(this.docListeners).forEach((listener) => listener.unsubscribe());
-    Object.values(this.colListeners).forEach((listener) => listener.unsubscribe());
-    Object.values(this.queryListeners).forEach((listener) => listener.unsubscribe());
-    Object.values(this.hasManyListeners).forEach((listener) => listener.unsubscribe());
+    Object.values(this.docListeners).forEach((listener) =>
+      listener.unsubscribe(),
+    );
+    Object.values(this.colListeners).forEach((listener) =>
+      listener.unsubscribe(),
+    );
+    Object.values(this.queryListeners).forEach((listener) =>
+      listener.unsubscribe(),
+    );
+    Object.values(this.hasManyListeners).forEach((listener) =>
+      listener.unsubscribe(),
+    );
   }
 
   public async findRecordRealtime(
@@ -100,8 +112,11 @@ export default class FirestoreDataManager extends Service {
     return this.colListeners[listenerKey].snapshot;
   }
 
-  public async queryRealtime(config: QueryFetchConfig): Promise<DocumentSnapshot[]> {
-    const queryId = config.queryId || Math.random().toString(32).slice(2).substring(0, 5);
+  public async queryRealtime(
+    config: QueryFetchConfig,
+  ): Promise<DocumentSnapshot[]> {
+    const queryId =
+      config.queryId || Math.random().toString(32).slice(2).substring(0, 5);
     let unsubscribe: Unsubscribe | undefined;
 
     if (this.queryListeners[queryId]) {
@@ -118,7 +133,9 @@ export default class FirestoreDataManager extends Service {
     return this.queryListeners[queryId].snapshots;
   }
 
-  public async findHasManyRealtime(config: HasManyFetchConfig): Promise<DocumentSnapshot[]> {
+  public async findHasManyRealtime(
+    config: HasManyFetchConfig,
+  ): Promise<DocumentSnapshot[]> {
     const queryId = `${config.modelName}_${config.id}_${config.field}`;
 
     let unsubscribe: Unsubscribe | undefined;
@@ -142,9 +159,9 @@ export default class FirestoreDataManager extends Service {
     referenceKey: string,
   ): Promise<DocumentSnapshot[]> {
     const querySnapshot = await getDocs(queryRef);
-    const promises = querySnapshot.docs.map((docSnapshot) => (
-      this.getReferenceToDoc(docSnapshot, '', referenceKey)
-    ));
+    const promises = querySnapshot.docs.map((docSnapshot) =>
+      this.getReferenceToDoc(docSnapshot, '', referenceKey),
+    );
 
     return Promise.all(promises);
   }
@@ -155,18 +172,32 @@ export default class FirestoreDataManager extends Service {
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       const { path: listenerKey } = docRef;
-      const unsubscribe = onSnapshot(docRef, (docSnapshot) => {
-        if (Object.prototype.hasOwnProperty.call(this.docListeners, listenerKey)) {
-          this.handleSubsequentDocRealtimeUpdates(docSnapshot, modelName, listenerKey);
-        } else {
-          this.handleInitialDocRealtimeUpdates(docSnapshot, listenerKey, unsubscribe);
-        }
+      const unsubscribe = onSnapshot(
+        docRef,
+        (docSnapshot) => {
+          if (
+            Object.prototype.hasOwnProperty.call(this.docListeners, listenerKey)
+          ) {
+            this.handleSubsequentDocRealtimeUpdates(
+              docSnapshot,
+              modelName,
+              listenerKey,
+            );
+          } else {
+            this.handleInitialDocRealtimeUpdates(
+              docSnapshot,
+              listenerKey,
+              unsubscribe,
+            );
+          }
 
-        resolve();
-      }, (error) => {
-        this.destroyListener('doc', listenerKey);
-        reject(error);
-      });
+          resolve();
+        },
+        (error) => {
+          this.destroyListener('doc', listenerKey);
+          reject(error);
+        },
+      );
     });
   }
 
@@ -176,64 +207,98 @@ export default class FirestoreDataManager extends Service {
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       const { path: listenerKey } = colRef;
-      const unsubscribe = onSnapshot(colRef, (querySnapshot) => {
-        if (Object.prototype.hasOwnProperty.call(this.colListeners, listenerKey)) {
-          this.handleSubsequentColRealtimeUpdates(modelName, listenerKey, querySnapshot);
-        } else {
-          this.colListeners[listenerKey] = { unsubscribe, snapshot: querySnapshot };
-        }
+      const unsubscribe = onSnapshot(
+        colRef,
+        (querySnapshot) => {
+          if (
+            Object.prototype.hasOwnProperty.call(this.colListeners, listenerKey)
+          ) {
+            this.handleSubsequentColRealtimeUpdates(
+              modelName,
+              listenerKey,
+              querySnapshot,
+            );
+          } else {
+            this.colListeners[listenerKey] = {
+              unsubscribe,
+              snapshot: querySnapshot,
+            };
+          }
 
-        resolve();
-      }, (error) => {
-        this.destroyListener('col', listenerKey);
-        reject(error);
-      });
+          resolve();
+        },
+        (error) => {
+          this.destroyListener('col', listenerKey);
+          reject(error);
+        },
+      );
     });
   }
 
-  public setupQueryRealtimeUpdates(config: QueryFetchConfig, queryId: string): Promise<void> {
+  public setupQueryRealtimeUpdates(
+    config: QueryFetchConfig,
+    queryId: string,
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
-      const unsubscribe = onSnapshot(config.queryRef, (querySnapshot) => {
-        if (Object.prototype.hasOwnProperty.call(this.queryListeners, queryId)) {
-          this.handleSubsequentQueryRealtimeUpdates(queryId, config.recordArray);
-          resolve();
-        } else {
-          this.handleInitialQueryRealtimeUpdates(
-            queryId,
-            config,
-            querySnapshot,
-            unsubscribe,
-          ).then(() => {
+      const unsubscribe = onSnapshot(
+        config.queryRef,
+        (querySnapshot) => {
+          if (
+            Object.prototype.hasOwnProperty.call(this.queryListeners, queryId)
+          ) {
+            this.handleSubsequentQueryRealtimeUpdates(
+              queryId,
+              config.recordArray,
+            );
             resolve();
-          });
-        }
-      }, (error) => {
-        this.destroyListener('query', queryId);
-        reject(error);
-      });
+          } else {
+            this.handleInitialQueryRealtimeUpdates(
+              queryId,
+              config,
+              querySnapshot,
+              unsubscribe,
+            ).then(() => {
+              resolve();
+            });
+          }
+        },
+        (error) => {
+          this.destroyListener('query', queryId);
+          reject(error);
+        },
+      );
     });
   }
 
-  public setupHasManyRealtimeUpdates(config: HasManyFetchConfig, queryId: string): Promise<void> {
+  public setupHasManyRealtimeUpdates(
+    config: HasManyFetchConfig,
+    queryId: string,
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
-      const unsubscribe = onSnapshot(config.queryRef, (querySnapshot) => {
-        if (Object.prototype.hasOwnProperty.call(this.hasManyListeners, queryId)) {
-          this.handleSubsequentHasManyRealtimeUpdates(config);
-          resolve();
-        } else {
-          this.handleInitialHasManyRealtimeUpdates(
-            queryId,
-            config,
-            querySnapshot,
-            unsubscribe,
-          ).then(() => {
+      const unsubscribe = onSnapshot(
+        config.queryRef,
+        (querySnapshot) => {
+          if (
+            Object.prototype.hasOwnProperty.call(this.hasManyListeners, queryId)
+          ) {
+            this.handleSubsequentHasManyRealtimeUpdates(config);
             resolve();
-          });
-        }
-      }, (error) => {
-        this.destroyListener('hasMany', queryId);
-        reject(error);
-      });
+          } else {
+            this.handleInitialHasManyRealtimeUpdates(
+              queryId,
+              config,
+              querySnapshot,
+              unsubscribe,
+            ).then(() => {
+              resolve();
+            });
+          }
+        },
+        (error) => {
+          this.destroyListener('hasMany', queryId);
+          reject(error);
+        },
+      );
     });
   }
 
@@ -286,9 +351,13 @@ export default class FirestoreDataManager extends Service {
     querySnapshot: QuerySnapshot,
     unsubscribe: Unsubscribe,
   ): Promise<void> {
-    const docSnapshots = querySnapshot.docs.map((docSnapshot) => (
-      this.getReferenceToDoc(docSnapshot, config.modelName, config.referenceKeyName)
-    ));
+    const docSnapshots = querySnapshot.docs.map((docSnapshot) =>
+      this.getReferenceToDoc(
+        docSnapshot,
+        config.modelName,
+        config.referenceKeyName,
+      ),
+    );
 
     const result = await Promise.all(docSnapshots);
 
@@ -323,23 +392,31 @@ export default class FirestoreDataManager extends Service {
     querySnapshot: QuerySnapshot,
     unsubscribe: Unsubscribe,
   ): Promise<void> {
-    const docSnapshots = querySnapshot.docs.map((docSnapshot) => (
-      this.getReferenceToDoc(docSnapshot, config.modelName, config.referenceKeyName)
-    ));
+    const docSnapshots = querySnapshot.docs.map((docSnapshot) =>
+      this.getReferenceToDoc(
+        docSnapshot,
+        config.modelName,
+        config.referenceKeyName,
+      ),
+    );
 
     const result = await Promise.all(docSnapshots);
 
     this.hasManyListeners[queryId] = { unsubscribe, snapshots: result };
   }
 
-  private handleSubsequentHasManyRealtimeUpdates(config: HasManyFetchConfig): void {
+  private handleSubsequentHasManyRealtimeUpdates(
+    config: HasManyFetchConfig,
+  ): void {
     // Schedule for next runloop to avoid race condition errors. This can happen when a listener
     // exists for a record that's part of the hasMany array. When that happens, doing a reload
     // in the hasMany array while the record is being unloaded from store can cause an error.
     // To avoid the issue, we run .reload() in the next runloop so that we allow the unload
     // to happen first.
     next(() => {
-      const hasManyRef = this.store.peekRecord(config.modelName, config.id).hasMany(config.field);
+      const hasManyRef = this.store
+        .peekRecord(config.modelName, config.id)
+        .hasMany(config.field);
 
       hasManyRef.reload();
     });
@@ -354,13 +431,18 @@ export default class FirestoreDataManager extends Service {
     const referenceTo = docSnapshot.get(referenceKeyName);
 
     if (referenceTo && referenceTo.firestore) {
-      return isRealtime ? this.findRecordRealtime(modelName, referenceTo) : getDoc(referenceTo);
+      return isRealtime
+        ? this.findRecordRealtime(modelName, referenceTo)
+        : getDoc(referenceTo);
     }
 
     return docSnapshot;
   }
 
-  private pushRecord(modelName: keyof ModelRegistry, snapshot: DocumentSnapshot): void {
+  private pushRecord(
+    modelName: keyof ModelRegistry,
+    snapshot: DocumentSnapshot,
+  ): void {
     const flatRecord = flattenDocSnapshot(snapshot);
     const normalizedRecord = this.store.normalize(modelName, flatRecord);
 
@@ -373,7 +455,11 @@ export default class FirestoreDataManager extends Service {
     }
   }
 
-  private unloadRecord(modelName: keyof ModelRegistry, id: string, path?: string): void {
+  private unloadRecord(
+    modelName: keyof ModelRegistry,
+    id: string,
+    path?: string,
+  ): void {
     const record = this.store.peekRecord(modelName, id);
 
     if (record !== null) {

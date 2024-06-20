@@ -4,7 +4,10 @@ import { setupTest } from 'ember-qunit';
 import { Firestore } from 'firebase/firestore';
 
 import {
-  doc, getDoc, getFirestore, serverTimestamp,
+  doc,
+  getDoc,
+  getFirestore,
+  serverTimestamp,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import type TimestampTransform from 'ember-cloud-firestore-adapter/transforms/timestamp';
 import resetFixtureData from 'dummy/tests/helpers/reset-fixture-data';

@@ -14,10 +14,10 @@ import UserModel from './user';
 
 export default class GroupModel extends Model {
   @attr('string')
-  declare public name: string;
+  public declare name: string;
 
   @hasMany('user', { async: true, inverse: 'groups' })
-  declare public members: DS.PromiseManyArray<UserModel>;
+  public declare members: DS.PromiseManyArray<UserModel>;
 
   @hasMany('post', {
     async: true,
@@ -28,12 +28,12 @@ export default class GroupModel extends Model {
       return query(reference, limit(1));
     },
   })
-  declare public posts: DS.PromiseManyArray<PostModel>;
+  public declare posts: DS.PromiseManyArray<PostModel>;
 }
 
 // DO NOT DELETE: this is how TypeScript knows how to look up your models.
 declare module 'ember-data/types/registries/model' {
   export default interface ModelRegistry {
-    'group': GroupModel;
+    group: GroupModel;
   }
 }
