@@ -1,8 +1,8 @@
 import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
 import Adapter from '@ember-data/adapter';
-import DS, { ModelSchema } from 'ember-data';
-import ModelRegistry from 'ember-data/types/registries/model';
+import DS, { type ModelSchema } from 'ember-data';
+import type ModelRegistry from 'ember-data/types/registries/model';
 import RSVP from 'rsvp';
 import Store from '@ember-data/store';
 
@@ -272,7 +272,7 @@ export default class CloudFirestoreAdapter extends Adapter {
         urlNodes.pop();
 
         const db = getFirestore();
-        const docRef = doc(db, urlNodes.join('/'), id);
+        const docRef = doc(db, urlNodes.join('/'), id!);
         const modelName = relationship.type;
         const docSnapshot =
           relationship.options.isRealtime && !this.isFastBoot

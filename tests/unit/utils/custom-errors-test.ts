@@ -13,8 +13,14 @@ module('Unit | Utility | custom-errors', function () {
         });
       } catch (error) {
         assert.ok(error instanceof AdapterRecordNotFoundError);
-        assert.strictEqual((error as AdapterRecordNotFoundError).message, 'Test Error');
-        assert.strictEqual((error as AdapterRecordNotFoundError).cause, 'Test Cause');
+        assert.strictEqual(
+          (error as AdapterRecordNotFoundError).message,
+          'Test Error',
+        );
+        assert.strictEqual(
+          (error as AdapterRecordNotFoundError).cause,
+          'Test Cause',
+        );
       }
     });
   });
