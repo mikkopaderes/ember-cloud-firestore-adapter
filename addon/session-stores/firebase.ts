@@ -1,10 +1,10 @@
 import { getOwner } from '@ember/application';
 
 import LocalStorageStore from 'ember-simple-auth/session-stores/local-storage';
+import FastBoot from 'ember-cli-fastboot/services/fastboot';
 
 export default class FirebaseStore extends LocalStorageStore {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private get fastboot(): any {
+  private get fastboot(): FastBoot | undefined {
     return getOwner(this)?.lookup('service:fastboot');
   }
 

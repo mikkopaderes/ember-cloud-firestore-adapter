@@ -23,7 +23,7 @@ module('Unit | Session Store | firebase', function (hooks) {
       const sessionStore = this.owner.lookup(
         'session-store:firebase',
       ) as FirebaseStore;
-      const fastboot = this.owner.lookup('service:fastboot') as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      const fastboot = this.owner.lookup('service:fastboot');
 
       fastboot.set('request', {
         headers: new Headers({
