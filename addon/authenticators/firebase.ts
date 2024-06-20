@@ -1,6 +1,6 @@
 import { getOwner } from '@ember/application';
 
-import { Auth, User, UserCredential } from 'firebase/auth';
+import type { Auth, User, UserCredential } from 'firebase/auth';
 import BaseAuthenticator from 'ember-simple-auth/authenticators/base';
 import type FastBoot from 'ember-cli-fastboot/services/fastboot';
 

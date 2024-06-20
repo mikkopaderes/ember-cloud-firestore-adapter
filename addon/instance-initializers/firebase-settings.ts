@@ -1,7 +1,7 @@
 import ApplicationInstance from '@ember/application/instance';
 
-import { FirebaseApp, FirebaseOptions } from 'firebase/app';
-import { Firestore, EmulatorMockTokenOptions } from 'firebase/firestore';
+import type { FirebaseApp, FirebaseError, FirebaseOptions } from 'firebase/app';
+import type { Firestore, EmulatorMockTokenOptions } from 'firebase/firestore';
 
 import { initializeApp } from 'ember-cloud-firestore-adapter/firebase/app';
 import {
@@ -141,7 +141,7 @@ export function initialize(appInstance: ApplicationInstance): void {
   try {
     setupModularInstance(addonConfig);
   } catch (e) {
-    if (e.code !== 'failed-precondition') {
+    if ((e as FirebaseError).code !== 'failed-precondition') {
       throw new Error(
         `There was a problem with initializing Firebase. Check if you've configured the addon properly. | Error: ${e}`,
       );

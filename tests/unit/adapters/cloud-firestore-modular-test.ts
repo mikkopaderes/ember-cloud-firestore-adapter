@@ -390,7 +390,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         // Assert
         assert.ok(error instanceof AdapterRecordNotFoundError);
         assert.strictEqual(
-          error.message,
+          (error as AdapterRecordNotFoundError).message,
           "Record user_100 for model type user doesn't exist",
         );
       }

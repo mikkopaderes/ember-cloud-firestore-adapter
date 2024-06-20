@@ -1,7 +1,7 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 
-import { Firestore } from 'firebase/firestore';
+import type { Firestore } from 'firebase/firestore';
 
 import {
   doc,

@@ -4,7 +4,7 @@
 */
 
 import { isNone } from '@ember/utils';
-import DS, { ModelSchema } from 'ember-data';
+import DS, { type ModelSchema } from 'ember-data';
 import JSONSerializer from '@ember-data/serializer/json';
 import Store from '@ember-data/store';
 
@@ -134,9 +134,9 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
       ...super.serialize(snapshot, options),
     };
 
-    snapshot.eachRelationship((name: string, relationship) => {
+    snapshot.eachRelationship((name, relationship) => {
       if (relationship.kind === 'hasMany') {
-        delete json[name];
+        delete json[name as string];
       }
     });
 
