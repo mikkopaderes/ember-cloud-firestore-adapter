@@ -8,7 +8,9 @@ module('Unit | Utility | custom-errors', function () {
       assert.expect(3);
 
       try {
-        throw new AdapterRecordNotFoundError('Test Error', { cause: 'Test Cause' });
+        throw new AdapterRecordNotFoundError('Test Error', {
+          cause: 'Test Cause',
+        });
       } catch (error) {
         assert.ok(error instanceof AdapterRecordNotFoundError);
         assert.strictEqual((error as AdapterRecordNotFoundError).message, 'Test Error');

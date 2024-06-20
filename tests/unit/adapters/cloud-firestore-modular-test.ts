@@ -1,6 +1,7 @@
 /*
   eslint
-  max-classes-per-file: off
+  max-classes-per-file: off,
+  @typescript-eslint/no-explicit-any: off
 */
 
 import { module, test } from 'qunit';
@@ -8,6 +9,7 @@ import { setupTest } from 'ember-qunit';
 import EmberObject from '@ember/object';
 
 import Store from '@ember-data/store';
+import type { ModelSchema } from 'ember-data';
 import { CollectionReference, Firestore, WriteBatch } from 'firebase/firestore';
 import sinon from 'sinon';
 
@@ -20,6 +22,7 @@ import {
   query,
   where,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
+import type CloudFirestoreModularAdapter from 'ember-cloud-firestore-adapter/adapters/cloud-firestore-modular';
 import AdapterRecordNotFoundError from 'ember-cloud-firestore-adapter/utils/custom-errors';
 import resetFixtureData from '../../helpers/reset-fixture-data';
 
@@ -38,7 +41,9 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should generate ID for record', function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       // Act
       const result = adapter.generateIdForRecord(store, 'foo');
@@ -52,18 +57,28 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should proxy a call to updateRecord and return with the created doc', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'user' };
+      const modelClass = { modelName: 'user' } as ModelSchema;
       const snapshot = { id: 'user_100', age: 30, username: 'user_100' };
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
-      const updateRecordStub = sinon.stub(adapter, 'updateRecord').returns('foo');
+      const updateRecordStub = sinon
+        .stub(adapter, 'updateRecord')
+        .returns('foo' as any);
 
       // Act
-      const result = await adapter.createRecord(store, modelClass, snapshot);
+      const result = await adapter.createRecord(
+        store,
+        modelClass,
+        snapshot as any,
+      );
 
       // Assert
       assert.strictEqual(result, 'foo');
-      assert.ok(updateRecordStub.calledWithExactly(store, modelClass, snapshot));
+      assert.ok(
+        updateRecordStub.calledWithExactly(store, modelClass, snapshot as any),
+      );
     });
   });
 
@@ -71,12 +86,14 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should update record and resolve with the updated doc', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'user' };
+      const modelClass = { modelName: 'user' } as ModelSchema;
       const snapshot = {
         id: 'user_a',
         age: 50,
       };
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       adapter.serialize = sinon.stub().returns({
         age: 50,
@@ -84,7 +101,11 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       });
 
       // Act
-      const result = await adapter.updateRecord(store, modelClass, snapshot);
+      const result = await adapter.updateRecord(
+        store,
+        modelClass,
+        snapshot as any,
+      );
 
       // Assert
       assert.deepEqual(result, { age: 50, username: 'user_a' });
@@ -98,7 +119,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should update record in a custom collection and resolve with the updated resource', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'user' };
+      const modelClass = { modelName: 'user' } as ModelSchema;
       const snapshot = {
         id: 'user_a',
         age: 50,
@@ -108,12 +129,18 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
           },
         },
       };
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       adapter.serialize = sinon.stub().returns({ age: 50 });
 
       // Act
-      const result = await adapter.createRecord(store, modelClass, snapshot);
+      const result = await adapter.createRecord(
+        store,
+        modelClass,
+        snapshot as any,
+      );
 
       // Assert
       assert.deepEqual(result, { age: 50 });
@@ -126,7 +153,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should update record and process additional batched writes', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'user' };
+      const modelClass = { modelName: 'user' } as ModelSchema;
       const snapshot = {
         id: 'user_a',
         age: 50,
@@ -136,20 +163,30 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
           },
         },
       };
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       adapter.generateIdForRecord = sinon.stub().returns('12345');
       adapter.serialize = sinon.stub().returns({ age: 50, username: 'user_a' });
 
       // Act
-      const result = await adapter.updateRecord(store, modelClass, snapshot);
+      const result = await adapter.updateRecord(
+        store,
+        modelClass,
+        snapshot as any,
+      );
 
       // Assert
       assert.deepEqual(result, { age: 50, username: 'user_a' });
 
       const userA = await getDoc(doc(db, 'users/user_a'));
 
-      assert.deepEqual(userA.data(), { age: 50, name: 'user_a', username: 'user_a' });
+      assert.deepEqual(userA.data(), {
+        age: 50,
+        name: 'user_a',
+        username: 'user_a',
+      });
 
       const user100 = await getDoc(doc(db, 'users/user_100'));
 
@@ -161,12 +198,14 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should delete record', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'user' };
+      const modelClass = { modelName: 'user' } as ModelSchema;
       const snapshot = { id: 'user_a' };
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       // Act
-      await adapter.deleteRecord(store, modelClass, snapshot);
+      await adapter.deleteRecord(store, modelClass, snapshot as any);
 
       // Assert
       const userA = await getDoc(doc(db, 'users/user_a'));
@@ -177,7 +216,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should delete record in a custom collection', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'post' };
+      const modelClass = { modelName: 'post' } as ModelSchema;
       const snapshot = {
         id: 'post_b',
 
@@ -187,10 +226,12 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
           },
         },
       };
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       // Act
-      await adapter.deleteRecord(store, modelClass, snapshot);
+      await adapter.deleteRecord(store, modelClass, snapshot as any);
 
       // Assert
       const postB = await getDoc(doc(db, 'users/user_a/feeds/post_b'));
@@ -201,7 +242,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should delete record and process additional batched writes', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'user' };
+      const modelClass = { modelName: 'user' } as ModelSchema;
       const snapshot = {
         id: 'user_a',
         adapterOptions: {
@@ -210,12 +251,14 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
           },
         },
       };
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       adapter.serialize = sinon.stub().returns({ age: 50, username: 'user_a' });
 
       // Act
-      await adapter.deleteRecord(store, modelClass, snapshot);
+      await adapter.deleteRecord(store, modelClass, snapshot as any);
 
       // Assert
       const userA = await getDoc(doc(db, 'users/user_a'));
@@ -234,11 +277,13 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
       store.push = sinon.stub();
-      const modelClass = { modelName: 'user' };
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const modelClass = { modelName: 'user' } as ModelSchema;
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       // Act
-      const result = await adapter.findAll(store, modelClass);
+      const result = await adapter.findAll(store, modelClass, undefined as any);
 
       // Assert
       assert.deepEqual(result, [
@@ -270,13 +315,20 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
       store.push = sinon.stub();
-      const modelClass = { modelName: 'user' };
+      const modelClass = { modelName: 'user' } as ModelSchema;
       const modelId = 'user_a';
       const snapshot = {};
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       // Act
-      const result = await adapter.findRecord(store, modelClass, modelId, snapshot);
+      const result = await adapter.findRecord(
+        store,
+        modelClass,
+        modelId,
+        snapshot as any,
+      );
 
       // Assert
       assert.deepEqual(result, {
@@ -292,7 +344,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
       store.push = sinon.stub();
-      const modelClass = { modelName: 'user' };
+      const modelClass = { modelName: 'user' } as ModelSchema;
       const modelId = 'user_a';
       const snapshot = {
         adapterOptions: {
@@ -301,10 +353,17 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
           },
         },
       };
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       // Act
-      const result = await adapter.findRecord(store, modelClass, modelId, snapshot);
+      const result = await adapter.findRecord(
+        store,
+        modelClass,
+        modelId,
+        snapshot as any,
+      );
 
       // Assert
       assert.deepEqual(result, { id: 'user_a', since: 2010 });
@@ -317,18 +376,23 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
       store.push = sinon.stub();
-      const modelClass = { modelName: 'user' };
+      const modelClass = { modelName: 'user' } as ModelSchema;
       const modelId = 'user_100';
       const snapshot = {};
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       try {
         // Act
-        await adapter.findRecord(store, modelClass, modelId, snapshot);
+        await adapter.findRecord(store, modelClass, modelId, snapshot as any);
       } catch (error) {
         // Assert
         assert.ok(error instanceof AdapterRecordNotFoundError);
-        assert.strictEqual(error.message, 'Record user_100 for model type user doesn\'t exist');
+        assert.strictEqual(
+          error.message,
+          "Record user_100 for model type user doesn't exist",
+        );
       }
     });
   });
@@ -342,10 +406,17 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       const snapshot = {};
       const url = 'users/user_a';
       const relationship = { type: 'user', options: {} };
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       // Act
-      const result = await adapter.findBelongsTo(store, snapshot, url, relationship);
+      const result = await adapter.findBelongsTo(
+        store,
+        snapshot as any,
+        url,
+        relationship,
+      );
 
       // Assert
       assert.deepEqual(result, {
@@ -362,14 +433,17 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const determineRelationshipTypeStub = sinon.stub().returns('manyToOne');
       const inverseForStub = sinon.stub().returns({ name: 'author' });
-      this.owner.register('service:store', class extends Store {
-        modelFor() {
-          return {
-            determineRelationshipType: determineRelationshipTypeStub,
-            inverseFor: inverseForStub,
-          };
-        }
-      });
+      this.owner.register(
+        'service:store',
+        class extends Store {
+          modelFor() {
+            return {
+              determineRelationshipType: determineRelationshipTypeStub,
+              inverseFor: inverseForStub,
+            };
+          }
+        },
+      );
 
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
@@ -389,28 +463,40 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         },
         type: 'post',
       };
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       // Act
-      const result = await adapter.findHasMany(store, snapshot, url, relationship);
+      const result = (await adapter.findHasMany(
+        store,
+        snapshot as any,
+        url,
+        relationship,
+      )) as any;
 
       // Assert
       assert.strictEqual(result[0].id, 'post_a');
       assert.strictEqual(result[0].title, 'post_a');
-      assert.ok(determineRelationshipTypeStub.calledWithExactly(relationship, store));
+      assert.ok(
+        determineRelationshipTypeStub.calledWithExactly(relationship, store),
+      );
       assert.ok(inverseForStub.calledWithExactly(relationship.key, store));
     });
 
     test('should fetch many-to-whatever cardinality', async function (assert) {
       // Arrange
       const determineRelationshipTypeStub = sinon.stub().returns('manyToNone');
-      this.owner.register('service:store', class extends Store {
-        modelFor() {
-          return {
-            determineRelationshipType: determineRelationshipTypeStub,
-          };
-        }
-      });
+      this.owner.register(
+        'service:store',
+        class extends Store {
+          modelFor() {
+            return {
+              determineRelationshipType: determineRelationshipTypeStub,
+            };
+          }
+        },
+      );
 
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
@@ -430,10 +516,17 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         },
         type: 'user',
       };
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       // Act
-      const result = await adapter.findHasMany(store, snapshot, url, relationship);
+      const result = await adapter.findHasMany(
+        store,
+        snapshot as any,
+        url,
+        relationship as any,
+      );
 
       // Assert
       assert.deepEqual(result, [
@@ -444,21 +537,26 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
           username: 'user_b',
         },
       ]);
-      assert.ok(determineRelationshipTypeStub.calledWithExactly(relationship, store));
+      assert.ok(
+        determineRelationshipTypeStub.calledWithExactly(relationship, store),
+      );
     });
 
     test('should be able to fetch with filter using a record property', async function (assert) {
       // Arrange
       const determineRelationshipTypeStub = sinon.stub().returns('manyToOne');
       const inverseForStub = sinon.stub().returns({ name: 'author' });
-      this.owner.register('service:store', class extends Store {
-        modelFor() {
-          return {
-            determineRelationshipType: determineRelationshipTypeStub,
-            inverseFor: inverseForStub,
-          };
-        }
-      });
+      this.owner.register(
+        'service:store',
+        class extends Store {
+          modelFor() {
+            return {
+              determineRelationshipType: determineRelationshipTypeStub,
+              inverseFor: inverseForStub,
+            };
+          }
+        },
+      );
 
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
@@ -480,15 +578,24 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         },
         type: 'post',
       };
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       // Act
-      const result = await adapter.findHasMany(store, snapshot, url, relationship);
+      const result = (await adapter.findHasMany(
+        store,
+        snapshot as any,
+        url,
+        relationship,
+      )) as any;
 
       // Assert
       assert.strictEqual(result.length, 1);
       assert.strictEqual(result[0].id, 'post_a');
-      assert.ok(determineRelationshipTypeStub.calledWithExactly(relationship, store));
+      assert.ok(
+        determineRelationshipTypeStub.calledWithExactly(relationship, store),
+      );
       assert.ok(inverseForStub.calledWithExactly(relationship.key, store));
     });
 
@@ -514,10 +621,17 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         },
         type: 'post',
       };
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       // Act
-      const result = await adapter.findHasMany(store, snapshot, url, relationship);
+      const result = (await adapter.findHasMany(
+        store,
+        snapshot as any,
+        url as any,
+        relationship,
+      )) as any;
 
       // Assert
       assert.strictEqual(result[0].id, 'post_b');
@@ -529,16 +643,23 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should query for records', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'user' };
+      const modelClass = { modelName: 'user' } as ModelSchema;
       const queryRef = {
         filter(reference: CollectionReference) {
           return query(reference, where('age', '>=', 15), limit(1));
         },
       };
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       // Act
-      const result = await adapter.query(store, modelClass, queryRef);
+      const result = await adapter.query(
+        store,
+        modelClass,
+        queryRef,
+        undefined as any,
+      );
 
       // Assert
       assert.deepEqual(result, [
@@ -554,7 +675,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should query for records in a custom collection', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'user' };
+      const modelClass = { modelName: 'user' } as ModelSchema;
       const queryRef = {
         buildReference(firestore: Firestore) {
           return collection(firestore, 'admins');
@@ -564,10 +685,17 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
           return query(reference, where('since', '==', 2015));
         },
       };
-      const adapter = this.owner.lookup('adapter:cloud-firestore-modular');
+      const adapter = this.owner.lookup(
+        'adapter:cloud-firestore-modular',
+      ) as CloudFirestoreModularAdapter;
 
       // Act
-      const result = await adapter.query(store, modelClass, queryRef);
+      const result = await adapter.query(
+        store,
+        modelClass,
+        queryRef,
+        undefined as any,
+      );
 
       // Assert
       assert.deepEqual(result, [{ id: 'user_b', since: 2015 }]);

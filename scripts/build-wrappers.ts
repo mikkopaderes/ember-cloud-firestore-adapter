@@ -1,14 +1,15 @@
-// eslint-disable
-
 import * as fs from 'fs';
 
 import { keys } from 'ts-transformer-keys';
 
-function createFile(outputExports: string[], outputFileName: string, moduleName: string): void {
+function createFile(
+  outputExports: string[],
+  outputFileName: string,
+  moduleName: string,
+): void {
   fs.writeFile(
     `./addon/firebase/${outputFileName}.ts`,
-    `/* eslint-disable max-len */
-// DO NOT MODIFY. THIS IS AUTO GENERATED.
+    `// DO NOT MODIFY. THIS IS AUTO GENERATED.
 import {
   ${outputExports.map((api) => `${api} as _${api}`).join(',\n  ')},
 } from '${moduleName}';
@@ -37,10 +38,10 @@ async function buildFastBootWrappers(
   const module = await import(moduleName);
   const outputExports = Object.keys(module).filter((key) => {
     if (
-      typeof module[key] === 'function'
-      && moduleExports.includes(key)
-      && key.charAt(0) === key.charAt(0).toLowerCase()
-      && !moduleExportsToSkip.includes(key)
+      typeof module[key] === 'function' &&
+      moduleExports.includes(key) &&
+      key.charAt(0) === key.charAt(0).toLowerCase() &&
+      !moduleExportsToSkip.includes(key)
     ) {
       return true;
     }
@@ -53,12 +54,29 @@ async function buildFastBootWrappers(
   });
 }
 
-buildFastBootWrappers('firebase/app', keys<typeof import('firebase/app')>(), 'app');
-buildFastBootWrappers('firebase/auth', keys<typeof import('firebase/auth')>(), 'auth', [
-  'debugErrorMap',
-  'inMemoryPersistence',
-  'prodErrorMap',
-]);
-buildFastBootWrappers('firebase/firestore', keys<typeof import('firebase/firestore')>(), 'firestore');
-buildFastBootWrappers('firebase/functions', keys<typeof import('firebase/functions')>(), 'functions');
-buildFastBootWrappers('firebase/storage', keys<typeof import('firebase/storage')>(), 'storage');
+buildFastBootWrappers(
+  'firebase/app',
+  keys<typeof import('firebase/app')>(),
+  'app',
+);
+buildFastBootWrappers(
+  'firebase/auth',
+  keys<typeof import('firebase/auth')>(),
+  'auth',
+  ['debugErrorMap', 'inMemoryPersistence', 'prodErrorMap'],
+);
+buildFastBootWrappers(
+  'firebase/firestore',
+  keys<typeof import('firebase/firestore')>(),
+  'firestore',
+);
+buildFastBootWrappers(
+  'firebase/functions',
+  keys<typeof import('firebase/functions')>(),
+  'functions',
+);
+buildFastBootWrappers(
+  'firebase/storage',
+  keys<typeof import('firebase/storage')>(),
+  'storage',
+);

@@ -8,9 +8,16 @@ import DS, { ModelSchema } from 'ember-data';
 import JSONSerializer from '@ember-data/serializer/json';
 import Store from '@ember-data/store';
 
-import { CollectionReference, DocumentReference, Firestore } from 'firebase/firestore';
+import {
+  CollectionReference,
+  DocumentReference,
+  Firestore,
+} from 'firebase/firestore';
 
-import { doc, getFirestore } from 'ember-cloud-firestore-adapter/firebase/firestore';
+import {
+  doc,
+  getFirestore,
+} from 'ember-cloud-firestore-adapter/firebase/firestore';
 import buildCollectionName from 'ember-cloud-firestore-adapter/-private/build-collection-name';
 
 interface Links {
@@ -27,19 +34,22 @@ interface RelationshipDefinition {
   key: string;
   type: string;
   options: {
-    buildReference?(db: Firestore, record: unknown): CollectionReference
+    buildReference?(db: Firestore, record: unknown): CollectionReference;
   };
 }
 
 type ModelClass = ModelSchema & {
-  determineRelationshipType(descriptor: { kind: string, type: string }, store: Store): string;
-}
+  determineRelationshipType(
+    descriptor: { kind: string; type: string },
+    store: Store,
+  ): string;
+};
 
 export default class CloudFirestoreSerializer extends JSONSerializer {
   public extractRelationship(
     relationshipModelName: string,
     relationshipHash: DocumentReference,
-  ): { id: string, type: string } | Record<string, unknown> {
+  ): { id: string; type: string } | Record<string, unknown> {
     if (isNone(relationshipHash)) {
       return super.extractRelationship(relationshipModelName, relationshipHash);
     }
@@ -65,13 +75,18 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
           links[name] = data.path;
         }
       } else {
-        const cardinality = modelClass.determineRelationshipType(descriptor, this.store);
+        const cardinality = modelClass.determineRelationshipType(
+          descriptor,
+          this.store,
+        );
         let hasManyPath;
 
         if (cardinality === 'manyToOne') {
           hasManyPath = buildCollectionName(descriptor.type);
         } else {
-          const collectionName = buildCollectionName(modelClass.modelName as string);
+          const collectionName = buildCollectionName(
+            modelClass.modelName as string,
+          );
           const docId = resourceHash.id;
 
           hasManyPath = `${collectionName}/${docId}/${name}`;
@@ -115,7 +130,9 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
     snapshot: DS.Snapshot,
     options: Record<string, unknown>,
   ): Record<string, unknown> {
-    const json: { [key: string]: unknown } = { ...super.serialize(snapshot, options) };
+    const json: { [key: string]: unknown } = {
+      ...super.serialize(snapshot, options),
+    };
 
     snapshot.eachRelationship((name: string, relationship) => {
       if (relationship.kind === 'hasMany') {

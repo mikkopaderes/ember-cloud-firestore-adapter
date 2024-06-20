@@ -9,8 +9,9 @@ module.exports = {
   plugins: ['ember', '@typescript-eslint'],
   extends: [
     'airbnb-base',
-    'plugin:@typescript-eslint/recommended',
+    'eslint:recommended',
     'plugin:ember/recommended',
+    'plugin:prettier/recommended',
   ],
   env: {
     browser: true,
@@ -49,6 +50,15 @@ module.exports = {
     'func-names': 'off',
   },
   overrides: [
+    // ts files
+    {
+      files: ['**/*.ts'],
+      extends: [
+        'plugin:@typescript-eslint/eslint-recommended',
+        'plugin:@typescript-eslint/recommended',
+      ],
+      rules: {},
+    },
     // node files
     {
       files: [
@@ -72,7 +82,6 @@ module.exports = {
       },
       extends: ['plugin:n/recommended'],
       rules: {
-        '@typescript-eslint/no-var-requires': 'off',
         'global-require': 'off',
         'prefer-object-spread': 'off',
         'prefer-rest-params': 'off',
@@ -86,8 +95,6 @@ module.exports = {
       extends: ['plugin:qunit/recommended'],
       rules: {
         'prefer-arrow-callback': 'off',
-        'func-names': 'off',
-        '@typescript-eslint/no-empty-function': 'off',
         'qunit/require-expect': 'off',
       },
     },

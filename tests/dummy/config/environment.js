@@ -26,8 +26,10 @@ module.exports = function (environment) {
     'ember-cloud-firestore-adapter': {
       firebaseConfig: {
         apiKey: '123qweasd',
-        authDomain: 'ember-cloud-firestore-adapter-test-project.firebaseapp.com',
-        databaseURL: 'https://ember-cloud-firestore-adapter-test-project.firebaseio.com',
+        authDomain:
+          'ember-cloud-firestore-adapter-test-project.firebaseapp.com',
+        databaseURL:
+          'https://ember-cloud-firestore-adapter-test-project.firebaseio.com',
         projectId: 'ember-cloud-firestore-adapter-test-project',
         storageBucket: 'ember-cloud-firestore-adapter-test-project.appspot.com',
         messagingSenderId: '123qweasd',
