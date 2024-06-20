@@ -2,6 +2,7 @@ import { getOwner } from '@ember/application';
 
 import { Auth, User, UserCredential } from 'firebase/auth';
 import BaseAuthenticator from 'ember-simple-auth/authenticators/base';
+import type FastBoot from 'ember-cli-fastboot/services/fastboot';
 
 import {
   getAuth,
@@ -16,8 +17,7 @@ interface AuthenticateCallback {
 }
 
 export default class FirebaseAuthenticator extends BaseAuthenticator {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private get fastboot(): any {
+  private get fastboot(): FastBoot | undefined {
     return getOwner(this)?.lookup('service:fastboot');
   }
 
