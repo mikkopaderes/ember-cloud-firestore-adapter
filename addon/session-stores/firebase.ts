@@ -1,7 +1,7 @@
 import { getOwner } from '@ember/application';
 
 import LocalStorageStore from 'ember-simple-auth/session-stores/local-storage';
-import FastBoot from 'ember-cli-fastboot/services/fastboot';
+import type FastBoot from 'ember-cli-fastboot/services/fastboot';
 
 export default class FirebaseStore extends LocalStorageStore {
   private get fastboot(): FastBoot | undefined {
