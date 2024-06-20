@@ -11,6 +11,21 @@
   "repository": "https://github.com/mikkopaderes/ember-cloud-firestore-adapter",
   "license": "MIT",
   "author": "Mikko Paderes",
+  "typesVersions": {
+    "*": {
+      "test-support": [
+        "declarations/addon-test-support/index.d.ts"
+      ],
+      "test-support/*": [
+        "declarations/addon-test-support/*",
+        "declarations/addon-test-support/*/index.d.ts"
+      ],
+      "*": [
+        "declarations/addon/*",
+        "declarations/addon/*/index.d.ts"
+      ]
+    }
+  },
   "directories": {
     "doc": "doc",
     "test": "tests"
