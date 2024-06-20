@@ -6,7 +6,7 @@ import { Firestore } from 'firebase/firestore';
 import {
   doc, getDoc, getFirestore, serverTimestamp,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
-import TimestampTransform from 'ember-cloud-firestore-adapter/transforms/timestamp';
+import type TimestampTransform from 'ember-cloud-firestore-adapter/transforms/timestamp';
 import resetFixtureData from 'dummy/tests/helpers/reset-fixture-data';
 
 module('Unit | Transform | timestamp', function (hooks) {
