@@ -1,7 +1,7 @@
 import { next } from '@ember/runloop';
 import DS from 'ember-data';
 import type ModelRegistry from 'ember-data/types/registries/model';
-import Service, { inject as service } from '@ember/service';
+import Service, { service } from '@ember/service';
 import StoreService from '@ember-data/store';
 
 import type {
