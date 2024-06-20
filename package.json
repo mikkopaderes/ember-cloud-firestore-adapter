@@ -26,12 +26,12 @@
     "lint:hbs:fix": "ember-template-lint . --fix",
     "lint:js": "eslint . --cache",
     "lint:js:fix": "eslint . --fix",
+    "prepack": "npm run build:wrappers && tsc --project tsconfig.declarations.json",
+    "postpack": "rimraf declarations",
     "start": "npm run build:wrappers && firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project --ui \"ember serve\"",
     "test": "concurrently \"npm:lint\" \"npm:test:*\" --names \"lint,test:\"",
     "test:ember": "npm run build:wrappers && firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember test\"",
-    "test:ember-compatibility": "npm run build:wrappers && firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember try:each\"",
-    "prepack": "npm run build:wrappers && tsc --project tsconfig.declarations.json",
-    "postpack": "rimraf declarations"
+    "test:ember-compatibility": "npm run build:wrappers && firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember try:each\""
   },
   "dependencies": {
     "@babel/core": "^7.23.2",
