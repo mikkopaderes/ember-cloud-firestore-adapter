@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
+
 import { next } from '@ember/runloop';
 import DS from 'ember-data';
 import type ModelRegistry from 'ember-data/types/registries/model';
