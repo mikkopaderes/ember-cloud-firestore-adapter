@@ -1,10 +1,10 @@
 import { next } from '@ember/runloop';
 import DS from 'ember-data';
-import ModelRegistry from 'ember-data/types/registries/model';
+import type ModelRegistry from 'ember-data/types/registries/model';
 import Service, { inject as service } from '@ember/service';
 import StoreService from '@ember-data/store';
 
-import {
+import type {
   CollectionReference,
   DocumentReference,
   DocumentSnapshot,
@@ -96,7 +96,7 @@ export default class FirestoreDataManager extends Service {
       await this.setupDocRealtimeUpdates(modelName, docRef);
     }
 
-    return this.docListeners[listenerKey].snapshot;
+    return this.docListeners[listenerKey]!.snapshot;
   }
 
   public async findAllRealtime(
@@ -109,7 +109,7 @@ export default class FirestoreDataManager extends Service {
       await this.setupColRealtimeUpdates(modelName, colRef);
     }
 
-    return this.colListeners[listenerKey].snapshot;
+    return this.colListeners[listenerKey]!.snapshot;
   }
 
   public async queryRealtime(
@@ -120,7 +120,7 @@ export default class FirestoreDataManager extends Service {
     let unsubscribe: Unsubscribe | undefined;
 
     if (this.queryListeners[queryId]) {
-      unsubscribe = this.queryListeners[queryId].unsubscribe;
+      unsubscribe = this.queryListeners[queryId]!.unsubscribe;
       delete this.queryListeners[queryId];
     }
 
@@ -130,7 +130,7 @@ export default class FirestoreDataManager extends Service {
       unsubscribe();
     }
 
-    return this.queryListeners[queryId].snapshots;
+    return this.queryListeners[queryId]!.snapshots;
   }
 
   public async findHasManyRealtime(
@@ -141,7 +141,7 @@ export default class FirestoreDataManager extends Service {
     let unsubscribe: Unsubscribe | undefined;
 
     if (this.hasManyListeners[queryId]) {
-      unsubscribe = this.hasManyListeners[queryId].unsubscribe;
+      unsubscribe = this.hasManyListeners[queryId]!.unsubscribe;
       delete this.hasManyListeners[queryId];
     }
 
@@ -151,7 +151,7 @@ export default class FirestoreDataManager extends Service {
       unsubscribe();
     }
 
-    return this.hasManyListeners[queryId].snapshots;
+    return this.hasManyListeners[queryId]!.snapshots;
   }
 
   public async queryWithReferenceTo(
@@ -320,7 +320,7 @@ export default class FirestoreDataManager extends Service {
     listenerKey: string,
   ): void {
     if (docSnapshot.exists()) {
-      this.docListeners[listenerKey].snapshot = docSnapshot;
+      this.docListeners[listenerKey]!.snapshot = docSnapshot;
       this.pushRecord(modelName, docSnapshot);
     } else {
       this.unloadRecord(modelName, docSnapshot.id, listenerKey);
@@ -332,7 +332,7 @@ export default class FirestoreDataManager extends Service {
     listenerKey: string,
     querySnapshot: QuerySnapshot,
   ): void {
-    this.colListeners[listenerKey].snapshot = querySnapshot;
+    this.colListeners[listenerKey]!.snapshot = querySnapshot;
 
     querySnapshot.forEach((docSnapshot) => {
       this.pushRecord(modelName, docSnapshot);
@@ -378,7 +378,7 @@ export default class FirestoreDataManager extends Service {
       // multiple times. Race condition can happen where queryId no longer exists inside
       // queryListeners so we have this check.
       if (Object.prototype.hasOwnProperty.call(this.queryListeners, queryId)) {
-        const { unsubscribe } = this.queryListeners[queryId];
+        const { unsubscribe } = this.queryListeners[queryId]!;
 
         delete this.queryListeners[queryId];
         recordArray.update().then(() => unsubscribe());
@@ -479,22 +479,22 @@ export default class FirestoreDataManager extends Service {
 
   private destroyListener(type: string, key: string): void {
     if (type === 'doc' && this.docListeners[key]) {
-      this.docListeners[key].unsubscribe();
+      this.docListeners[key]!.unsubscribe();
       delete this.docListeners[key];
     }
 
     if (type === 'col' && this.colListeners[key]) {
-      this.colListeners[key].unsubscribe();
+      this.colListeners[key]!.unsubscribe();
       delete this.colListeners[key];
     }
 
     if (type === 'query' && this.queryListeners[key]) {
-      this.queryListeners[key].unsubscribe();
+      this.queryListeners[key]!.unsubscribe();
       delete this.queryListeners[key];
     }
 
     if (type === 'hasMany' && this.hasManyListeners[key]) {
-      this.hasManyListeners[key].unsubscribe();
+      this.hasManyListeners[key]!.unsubscribe();
       delete this.hasManyListeners[key];
     }
   }

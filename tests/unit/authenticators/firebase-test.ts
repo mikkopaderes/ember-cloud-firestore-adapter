@@ -6,8 +6,8 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 
-import { Auth } from 'firebase/auth';
-import { Firestore } from 'firebase/firestore';
+import type { Auth } from 'firebase/auth';
+import type { Firestore } from 'firebase/firestore';
 
 import {
   getAuth,

@@ -4,7 +4,7 @@ import { waitUntil } from '@ember/test-helpers';
 import DS from 'ember-data';
 import RSVP from 'rsvp';
 
-import { Firestore } from 'firebase/firestore';
+import type { Firestore } from 'firebase/firestore';
 import sinon from 'sinon';
 
 import {
@@ -109,8 +109,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
 
       // Assert
       assert.strictEqual(result.size, 3);
-      assert.strictEqual(result.docs[0].id, 'user_a');
-      assert.deepEqual(result.docs[0].data(), {
+      assert.strictEqual(result.docs[0]?.id, 'user_a');
+      assert.deepEqual(result.docs[0]?.data(), {
         name: 'user_a',
         age: 15,
         username: 'user_a',
@@ -182,8 +182,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
 
       // Assert
       assert.strictEqual(result.length, 3);
-      assert.strictEqual(result[0].id, 'user_a');
-      assert.deepEqual(result[0].data(), {
+      assert.strictEqual(result[0]?.id, 'user_a');
+      assert.deepEqual(result[0]?.data(), {
         name: 'user_a',
         age: 15,
         username: 'user_a',
@@ -212,8 +212,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
 
       // Assert
       assert.strictEqual(result.length, 1);
-      assert.strictEqual(result[0].id, 'group_a');
-      assert.deepEqual(result[0].data(), { name: 'group_a' });
+      assert.strictEqual(result[0]?.id, 'group_a');
+      assert.deepEqual(result[0]?.data(), { name: 'group_a' });
     });
 
     test('should update record array when query gets updated', async function (assert) {
@@ -272,8 +272,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
 
       // Assert
       assert.strictEqual(result.length, 1);
-      assert.strictEqual(result[0].id, 'post_b');
-      assert.deepEqual(result[0].get('title'), 'post_b');
+      assert.strictEqual(result[0]?.id, 'post_b');
+      assert.deepEqual(result[0]?.get('title'), 'post_b');
     });
 
     test('should return fetched records with referenceTo indicators', async function (assert) {
@@ -296,8 +296,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
 
       // Assert
       assert.strictEqual(result.length, 1);
-      assert.strictEqual(result[0].id, 'group_a');
-      assert.deepEqual(result[0].data(), { name: 'group_a' });
+      assert.strictEqual(result[0]?.id, 'group_a');
+      assert.deepEqual(result[0]?.data(), { name: 'group_a' });
     });
 
     test('should reload has-many reference when query gets updated', async function (assert) {
@@ -357,8 +357,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
 
       // Assert
       assert.strictEqual(result.length, 3);
-      assert.strictEqual(result[0].id, 'user_a');
-      assert.deepEqual(result[0].data(), {
+      assert.strictEqual(result[0]?.id, 'user_a');
+      assert.deepEqual(result[0]?.data(), {
         name: 'user_a',
         age: 15,
         username: 'user_a',
@@ -382,8 +382,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
 
       // Assert
       assert.strictEqual(result.length, 1);
-      assert.strictEqual(result[0].id, 'group_a');
-      assert.deepEqual(result[0].data(), { name: 'group_a' });
+      assert.strictEqual(result[0]?.id, 'group_a');
+      assert.deepEqual(result[0]?.data(), { name: 'group_a' });
     });
   });
 });
