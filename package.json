@@ -139,7 +139,8 @@
   "ember-addon": {
     "configPath": "tests/dummy/config",
     "fastbootDependencies": [
-      "firebase"
+      "firebase",
+      "crypto"
     ]
   }
 }
