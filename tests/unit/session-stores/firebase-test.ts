@@ -2,6 +2,8 @@ import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import Service from '@ember/service';
 
+import type FirebaseStore from 'ember-cloud-firestore-adapter/session-stores/firebase';
+
 class FastBootStub extends Service {
   isFastBoot = true;
 
@@ -18,8 +20,8 @@ module('Unit | Session Store | firebase', function (hooks) {
       // Arrange
       this.owner.register('service:fastboot', FastBootStub);
 
-      const sessionStore = this.owner.lookup('session-store:firebase');
-      const fastboot = this.owner.lookup('service:fastboot');
+      const sessionStore = this.owner.lookup('session-store:firebase') as FirebaseStore;
+      const fastboot = this.owner.lookup('service:fastboot') as any;
 
       fastboot.set('request', {
         headers: new Headers({
