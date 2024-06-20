@@ -16,6 +16,7 @@ import {
   query,
   updateDoc,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
+import UserModel from 'dummy/tests/dummy/app/models/user';
 import resetFixtureData from '../../helpers/reset-fixture-data';
 
 module('Unit | Service | -firestore-data-manager', function (hooks) {
@@ -39,7 +40,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       );
 
       // Act
-      const result = await firestoreDataManager.findRecordRealtime(
+      const result = await firestoreDataManager.findRecordRealtime<UserModel>(
         modelName,
         docRef,
       );
@@ -64,7 +65,10 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       );
 
       // Act
-      await firestoreDataManager.findRecordRealtime(modelName, docRef);
+      await firestoreDataManager.findRecordRealtime<UserModel>(
+        modelName,
+        docRef,
+      );
       await updateDoc(docRef, { name: 'new_user_a' });
 
       // Assert
@@ -83,7 +87,10 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       );
 
       // Act
-      await firestoreDataManager.findRecordRealtime(modelName, docRef);
+      await firestoreDataManager.findRecordRealtime<UserModel>(
+        modelName,
+        docRef,
+      );
       await updateDoc(docRef, { name: 'new_user_a' });
       await deleteDoc(docRef);
 
@@ -103,7 +110,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       );
 
       // Act
-      const result = await firestoreDataManager.findAllRealtime(
+      const result = await firestoreDataManager.findAllRealtime<UserModel>(
         modelName,
         colRef,
       );
@@ -130,7 +137,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       );
 
       // Act
-      await firestoreDataManager.findAllRealtime(modelName, colRef);
+      await firestoreDataManager.findAllRealtime<UserModel>(modelName, colRef);
       await updateDoc(docRef, { name: 'new_user_a' });
 
       // Assert
@@ -150,7 +157,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       );
 
       // Act
-      await firestoreDataManager.findAllRealtime(modelName, colRef);
+      await firestoreDataManager.findAllRealtime<UserModel>(modelName, colRef);
       await updateDoc(docRef, { name: 'new_user_a' });
       await deleteDoc(docRef);
 
@@ -167,7 +174,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const queryRef = query(colRef);
       const config = {
         queryRef,
-        modelName: 'user',
+        modelName: 'user' as const,
         referenceKeyName: 'referenceTo',
         recordArray: {
           update: () =>
@@ -179,7 +186,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       );
 
       // Act
-      const result = await firestoreDataManager.queryRealtime(config);
+      const result =
+        await firestoreDataManager.queryRealtime<UserModel>(config);
 
       // Assert
       assert.strictEqual(result.length, 3);
@@ -197,7 +205,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const queryRef = query(colRef);
       const config = {
         queryRef,
-        modelName: 'user',
+        modelName: 'user' as const,
         referenceKeyName: 'referenceTo',
         recordArray: {
           update: () =>
@@ -209,7 +217,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       );
 
       // Act
-      const result = await firestoreDataManager.queryRealtime(config);
+      const result =
+        await firestoreDataManager.queryRealtime<UserModel>(config);
 
       // Assert
       assert.strictEqual(result.length, 1);
@@ -224,7 +233,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const queryRef = query(colRef);
       const config = {
         queryRef,
-        modelName: 'user',
+        modelName: 'user' as const,
         referenceKeyName: 'referenceTo',
         queryId: 'test',
         recordArray: {
@@ -238,7 +247,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       );
 
       // Act
-      await firestoreDataManager.queryRealtime(config);
+      await firestoreDataManager.queryRealtime<UserModel>(config);
       await updateDoc(docRef, { name: 'new_user_a' });
 
       // Assert
@@ -259,7 +268,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const queryRef = query(colRef);
       const config = {
         queryRef,
-        modelName: 'user',
+        modelName: 'user' as const,
         id: 'user_a',
         field: 'posts',
         referenceKeyName: 'referenceTo',
@@ -269,7 +278,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       );
 
       // Act
-      const result = await firestoreDataManager.findHasManyRealtime(config);
+      const result =
+        await firestoreDataManager.findHasManyRealtime<UserModel>(config);
 
       // Assert
       assert.strictEqual(result.length, 1);
@@ -283,7 +293,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const queryRef = query(colRef);
       const config = {
         queryRef,
-        modelName: 'user',
+        modelName: 'user' as const,
         id: 'user_a',
         field: 'groups',
         referenceKeyName: 'referenceTo',
@@ -293,7 +303,8 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       );
 
       // Act
-      const result = await firestoreDataManager.findHasManyRealtime(config);
+      const result =
+        await firestoreDataManager.findHasManyRealtime<UserModel>(config);
 
       // Assert
       assert.strictEqual(result.length, 1);
@@ -321,7 +332,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       const queryRef = query(colRef);
       const config = {
         queryRef,
-        modelName: 'user',
+        modelName: 'user' as const,
         id: 'user_a',
         field: 'groups',
         referenceKeyName: 'referenceTo',
@@ -331,7 +342,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
       );
 
       // Act
-      await firestoreDataManager.findHasManyRealtime(config);
+      await firestoreDataManager.findHasManyRealtime<UserModel>(config);
       await updateDoc(docRef, { name: 'new_group_a' });
 
       // Assert

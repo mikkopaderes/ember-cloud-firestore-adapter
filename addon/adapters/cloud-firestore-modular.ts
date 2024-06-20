@@ -1,13 +1,16 @@
 import { getOwner } from '@ember/owner';
 import { inject as service } from '@ember/service';
 import Adapter from '@ember-data/adapter';
-import type ModelRegistry from 'ember-data/types/registries/model';
 import RSVP from 'rsvp';
 import Store from '@ember-data/store';
 import type { ModelSchema } from '@ember-data/store/types';
 import type { Snapshot } from '@ember-data/legacy-compat/-private';
 import type { AdapterPayload } from '@ember-data/legacy-compat';
 import type { SnapshotRecordArray } from 'ember-data/-private';
+import type {
+  TypeFromInstance,
+  TypedRecordInstance,
+} from '@warp-drive/core-types/record';
 
 import {
   CollectionReference,
@@ -43,17 +46,16 @@ export interface AdapterOption {
   [key: string]: unknown;
 }
 
-// interface Snapshot extends DS.Snapshot {
-//   adapterOptions: AdapterOption;
-// }
+interface CloudFirestoreSnapshot extends Snapshot {
+  adapterOptions: AdapterOption;
+}
 
-// interface SnapshotRecordArray
-//   extends DS.SnapshotRecordArray<keyof ModelRegistry> {
-//   adapterOptions: AdapterOption;
-// }
+interface CloudFirestoreSnapshotRecordArray extends SnapshotRecordArray {
+  adapterOptions?: AdapterOption;
+}
 
-interface BelongsToRelationshipMeta {
-  type: keyof ModelRegistry;
+interface BelongsToRelationshipMeta<T> {
+  type: TypeFromInstance<T>;
   options: { isRealtime?: boolean };
 }
 
@@ -90,7 +92,7 @@ export default class CloudFirestoreAdapter extends Adapter {
   public createRecord(
     store: Store,
     type: ModelSchema,
-    snapshot: Snapshot,
+    snapshot: CloudFirestoreSnapshot,
   ): Promise<AdapterPayload> {
     return this.updateRecord(store, type, snapshot);
   }
@@ -98,7 +100,7 @@ export default class CloudFirestoreAdapter extends Adapter {
   public updateRecord(
     _store: Store,
     type: ModelSchema,
-    snapshot: Snapshot,
+    snapshot: CloudFirestoreSnapshot,
   ): Promise<AdapterPayload> {
     return new RSVP.Promise((resolve, reject) => {
       const collectionRef = this.buildCollectionRef(
@@ -117,7 +119,7 @@ export default class CloudFirestoreAdapter extends Adapter {
 
           if (snapshot.adapterOptions?.isRealtime && !this.isFastBoot) {
             // Setup realtime listener for record
-            this.firestoreDataManager.findRecordRealtime(
+            this.firestoreDataManager.findRecordRealtime<T>(
               type.modelName,
               docRef,
             );
@@ -132,7 +134,7 @@ export default class CloudFirestoreAdapter extends Adapter {
   public deleteRecord(
     _store: Store,
     type: ModelSchema,
-    snapshot: Snapshot,
+    snapshot: CloudFirestoreSnapshot,
   ): Promise<AdapterPayload> {
     return new RSVP.Promise((resolve, reject) => {
       const db = getFirestore();
@@ -157,23 +159,23 @@ export default class CloudFirestoreAdapter extends Adapter {
     });
   }
 
-  public findRecord(
+  public findRecord<T extends TypedRecordInstance>(
     _store: Store,
-    type: ModelSchema,
+    type: ModelSchema<T>,
     id: string,
-    snapshot: Snapshot,
+    snapshot: CloudFirestoreSnapshot,
   ): Promise<AdapterPayload> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
-        const colRef = this.buildCollectionRef(
-          type.modelName,
+        const colRef = this.buildCollectionRef<T>(
+          type.modelName as TypeFromInstance<T>,
           snapshot.adapterOptions,
         );
         const docRef = doc(colRef, id);
         const docSnapshot =
           snapshot.adapterOptions?.isRealtime && !this.isFastBoot
             ? await this.firestoreDataManager.findRecordRealtime(
-                type.modelName,
+                type.modelName as TypeFromInstance<T>,
                 docRef,
               )
             : await getDoc(docRef);
@@ -193,23 +195,20 @@ export default class CloudFirestoreAdapter extends Adapter {
     });
   }
 
-  public findAll(
+  public findAll<T>(
     _store: Store,
-    type: ModelSchema,
-    _sinceToken: null,
-    snapshotRecordArray?: SnapshotRecordArray,
+    type: ModelSchema<T>,
+    _neverSet: null,
+    snapshotRecordArray?: CloudFirestoreSnapshotRecordArray,
   ): Promise<AdapterPayload> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
         const db = getFirestore();
-        const colRef = collection(
-          db,
-          buildCollectionName(type.modelName as string),
-        );
+        const colRef = collection(db, buildCollectionName(type.modelName));
         const querySnapshot =
           snapshotRecordArray?.adapterOptions?.isRealtime && !this.isFastBoot
-            ? await this.firestoreDataManager.findAllRealtime(
-                type.modelName,
+            ? await this.firestoreDataManager.findAllRealtime<T>(
+                type.modelName as TypeFromInstance<T>,
                 colRef,
               )
             : await getDocs(colRef);
@@ -225,25 +224,28 @@ export default class CloudFirestoreAdapter extends Adapter {
     });
   }
 
-  public query(
+  public query<T>(
     _store: Store,
-    type: ModelSchema,
+    type: ModelSchema<T>,
     queryOption: AdapterOption,
   ): Promise<AdapterPayload> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
-        const colRef = this.buildCollectionRef(type.modelName, queryOption);
+        const colRef = this.buildCollectionRef<T>(
+          type.modelName as TypeFromInstance<T>,
+          queryOption,
+        );
         const queryRef = queryOption.filter?.(colRef) || colRef;
         const config = {
-          // recordArray,
+          recordArray: undefined,
           queryRef,
-          modelName: type.modelName,
+          modelName: type.modelName as TypeFromInstance<T>,
           referenceKeyName: this.referenceKeyName,
           queryId: queryOption.queryId,
         };
         const docSnapshots =
           queryOption.isRealtime && !this.isFastBoot
-            ? await this.firestoreDataManager.queryRealtime(config)
+            ? await this.firestoreDataManager.queryRealtime<T>(config)
             : await this.firestoreDataManager.queryWithReferenceTo(
                 queryRef,
                 this.referenceKeyName,
@@ -260,11 +262,11 @@ export default class CloudFirestoreAdapter extends Adapter {
     });
   }
 
-  public findBelongsTo(
+  public findBelongsTo<T>(
     _store: Store,
     _snapshot: Snapshot,
     url: string,
-    relationship: BelongsToRelationshipMeta,
+    relationship: BelongsToRelationshipMeta<T>,
   ): Promise<unknown> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
@@ -299,7 +301,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     });
   }
 
-  public findHasMany(
+  public findHasMany<T>(
     store: Store,
     snapshot: Snapshot,
     url: string,
@@ -315,14 +317,14 @@ export default class CloudFirestoreAdapter extends Adapter {
         );
         const config = {
           queryRef,
-          modelName: snapshot.modelName,
+          modelName: snapshot.modelName as TypeFromInstance<T>,
           id: snapshot.id,
           field: relationship.key,
           referenceKeyName: this.referenceKeyName,
         };
         const documentSnapshots =
           relationship.options.isRealtime && !this.isFastBoot
-            ? await this.firestoreDataManager.findHasManyRealtime(config)
+            ? await this.firestoreDataManager.findHasManyRealtime<T>(config)
             : await this.firestoreDataManager.queryWithReferenceTo(
                 queryRef,
                 this.referenceKeyName,
@@ -339,15 +341,15 @@ export default class CloudFirestoreAdapter extends Adapter {
     });
   }
 
-  protected buildCollectionRef(
-    modelName: keyof ModelRegistry,
+  protected buildCollectionRef<T>(
+    modelName: TypeFromInstance<T>,
     adapterOptions?: AdapterOption,
   ): CollectionReference {
     const db = getFirestore();
 
     return (
       adapterOptions?.buildReference?.(db) ||
-      collection(db, buildCollectionName(modelName as string))
+      collection(db, buildCollectionName(modelName))
     );
   }
 

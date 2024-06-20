@@ -1,8 +1,6 @@
 import { next } from '@ember/runloop';
-import DS from 'ember-data';
-import type ModelRegistry from 'ember-data/types/registries/model';
 import Service, { inject as service } from '@ember/service';
-import StoreService from '@ember-data/store';
+import Store from '@ember-data/store';
 
 import type {
   CollectionReference,
@@ -19,6 +17,11 @@ import {
   onSnapshot,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import flattenDocSnapshot from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
+import type {
+  TypeFromInstance,
+  TypedRecordInstance,
+} from '@warp-drive/core-types/record';
+import type { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
 
 interface DocListeners {
   [key: string]: {
@@ -41,16 +44,16 @@ interface QueryListeners {
   };
 }
 
-interface QueryFetchConfig {
-  modelName: keyof ModelRegistry;
+interface QueryFetchConfig<T> {
+  modelName: TypeFromInstance<T>;
   referenceKeyName: string;
-  // recordArray: DS.AdapterPopulatedRecordArray<unknown>;
+  recordArray: Collection;
   queryRef: Query;
   queryId?: string;
 }
 
-interface HasManyFetchConfig {
-  modelName: keyof ModelRegistry;
+interface HasManyFetchConfig<T> {
+  modelName: TypeFromInstance<T>;
   id: string | null;
   field: string;
   referenceKeyName: string;
@@ -59,7 +62,7 @@ interface HasManyFetchConfig {
 
 export default class FirestoreDataManager extends Service {
   @service
-  private declare store: StoreService;
+  private declare store: Store;
 
   private docListeners: DocListeners = {};
 
@@ -86,8 +89,8 @@ export default class FirestoreDataManager extends Service {
     );
   }
 
-  public async findRecordRealtime(
-    modelName: keyof ModelRegistry,
+  public async findRecordRealtime<T>(
+    modelName: TypeFromInstance<T>,
     docRef: DocumentReference,
   ): Promise<DocumentSnapshot> {
     const { path: listenerKey } = docRef;
@@ -99,8 +102,8 @@ export default class FirestoreDataManager extends Service {
     return this.docListeners[listenerKey]!.snapshot;
   }
 
-  public async findAllRealtime(
-    modelName: keyof ModelRegistry,
+  public async findAllRealtime<T>(
+    modelName: TypeFromInstance<T>,
     colRef: CollectionReference,
   ): Promise<QuerySnapshot> {
     const { path: listenerKey } = colRef;
@@ -112,8 +115,8 @@ export default class FirestoreDataManager extends Service {
     return this.colListeners[listenerKey]!.snapshot;
   }
 
-  public async queryRealtime(
-    config: QueryFetchConfig,
+  public async queryRealtime<T>(
+    config: QueryFetchConfig<T>,
   ): Promise<DocumentSnapshot[]> {
     const queryId =
       config.queryId || Math.random().toString(32).slice(2).substring(0, 5);
@@ -133,8 +136,8 @@ export default class FirestoreDataManager extends Service {
     return this.queryListeners[queryId]!.snapshots;
   }
 
-  public async findHasManyRealtime(
-    config: HasManyFetchConfig,
+  public async findHasManyRealtime<T>(
+    config: HasManyFetchConfig<T>,
   ): Promise<DocumentSnapshot[]> {
     const queryId = `${config.modelName}_${config.id}_${config.field}`;
 
@@ -154,20 +157,20 @@ export default class FirestoreDataManager extends Service {
     return this.hasManyListeners[queryId]!.snapshots;
   }
 
-  public async queryWithReferenceTo(
+  public async queryWithReferenceTo<T>(
     queryRef: Query,
     referenceKey: string,
   ): Promise<DocumentSnapshot[]> {
     const querySnapshot = await getDocs(queryRef);
     const promises = querySnapshot.docs.map((docSnapshot) =>
-      this.getReferenceToDoc(docSnapshot, '', referenceKey),
+      this.getReferenceToDoc<T>(docSnapshot, '' as never, referenceKey),
     );
 
     return Promise.all(promises);
   }
 
-  private setupDocRealtimeUpdates(
-    modelName: keyof ModelRegistry,
+  private setupDocRealtimeUpdates<T>(
+    modelName: TypeFromInstance<T>,
     docRef: DocumentReference,
   ): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -201,8 +204,8 @@ export default class FirestoreDataManager extends Service {
     });
   }
 
-  private setupColRealtimeUpdates(
-    modelName: keyof ModelRegistry,
+  private setupColRealtimeUpdates<T>(
+    modelName: TypeFromInstance<T>,
     colRef: CollectionReference,
   ): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -235,8 +238,8 @@ export default class FirestoreDataManager extends Service {
     });
   }
 
-  public setupQueryRealtimeUpdates(
-    config: QueryFetchConfig,
+  public setupQueryRealtimeUpdates<T>(
+    config: QueryFetchConfig<T>,
     queryId: string,
   ): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -270,8 +273,8 @@ export default class FirestoreDataManager extends Service {
     });
   }
 
-  public setupHasManyRealtimeUpdates(
-    config: HasManyFetchConfig,
+  public setupHasManyRealtimeUpdates<T>(
+    config: HasManyFetchConfig<T>,
     queryId: string,
   ): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -314,9 +317,9 @@ export default class FirestoreDataManager extends Service {
     }
   }
 
-  private handleSubsequentDocRealtimeUpdates(
+  private handleSubsequentDocRealtimeUpdates<T>(
     docSnapshot: DocumentSnapshot,
-    modelName: keyof ModelRegistry,
+    modelName: TypeFromInstance<T>,
     listenerKey: string,
   ): void {
     if (docSnapshot.exists()) {
@@ -327,8 +330,8 @@ export default class FirestoreDataManager extends Service {
     }
   }
 
-  private handleSubsequentColRealtimeUpdates(
-    modelName: keyof ModelRegistry,
+  private handleSubsequentColRealtimeUpdates<T>(
+    modelName: TypeFromInstance<T>,
     listenerKey: string,
     querySnapshot: QuerySnapshot,
   ): void {
@@ -345,9 +348,9 @@ export default class FirestoreDataManager extends Service {
     });
   }
 
-  private async handleInitialQueryRealtimeUpdates(
+  private async handleInitialQueryRealtimeUpdates<T>(
     queryId: string,
-    config: QueryFetchConfig,
+    config: QueryFetchConfig<T>,
     querySnapshot: QuerySnapshot,
     unsubscribe: Unsubscribe,
   ): Promise<void> {
@@ -366,7 +369,7 @@ export default class FirestoreDataManager extends Service {
 
   private handleSubsequentQueryRealtimeUpdates(
     queryId: string,
-    recordArray: DS.AdapterPopulatedRecordArray<unknown>,
+    recordArray: Collection,
   ): void {
     // Schedule for next runloop to avoid race condition errors. This can happen when a listener
     // exists for a record that's part of the query array. When that happens, doing an update
@@ -386,9 +389,9 @@ export default class FirestoreDataManager extends Service {
     });
   }
 
-  private async handleInitialHasManyRealtimeUpdates(
+  private async handleInitialHasManyRealtimeUpdates<T>(
     queryId: string,
-    config: HasManyFetchConfig,
+    config: HasManyFetchConfig<T>,
     querySnapshot: QuerySnapshot,
     unsubscribe: Unsubscribe,
   ): Promise<void> {
@@ -405,8 +408,8 @@ export default class FirestoreDataManager extends Service {
     this.hasManyListeners[queryId] = { unsubscribe, snapshots: result };
   }
 
-  private handleSubsequentHasManyRealtimeUpdates(
-    config: HasManyFetchConfig,
+  private handleSubsequentHasManyRealtimeUpdates<T>(
+    config: HasManyFetchConfig<T>,
   ): void {
     // Schedule for next runloop to avoid race condition errors. This can happen when a listener
     // exists for a record that's part of the hasMany array. When that happens, doing a reload
@@ -415,16 +418,16 @@ export default class FirestoreDataManager extends Service {
     // to happen first.
     next(() => {
       const hasManyRef = this.store
-        .peekRecord(config.modelName, config.id)
-        .hasMany(config.field);
+        .peekRecord<T>(config.modelName, config.id!)
+        ?.hasMany(config.field);
 
       hasManyRef.reload();
     });
   }
 
-  public async getReferenceToDoc(
+  public async getReferenceToDoc<T>(
     docSnapshot: DocumentSnapshot,
-    modelName: keyof ModelRegistry,
+    modelName: TypeFromInstance<T>,
     referenceKeyName: string,
     isRealtime = false,
   ): Promise<DocumentSnapshot> {
@@ -439,8 +442,8 @@ export default class FirestoreDataManager extends Service {
     return docSnapshot;
   }
 
-  private pushRecord(
-    modelName: keyof ModelRegistry,
+  private pushRecord<T>(
+    modelName: TypeFromInstance<T>,
     snapshot: DocumentSnapshot,
   ): void {
     const flatRecord = flattenDocSnapshot(snapshot);
@@ -455,9 +458,9 @@ export default class FirestoreDataManager extends Service {
     }
   }
 
-  private unloadRecord(
-    modelName: keyof ModelRegistry,
-    id: string,
+  private unloadRecord<T>(
+    modelName: TypeFromInstance<T>,
+    id: string | number,
     path?: string,
   ): void {
     const record = this.store.peekRecord(modelName, id);

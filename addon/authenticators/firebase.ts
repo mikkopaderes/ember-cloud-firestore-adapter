@@ -1,4 +1,4 @@
-import { getOwner } from '@ember/application';
+import { getOwner } from '@ember/owner';
 
 import type { Auth, User, UserCredential } from 'firebase/auth';
 import BaseAuthenticator from 'ember-simple-auth/authenticators/base';
