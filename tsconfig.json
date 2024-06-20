@@ -6,13 +6,43 @@
     // work with TypeScript.
     "baseUrl": ".",
     "paths": {
-      "dummy/tests/*": ["tests/*"],
-      "dummy/*": ["tests/dummy/app/*", "app/*"],
-      "ember-cloud-firestore-adapter": ["addon"],
-      "ember-cloud-firestore-adapter/*": ["addon/*"],
-      "ember-cloud-firestore-adapter/test-support": ["addon-test-support"],
-      "ember-cloud-firestore-adapter/test-support/*": ["addon-test-support/*"],
-      "*": ["types/*"]
-    }
+      "dummy/tests/*": [
+        "tests/*"
+      ],
+      "dummy/*": [
+        "tests/dummy/app/*",
+        "app/*"
+      ],
+      "ember-cloud-firestore-adapter": [
+        "addon"
+      ],
+      "ember-cloud-firestore-adapter/*": [
+        "addon/*"
+      ],
+      "ember-cloud-firestore-adapter/test-support": [
+        "addon-test-support"
+      ],
+      "ember-cloud-firestore-adapter/test-support/*": [
+        "addon-test-support/*"
+      ],
+      "*": [
+        "types/*"
+      ]
+    },
+    "types": [
+      "./node_modules/@ember-data-types/adapter/unstable-preview-types",
+      "./node_modules/@ember-data-types/graph/unstable-preview-types",
+      "./node_modules/@ember-data-types/json-api/unstable-preview-types",
+      "./node_modules/@ember-data-types/legacy-compat/unstable-preview-types",
+      "./node_modules/@ember-data-types/model/unstable-preview-types",
+      "./node_modules/@ember-data-types/request-utils/unstable-preview-types",
+      "./node_modules/@ember-data-types/request/unstable-preview-types",
+      "./node_modules/@ember-data-types/serializer/unstable-preview-types",
+      "./node_modules/@ember-data-types/store/unstable-preview-types",
+      "./node_modules/@ember-data-types/tracking/unstable-preview-types",
+      "./node_modules/@warp-drive-types/core-types/unstable-preview-types",
+      "./node_modules/ember-data-types/unstable-preview-types",
+      "ember-source/types"
+    ]
   }
 }

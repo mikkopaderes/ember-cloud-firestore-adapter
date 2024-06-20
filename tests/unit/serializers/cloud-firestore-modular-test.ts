@@ -5,6 +5,7 @@
 
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
+import type Store from '@ember-data/store';
 
 import type CloudFirestoreSerializer from 'ember-cloud-firestore-adapter/serializers/cloud-firestore-modular';
 
@@ -48,7 +49,7 @@ module('Unit | Serializer | cloud-firestore modular', function (hooks) {
       const serializer = this.owner.lookup(
         'serializer:cloud-firestore-modular',
       ) as CloudFirestoreSerializer;
-      const store = this.owner.lookup('service:store');
+      const store = this.owner.lookup('service:store') as Store;
       serializer.store = store; // TODO: injected store on serializer is undefined in tests
 
       // Act

@@ -44,14 +44,14 @@ interface QueryListeners {
 interface QueryFetchConfig {
   modelName: keyof ModelRegistry;
   referenceKeyName: string;
-  recordArray: DS.AdapterPopulatedRecordArray<unknown>;
+  // recordArray: DS.AdapterPopulatedRecordArray<unknown>;
   queryRef: Query;
   queryId?: string;
 }
 
 interface HasManyFetchConfig {
   modelName: keyof ModelRegistry;
-  id: string;
+  id: string | null;
   field: string;
   referenceKeyName: string;
   queryRef: Query;

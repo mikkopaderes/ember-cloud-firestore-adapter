@@ -3,6 +3,7 @@ import { setupTest } from 'ember-qunit';
 import { waitUntil } from '@ember/test-helpers';
 import DS from 'ember-data';
 import RSVP from 'rsvp';
+import type Store from '@ember-data/store';
 
 import type { Firestore } from 'firebase/firestore';
 import sinon from 'sinon';
@@ -54,7 +55,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
 
     test('should push record to store when doc gets updated', async function (assert) {
       // Arrange
-      const store = this.owner.lookup('service:store');
+      const store = this.owner.lookup('service:store') as Store;
       const pushSpy = sinon.spy(store, 'push');
       const modelName = 'user';
       const docRef = doc(db, 'users', 'user_a');
@@ -73,7 +74,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
 
     test('should unload record from store when doc gets deleted', async function (assert) {
       // Arrange
-      const store = this.owner.lookup('service:store');
+      const store = this.owner.lookup('service:store') as Store;
       const unloadRecordSpy = sinon.spy(store, 'unloadRecord');
       const modelName = 'user';
       const docRef = doc(db, 'users', 'user_a');
@@ -119,7 +120,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
 
     test('should push every record to store when collection gets updated', async function (assert) {
       // Arrange
-      const store = this.owner.lookup('service:store');
+      const store = this.owner.lookup('service:store') as Store;
       const pushSpy = sinon.spy(store, 'push');
       const modelName = 'user';
       const docRef = doc(db, 'users', 'user_a');
@@ -139,7 +140,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
 
     test('should unload every record from store when doc gets deleted', async function (assert) {
       // Arrange
-      const store = this.owner.lookup('service:store');
+      const store = this.owner.lookup('service:store') as Store;
       const unloadRecordSpy = sinon.spy(store, 'unloadRecord');
       const modelName = 'user';
       const docRef = doc(db, 'users', 'user_a');
@@ -249,7 +250,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
   module('findHasManyRealtime()', function () {
     test('should return fetched records', async function (assert) {
       // Arrange
-      const store = this.owner.lookup('service:store');
+      const store = this.owner.lookup('service:store') as Store;
 
       // Pre-fetch so that peekRecord works
       await store.findRecord('user', 'user_a');
@@ -302,7 +303,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
 
     test('should reload has-many reference when query gets updated', async function (assert) {
       // Arrange
-      const store = this.owner.lookup('service:store');
+      const store = this.owner.lookup('service:store') as Store;
       const reloadStub = sinon.stub().returns(Promise.resolve());
 
       sinon

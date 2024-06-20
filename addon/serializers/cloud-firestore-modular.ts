@@ -4,9 +4,10 @@
 */
 
 import { isNone } from '@ember/utils';
-import DS, { type ModelSchema } from 'ember-data';
 import JSONSerializer from '@ember-data/serializer/json';
 import Store from '@ember-data/store';
+import type { ModelSchema } from '@ember-data/store/types';
+import type { Snapshot } from 'ember-data/-private';
 
 import {
   CollectionReference,
@@ -102,7 +103,7 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
   }
 
   public serializeBelongsTo(
-    snapshot: DS.Snapshot,
+    snapshot: Snapshot,
     json: { [key: string]: string | null | DocumentReference },
     relationship: RelationshipDefinition,
   ): void {
@@ -127,7 +128,7 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
   }
 
   public serialize(
-    snapshot: DS.Snapshot,
+    snapshot: Snapshot,
     options: Record<string, unknown>,
   ): Record<string, unknown> {
     const json: { [key: string]: unknown } = {
@@ -141,11 +142,5 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
     });
 
     return json;
-  }
-}
-
-declare module 'ember-data/types/registries/serializer' {
-  export default interface SerializerRegistry {
-    'cloud-firestore-modular': CloudFirestoreSerializer;
   }
 }

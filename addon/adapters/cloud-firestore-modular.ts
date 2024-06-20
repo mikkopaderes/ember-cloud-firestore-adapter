@@ -1,10 +1,13 @@
-import { getOwner } from '@ember/application';
+import { getOwner } from '@ember/owner';
 import { inject as service } from '@ember/service';
 import Adapter from '@ember-data/adapter';
-import DS, { type ModelSchema } from 'ember-data';
 import type ModelRegistry from 'ember-data/types/registries/model';
 import RSVP from 'rsvp';
 import Store from '@ember-data/store';
+import type { ModelSchema } from '@ember-data/store/types';
+import type { Snapshot } from '@ember-data/legacy-compat/-private';
+import type { AdapterPayload } from '@ember-data/legacy-compat';
+import type { SnapshotRecordArray } from 'ember-data/-private';
 
 import {
   CollectionReference,
@@ -40,14 +43,14 @@ export interface AdapterOption {
   [key: string]: unknown;
 }
 
-interface Snapshot extends DS.Snapshot {
-  adapterOptions: AdapterOption;
-}
+// interface Snapshot extends DS.Snapshot {
+//   adapterOptions: AdapterOption;
+// }
 
-interface SnapshotRecordArray
-  extends DS.SnapshotRecordArray<keyof ModelRegistry> {
-  adapterOptions: AdapterOption;
-}
+// interface SnapshotRecordArray
+//   extends DS.SnapshotRecordArray<keyof ModelRegistry> {
+//   adapterOptions: AdapterOption;
+// }
 
 interface BelongsToRelationshipMeta {
   type: keyof ModelRegistry;
@@ -71,8 +74,8 @@ export default class CloudFirestoreAdapter extends Adapter {
 
   protected referenceKeyName = 'referenceTo';
 
-  protected get isFastBoot(): boolean {
-    const fastboot = getOwner(this).lookup('service:fastboot');
+  protected get isFastBoot(): boolean | undefined {
+    const fastboot = getOwner(this)?.lookup('service:fastboot');
 
     return fastboot && fastboot.isFastBoot;
   }
@@ -88,7 +91,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     store: Store,
     type: ModelSchema,
     snapshot: Snapshot,
-  ): RSVP.Promise<unknown> {
+  ): Promise<AdapterPayload> {
     return this.updateRecord(store, type, snapshot);
   }
 
@@ -96,13 +99,13 @@ export default class CloudFirestoreAdapter extends Adapter {
     _store: Store,
     type: ModelSchema,
     snapshot: Snapshot,
-  ): RSVP.Promise<unknown> {
+  ): Promise<AdapterPayload> {
     return new RSVP.Promise((resolve, reject) => {
       const collectionRef = this.buildCollectionRef(
         type.modelName,
         snapshot.adapterOptions,
       );
-      const docRef = doc(collectionRef, snapshot.id);
+      const docRef = doc(collectionRef, snapshot.id!);
       const batch = this.buildWriteBatch(docRef, snapshot);
 
       batch
@@ -130,14 +133,14 @@ export default class CloudFirestoreAdapter extends Adapter {
     _store: Store,
     type: ModelSchema,
     snapshot: Snapshot,
-  ): RSVP.Promise<unknown> {
+  ): Promise<AdapterPayload> {
     return new RSVP.Promise((resolve, reject) => {
       const db = getFirestore();
       const collectionRef = this.buildCollectionRef(
         type.modelName,
         snapshot.adapterOptions,
       );
-      const docRef = doc(collectionRef, snapshot.id);
+      const docRef = doc(collectionRef, snapshot.id!);
       const batch = writeBatch(db);
 
       batch.delete(docRef);
@@ -159,7 +162,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     type: ModelSchema,
     id: string,
     snapshot: Snapshot,
-  ): RSVP.Promise<unknown> {
+  ): Promise<AdapterPayload> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
         const colRef = this.buildCollectionRef(
@@ -193,9 +196,9 @@ export default class CloudFirestoreAdapter extends Adapter {
   public findAll(
     _store: Store,
     type: ModelSchema,
-    _sinceToken: string,
+    _sinceToken: null,
     snapshotRecordArray?: SnapshotRecordArray,
-  ): RSVP.Promise<unknown> {
+  ): Promise<AdapterPayload> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
         const db = getFirestore();
@@ -226,14 +229,13 @@ export default class CloudFirestoreAdapter extends Adapter {
     _store: Store,
     type: ModelSchema,
     queryOption: AdapterOption,
-    recordArray: DS.AdapterPopulatedRecordArray<unknown>,
-  ): RSVP.Promise<unknown> {
+  ): Promise<AdapterPayload> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
         const colRef = this.buildCollectionRef(type.modelName, queryOption);
         const queryRef = queryOption.filter?.(colRef) || colRef;
         const config = {
-          recordArray,
+          // recordArray,
           queryRef,
           modelName: type.modelName,
           referenceKeyName: this.referenceKeyName,
@@ -263,7 +265,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     _snapshot: Snapshot,
     url: string,
     relationship: BelongsToRelationshipMeta,
-  ): RSVP.Promise<unknown> {
+  ): Promise<unknown> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
         const urlNodes = url.split('/');
@@ -302,7 +304,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     snapshot: Snapshot,
     url: string,
     relationship: HasManyRelationshipMeta,
-  ): RSVP.Promise<unknown> {
+  ): Promise<unknown> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
         const queryRef = this.buildHasManyCollectionRef(
@@ -433,11 +435,5 @@ export default class CloudFirestoreAdapter extends Adapter {
       relationship.options.filter?.(collectionRef, snapshot.record) ||
       collectionRef
     );
-  }
-}
-
-declare module 'ember-data/types/registries/adapter' {
-  export default interface AdapterRegistry {
-    'cloud-firestore-modular': CloudFirestoreAdapter;
   }
 }

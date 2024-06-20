@@ -9,7 +9,7 @@ export default class FindRecordRoute extends Route {
   public declare store: Store;
 
   public async model(): Promise<GroupModel> {
-    return this.store.findRecord('group', 'group_a', {
+    return this.store.findRecord<GroupModel>('group', 'group_a', {
       adapterOptions: {
         isRealtime: true,
       },

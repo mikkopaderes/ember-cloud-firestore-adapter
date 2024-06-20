@@ -13,6 +13,7 @@ import {
   where,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import UserModel from '../models/user';
+import type PostModel from '../models/post';
 
 export default class FeaturesController extends Controller {
   @service
@@ -24,7 +25,7 @@ export default class FeaturesController extends Controller {
   @action
   public async handleCreateRecordWithIdClick(): Promise<void> {
     const user = await this.store
-      .createRecord('user', {
+      .createRecord<UserModel>('user', {
         id: 'new',
         name: 'new_user_created_with_id',
         age: 25,
@@ -37,7 +38,7 @@ export default class FeaturesController extends Controller {
   @action
   public async handleCreateRecordWithoutIdClick(): Promise<void> {
     const user = await this.store
-      .createRecord('user', {
+      .createRecord<UserModel>('user', {
         name: 'new_user_created_without_id',
         age: 30,
       })
@@ -48,9 +49,9 @@ export default class FeaturesController extends Controller {
 
   @action
   public async handleCreateRecordWithoutBelongsToRelationship(): Promise<void> {
-    const user = await this.store.findRecord('user', 'user_a');
+    const user = await this.store.findRecord<UserModel>('user', 'user_a');
     const post = await this.store
-      .createRecord('post', {
+      .createRecord<PostModel>('post', {
         // No belongs to relationship for Group model
         author: user,
         title: 'What does having it all mean to you? (By: Gabe Lewis)',
@@ -63,9 +64,9 @@ export default class FeaturesController extends Controller {
 
   @action
   public async handleCreateRecordWithBelongsToBuildReference(): Promise<void> {
-    const user = await this.store.findRecord('user', 'user_a');
+    const user = await this.store.findRecord<UserModel>('user', 'user_a');
     const post = await this.store
-      .createRecord('post', {
+      .createRecord<PostModel>('post', {
         id: 'new_post',
         publisher: user,
         title: 'What does having it all mean to you? (By: Gabe Lewis)',
@@ -78,7 +79,7 @@ export default class FeaturesController extends Controller {
 
   @action
   public async handleUpdateRecordClick(): Promise<void> {
-    const user = await this.store.findRecord('user', 'user_a');
+    const user = await this.store.findRecord<UserModel>('user', 'user_a');
 
     user.set('name', 'updated_user');
 
@@ -89,8 +90,8 @@ export default class FeaturesController extends Controller {
 
   @action
   public async handleDeleteRecordClick(): Promise<void> {
-    const users = await this.store.findAll('user');
-    const user = users.get('firstObject');
+    const users = await this.store.findAll<UserModel>('user');
+    const user = users[0];
 
     await user?.destroyRecord();
 
@@ -99,21 +100,21 @@ export default class FeaturesController extends Controller {
 
   @action
   public async handleFindAllClick(): Promise<void> {
-    const users = await this.store.findAll('user');
+    const users = await this.store.findAll<UserModel>('user');
 
     this.users = users;
   }
 
   @action
   public async handleFindRecordClick(): Promise<void> {
-    const user = await this.store.findRecord('user', 'user_a');
+    const user = await this.store.findRecord<UserModel>('user', 'user_a');
 
     this.users = [user];
   }
 
   @action
   public async handleQuery1Click(): Promise<void> {
-    const users = await this.store.query('user', {
+    const users = await this.store.query<UserModel>('user', {
       buildReference(db: Firestore) {
         return collection(db, 'users');
       },
@@ -128,7 +129,7 @@ export default class FeaturesController extends Controller {
 
   @action
   public async handleQuery2Click(): Promise<void> {
-    const users = await this.store.query('user', {
+    const users = await this.store.query<UserModel>('user', {
       buildReference(db: Firestore) {
         return collection(db, 'users/user_a/foobar');
       },
