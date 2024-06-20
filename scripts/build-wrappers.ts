@@ -9,8 +9,7 @@ function createFile(
 ): void {
   fs.writeFile(
     `./addon/firebase/${outputFileName}.ts`,
-    `/* eslint-disable max-len */
-// DO NOT MODIFY. THIS IS AUTO GENERATED.
+    `// DO NOT MODIFY. THIS IS AUTO GENERATED.
 import {
   ${outputExports.map((api) => `${api} as _${api}`).join(',\n  ')},
 } from '${moduleName}';
