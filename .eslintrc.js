@@ -11,6 +11,7 @@ module.exports = {
     'airbnb-base',
     'eslint:recommended',
     'plugin:ember/recommended',
+    'plugin:prettier/recommended',
   ],
   env: {
     browser: true,

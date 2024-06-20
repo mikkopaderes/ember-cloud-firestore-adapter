@@ -4,7 +4,11 @@ import { setupTest } from 'ember-qunit';
 import { Auth } from 'firebase/auth';
 import { Firestore } from 'firebase/firestore';
 
-import { getAuth, signInAnonymously, signOut } from 'ember-cloud-firestore-adapter/firebase/auth';
+import {
+  getAuth,
+  signInAnonymously,
+  signOut,
+} from 'ember-cloud-firestore-adapter/firebase/auth';
 import { getFirestore } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import resetFixtureData from '../../helpers/reset-fixture-data';
 
@@ -34,7 +38,9 @@ module('Unit | Authenticator | firebase', function (hooks) {
       const authenticator = this.owner.lookup('authenticator:firebase');
 
       // Act
-      const result = await authenticator.authenticate(() => Promise.resolve({ user: 'foo' }));
+      const result = await authenticator.authenticate(() =>
+        Promise.resolve({ user: 'foo' }),
+      );
 
       // Assert
       assert.deepEqual(result, { user: 'foo' });

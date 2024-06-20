@@ -1,7 +1,11 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 
-import { doc, getDoc, getFirestore } from 'ember-cloud-firestore-adapter/firebase/firestore';
+import {
+  doc,
+  getDoc,
+  getFirestore,
+} from 'ember-cloud-firestore-adapter/firebase/firestore';
 import flattenDocSnapshot from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
 
 module('Unit | -Private | flatten-doc-snapshot-data', function (hooks) {

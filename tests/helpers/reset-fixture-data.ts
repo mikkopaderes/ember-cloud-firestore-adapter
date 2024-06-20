@@ -1,11 +1,17 @@
 import { Firestore } from 'firebase/firestore';
 
-import { doc, writeBatch } from 'ember-cloud-firestore-adapter/firebase/firestore';
+import {
+  doc,
+  writeBatch,
+} from 'ember-cloud-firestore-adapter/firebase/firestore';
 
 export default async function resetFixtureData(db: Firestore): Promise<void> {
-  await fetch('http://localhost:8080/emulator/v1/projects/ember-cloud-firestore-adapter-test-project/databases/(default)/documents', {
-    method: 'DELETE',
-  });
+  await fetch(
+    'http://localhost:8080/emulator/v1/projects/ember-cloud-firestore-adapter-test-project/databases/(default)/documents',
+    {
+      method: 'DELETE',
+    },
+  );
 
   const batch = writeBatch(db);
   const testData = {
