@@ -98,7 +98,7 @@ export default class FirestoreDataManager extends Service {
       await this.setupDocRealtimeUpdates(modelName, docRef);
     }
 
-    return this.docListeners[listenerKey]?.snapshot!;
+    return this.docListeners[listenerKey]!.snapshot;
   }
 
   public async findAllRealtime(
@@ -111,7 +111,7 @@ export default class FirestoreDataManager extends Service {
       await this.setupColRealtimeUpdates(modelName, colRef);
     }
 
-    return this.colListeners[listenerKey]?.snapshot!;
+    return this.colListeners[listenerKey]!.snapshot;
   }
 
   public async queryRealtime(
@@ -122,7 +122,7 @@ export default class FirestoreDataManager extends Service {
     let unsubscribe: Unsubscribe | undefined;
 
     if (this.queryListeners[queryId]) {
-      unsubscribe = this.queryListeners[queryId]?.unsubscribe;
+      unsubscribe = this.queryListeners[queryId]!.unsubscribe;
       delete this.queryListeners[queryId];
     }
 
@@ -132,7 +132,7 @@ export default class FirestoreDataManager extends Service {
       unsubscribe();
     }
 
-    return this.queryListeners[queryId]?.snapshots!;
+    return this.queryListeners[queryId]!.snapshots;
   }
 
   public async findHasManyRealtime(
@@ -143,7 +143,7 @@ export default class FirestoreDataManager extends Service {
     let unsubscribe: Unsubscribe | undefined;
 
     if (this.hasManyListeners[queryId]) {
-      unsubscribe = this.hasManyListeners[queryId]?.unsubscribe;
+      unsubscribe = this.hasManyListeners[queryId]!.unsubscribe;
       delete this.hasManyListeners[queryId];
     }
 
@@ -153,7 +153,7 @@ export default class FirestoreDataManager extends Service {
       unsubscribe();
     }
 
-    return this.hasManyListeners[queryId]?.snapshots!;
+    return this.hasManyListeners[queryId]!.snapshots;
   }
 
   public async queryWithReferenceTo(
@@ -481,22 +481,22 @@ export default class FirestoreDataManager extends Service {
 
   private destroyListener(type: string, key: string): void {
     if (type === 'doc' && this.docListeners[key]) {
-      this.docListeners[key]?.unsubscribe();
+      this.docListeners[key]!.unsubscribe();
       delete this.docListeners[key];
     }
 
     if (type === 'col' && this.colListeners[key]) {
-      this.colListeners[key]?.unsubscribe();
+      this.colListeners[key]!.unsubscribe();
       delete this.colListeners[key];
     }
 
     if (type === 'query' && this.queryListeners[key]) {
-      this.queryListeners[key]?.unsubscribe();
+      this.queryListeners[key]!.unsubscribe();
       delete this.queryListeners[key];
     }
 
     if (type === 'hasMany' && this.hasManyListeners[key]) {
-      this.hasManyListeners[key]?.unsubscribe();
+      this.hasManyListeners[key]!.unsubscribe();
       delete this.hasManyListeners[key];
     }
   }
