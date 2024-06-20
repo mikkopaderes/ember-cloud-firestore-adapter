@@ -1,4 +1,4 @@
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import ArrayProxy from '@ember/array/proxy';
 import Route from '@ember/routing/route';
 import Store from '@ember-data/store';

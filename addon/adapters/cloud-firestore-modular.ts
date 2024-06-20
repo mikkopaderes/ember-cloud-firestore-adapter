@@ -1,5 +1,5 @@
 import { getOwner } from '@ember/application';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import Adapter from '@ember-data/adapter';
 import DS, { type ModelSchema } from 'ember-data';
 import type ModelRegistry from 'ember-data/types/registries/model';
