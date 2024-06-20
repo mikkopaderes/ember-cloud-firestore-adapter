@@ -21,7 +21,7 @@ export default class FirebaseAuthenticator extends BaseAuthenticator {
     return getOwner(this)?.lookup('service:fastboot');
   }
 
-  public async authenticate(
+  public override async authenticate(
     callback: AuthenticateCallback,
   ): Promise<{ user: User | null }> {
     const auth = getAuth();

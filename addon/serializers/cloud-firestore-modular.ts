@@ -46,7 +46,7 @@ type ModelClass = ModelSchema & {
 };
 
 export default class CloudFirestoreSerializer extends JSONSerializer {
-  public extractRelationship(
+  public override extractRelationship(
     relationshipModelName: string,
     relationshipHash: DocumentReference,
   ): { id: string; type: string } | Record<string, unknown> {
@@ -60,7 +60,7 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
     return { id: belongsToId, type: relationshipModelName };
   }
 
-  public extractRelationships(
+  public override extractRelationships(
     modelClass: ModelClass,
     resourceHash: ResourceHash,
   ): Record<string, unknown> {
@@ -101,7 +101,7 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
     return super.extractRelationships(modelClass, newResourceHash);
   }
 
-  public serializeBelongsTo(
+  public override serializeBelongsTo(
     snapshot: DS.Snapshot,
     json: { [key: string]: string | null | DocumentReference },
     relationship: RelationshipDefinition,
@@ -126,7 +126,7 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
     }
   }
 
-  public serialize(
+  public override serialize(
     snapshot: DS.Snapshot,
     options: Record<string, unknown>,
   ): Record<string, unknown> {

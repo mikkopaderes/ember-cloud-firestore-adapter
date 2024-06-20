@@ -6,7 +6,7 @@ import { FieldValue, Timestamp } from 'firebase/firestore';
 import { serverTimestamp } from 'ember-cloud-firestore-adapter/firebase/firestore';
 
 export default class TimestampTransform extends Transform {
-  public deserialize(value: Date | Timestamp): Date {
+  public override deserialize(value: Date | Timestamp): Date {
     if (value instanceof Timestamp) {
       return value.toDate();
     }
@@ -14,7 +14,7 @@ export default class TimestampTransform extends Transform {
     return value;
   }
 
-  public serialize(value: unknown): Date | FieldValue {
+  public override serialize(value: unknown): Date | FieldValue {
     return typeOf(value) === 'date' ? (value as Date) : serverTimestamp();
   }
 }

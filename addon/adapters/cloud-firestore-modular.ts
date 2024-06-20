@@ -77,14 +77,14 @@ export default class CloudFirestoreAdapter extends Adapter {
     return fastboot && fastboot.isFastBoot;
   }
 
-  public generateIdForRecord(_store: Store, type: unknown): string {
+  public override generateIdForRecord(_store: Store, type: unknown): string {
     const db = getFirestore();
     const collectionName = buildCollectionName(type as string); // TODO: EmberData types incorrect
 
     return doc(collection(db, collectionName)).id;
   }
 
-  public createRecord(
+  public override createRecord(
     store: Store,
     type: ModelSchema,
     snapshot: Snapshot,
@@ -92,7 +92,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     return this.updateRecord(store, type, snapshot);
   }
 
-  public updateRecord(
+  public override updateRecord(
     _store: Store,
     type: ModelSchema,
     snapshot: Snapshot,
@@ -126,7 +126,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     });
   }
 
-  public deleteRecord(
+  public override deleteRecord(
     _store: Store,
     type: ModelSchema,
     snapshot: Snapshot,
@@ -154,7 +154,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     });
   }
 
-  public findRecord(
+  public override findRecord(
     _store: Store,
     type: ModelSchema,
     id: string,
@@ -190,7 +190,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     });
   }
 
-  public findAll(
+  public override findAll(
     _store: Store,
     type: ModelSchema,
     _sinceToken: string,
@@ -222,7 +222,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     });
   }
 
-  public query(
+  public override query(
     _store: Store,
     type: ModelSchema,
     queryOption: AdapterOption,

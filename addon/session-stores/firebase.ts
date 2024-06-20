@@ -8,7 +8,7 @@ export default class FirebaseStore extends LocalStorageStore {
     return getOwner(this)?.lookup('service:fastboot');
   }
 
-  public restore(): Promise<unknown> {
+  public override restore(): Promise<unknown> {
     if (this.fastboot?.isFastBoot) {
       if (
         this.fastboot.request.headers
