@@ -24,8 +24,8 @@ import {
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import type CloudFirestoreModularAdapter from 'ember-cloud-firestore-adapter/adapters/cloud-firestore-modular';
 import AdapterRecordNotFoundError from 'ember-cloud-firestore-adapter/utils/custom-errors';
-import resetFixtureData from '../../helpers/reset-fixture-data';
 import UserModel from 'dummy/tests/dummy/app/models/user';
+import resetFixtureData from '../../helpers/reset-fixture-data';
 
 module('Unit | Adapter | cloud firestore modular', function (hooks) {
   let db: Firestore;

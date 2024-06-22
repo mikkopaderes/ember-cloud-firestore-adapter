@@ -97,14 +97,14 @@ export default class CloudFirestoreAdapter extends Adapter {
     return this.updateRecord(store, type, snapshot);
   }
 
-  public updateRecord(
+  public updateRecord<T>(
     _store: Store,
-    type: ModelSchema,
+    type: ModelSchema<T>,
     snapshot: CloudFirestoreSnapshot,
   ): Promise<AdapterPayload> {
     return new RSVP.Promise((resolve, reject) => {
-      const collectionRef = this.buildCollectionRef(
-        type.modelName,
+      const collectionRef = this.buildCollectionRef<T>(
+        type.modelName as TypeFromInstance<T>,
         snapshot.adapterOptions,
       );
       const docRef = doc(collectionRef, snapshot.id!);
@@ -120,7 +120,7 @@ export default class CloudFirestoreAdapter extends Adapter {
           if (snapshot.adapterOptions?.isRealtime && !this.isFastBoot) {
             // Setup realtime listener for record
             this.firestoreDataManager.findRecordRealtime<T>(
-              type.modelName,
+              type.modelName as TypeFromInstance<T>,
               docRef,
             );
           }
@@ -131,7 +131,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     });
   }
 
-  public deleteRecord(
+  public deleteRecord<T>(
     _store: Store,
     type: ModelSchema,
     snapshot: CloudFirestoreSnapshot,
@@ -139,7 +139,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     return new RSVP.Promise((resolve, reject) => {
       const db = getFirestore();
       const collectionRef = this.buildCollectionRef(
-        type.modelName,
+        type.modelName as TypeFromInstance<T>,
         snapshot.adapterOptions,
       );
       const docRef = doc(collectionRef, snapshot.id!);
@@ -237,7 +237,7 @@ export default class CloudFirestoreAdapter extends Adapter {
         );
         const queryRef = queryOption.filter?.(colRef) || colRef;
         const config = {
-          recordArray: undefined,
+          recordArray: {},
           queryRef,
           modelName: type.modelName as TypeFromInstance<T>,
           referenceKeyName: this.referenceKeyName,

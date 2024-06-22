@@ -1,7 +1,6 @@
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 import Store from '@ember-data/store';
-import { query as _query } from '@ember-data/json-api/request';
 
 import { CollectionReference } from 'firebase/firestore';
 
@@ -18,14 +17,11 @@ export default class QueryRoute extends Route {
   public declare store: Store;
 
   public async model(): Promise<GroupModel[]> {
-    const groups = await this.store.request(
-      _query<GroupModel>('group', {
-        isRealtime: true,
-        filter(reference: CollectionReference) {
-          return query(reference, orderBy('name'), limit(1));
-        },
-      }),
-    );
-    return groups.content.data;
+    return this.store.query('group', {
+      isRealtime: true,
+      filter(reference: CollectionReference) {
+        return query(reference, orderBy('name'), limit(1));
+      },
+    });
   }
 }

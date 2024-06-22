@@ -3,8 +3,7 @@
   import/no-cycle: off,
 */
 
-import DS from 'ember-data';
-import Model, { attr, hasMany } from '@ember-data/model';
+import Model, { attr, hasMany, type AsyncHasMany } from '@ember-data/model';
 import { Type } from '@warp-drive/core-types/symbols';
 
 import GroupModel from './group';
@@ -18,10 +17,10 @@ export default class UserModel extends Model {
   public declare age: number;
 
   @hasMany('group', { async: true, inverse: 'members' })
-  public declare groups: DS.PromiseManyArray<GroupModel>;
+  public declare groups: AsyncHasMany<GroupModel>;
 
   @hasMany('post', { async: true, inverse: 'author' })
-  public declare posts: DS.PromiseManyArray<PostModel>;
+  public declare posts: AsyncHasMany<PostModel>;
 
   declare [Type]: 'user';
 }
