@@ -5,6 +5,7 @@ module.exports = function () {
     buildSandboxGlobals(defaultGlobals) {
       return Object.assign({}, defaultGlobals, {
         fetch,
+        AbortController,
       });
     },
   };

@@ -3,8 +3,8 @@
   import/no-cycle: off,
 */
 
-import DS from 'ember-data';
-import Model, { attr, hasMany } from '@ember-data/model';
+import Model, { attr, hasMany, type AsyncHasMany } from '@ember-data/model';
+import { Type } from '@warp-drive/core-types/symbols';
 
 import GroupModel from './group';
 import PostModel from './post';
@@ -13,16 +13,14 @@ export default class UserModel extends Model {
   @attr('string')
   public declare name: string;
 
+  @attr('number')
+  public declare age: number;
+
   @hasMany('group', { async: true, inverse: 'members' })
-  public declare groups: DS.PromiseManyArray<GroupModel>;
+  public declare groups: AsyncHasMany<GroupModel>;
 
   @hasMany('post', { async: true, inverse: 'author' })
-  public declare posts: DS.PromiseManyArray<PostModel>;
-}
+  public declare posts: AsyncHasMany<PostModel>;
 
-// DO NOT DELETE: this is how TypeScript knows how to look up your models.
-declare module 'ember-data/types/registries/model' {
-  export default interface ModelRegistry {
-    user: UserModel;
-  }
+  declare [Type]: 'user';
 }
