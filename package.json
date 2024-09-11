@@ -107,7 +107,7 @@
     "eslint-plugin-n": "^16.2.0",
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-qunit": "^8.0.1",
-    "firebase": "^9.14.0",
+    "firebase": "^10.13.1",
     "firebase-tools": "^11.2.2",
     "loader.js": "^4.7.0",
     "prettier": "^3.0.3",
@@ -127,7 +127,7 @@
     "ember-auto-import": "2.x",
     "ember-simple-auth": "4.x || 5.x || 6.x",
     "ember-source": ">= 4.0.0",
-    "firebase": "9.14.x"
+    "firebase": "9.14.x || 10.x"
   },
   "engines": {
     "node": ">= 18"
