@@ -127,7 +127,7 @@
     "ember-auto-import": "2.x",
     "ember-simple-auth": "4.x || 5.x || 6.x",
     "ember-source": ">= 4.0.0",
-    "firebase": "9.14.x"
+    "firebase": "9.14.x || 10.x"
   },
   "engines": {
     "node": ">= 18"
