@@ -90,7 +90,8 @@ export default class FeaturesController extends Controller {
   @action
   public async handleDeleteRecordClick(): Promise<void> {
     const users = await this.store.findAll('user');
-    const user = users.get('firstObject');
+    // @ts-expect-error array proxy is indeed indexable
+    const user = users[0];
 
     await user?.destroyRecord();
 
