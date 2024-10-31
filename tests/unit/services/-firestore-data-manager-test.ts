@@ -16,6 +16,7 @@ import {
   updateDoc,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import resetFixtureData from '../../helpers/reset-fixture-data';
+import type { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
 
 module('Unit | Service | -firestore-data-manager', function (hooks) {
   let db: Firestore;
@@ -171,7 +172,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
         recordArray: {
           update: () =>
             DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
-        } as unknown as DS.AdapterPopulatedRecordArray<unknown>,
+        } as Collection,
       };
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
@@ -201,7 +202,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
         recordArray: {
           update: () =>
             DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
-        } as unknown as DS.AdapterPopulatedRecordArray<unknown>,
+        } as Collection,
       };
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
@@ -229,7 +230,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
         recordArray: {
           update: () =>
             DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
-        } as unknown as DS.AdapterPopulatedRecordArray<unknown>,
+        } as Collection,
       };
       const updateSpy = sinon.spy(config.recordArray, 'update');
       const firestoreDataManager = this.owner.lookup(

@@ -4,9 +4,9 @@
 */
 
 import { isNone } from '@ember/utils';
-import DS, { type ModelSchema } from 'ember-data';
+import type Model from '@ember-data/model';
+import type { Snapshot } from '@ember-data/legacy-compat/legacy-network-handler/snapshot';
 import JSONSerializer from '@ember-data/serializer/json';
-import Store from '@ember-data/store';
 
 import {
   CollectionReference,
@@ -38,13 +38,6 @@ interface RelationshipDefinition {
   };
 }
 
-type ModelClass = ModelSchema & {
-  determineRelationshipType(
-    descriptor: { kind: string; type: string },
-    store: Store,
-  ): string;
-};
-
 export default class CloudFirestoreSerializer extends JSONSerializer {
   public extractRelationship(
     relationshipModelName: string,
@@ -61,7 +54,7 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
   }
 
   public extractRelationships(
-    modelClass: ModelClass,
+    modelClass: typeof Model,
     resourceHash: ResourceHash,
   ): Record<string, unknown> {
     const newResourceHash = { ...resourceHash };
@@ -102,7 +95,7 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
   }
 
   public serializeBelongsTo(
-    snapshot: DS.Snapshot,
+    snapshot: Snapshot,
     json: { [key: string]: string | null | DocumentReference },
     relationship: RelationshipDefinition,
   ): void {
@@ -127,7 +120,7 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
   }
 
   public serialize(
-    snapshot: DS.Snapshot,
+    snapshot: Snapshot,
     options: Record<string, unknown>,
   ): Record<string, unknown> {
     const json: { [key: string]: unknown } = {
@@ -141,11 +134,5 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
     });
 
     return json;
-  }
-}
-
-declare module 'ember-data/types/registries/serializer' {
-  export default interface SerializerRegistry {
-    'cloud-firestore-modular': CloudFirestoreSerializer;
   }
 }

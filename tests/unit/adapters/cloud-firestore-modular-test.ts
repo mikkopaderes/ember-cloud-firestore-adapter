@@ -9,7 +9,7 @@ import { setupTest } from 'ember-qunit';
 import EmberObject from '@ember/object';
 
 import Store from '@ember-data/store';
-import type { ModelSchema } from 'ember-data';
+import type { ModelSchema } from '@ember-data/store/types';
 import { CollectionReference, Firestore, WriteBatch } from 'firebase/firestore';
 import sinon from 'sinon';
 
@@ -283,7 +283,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       ) as CloudFirestoreModularAdapter;
 
       // Act
-      const result = await adapter.findAll(store, modelClass, undefined as any);
+      const result = await adapter.findAll(store, modelClass, null, {});
 
       // Assert
       assert.deepEqual(result, [

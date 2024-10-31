@@ -1,6 +1,6 @@
 import { next } from '@ember/runloop';
-import DS from 'ember-data';
-import type ModelRegistry from 'ember-data/types/registries/model';
+import type { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
+import type { CompatStore } from '@ember-data/legacy-compat';
 import Service, { service } from '@ember/service';
 import StoreService from '@ember-data/store';
 
@@ -19,6 +19,7 @@ import {
   onSnapshot,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import flattenDocSnapshot from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
+import Model from '@ember-data/model';
 
 interface DocListeners {
   [key: string]: {
@@ -42,15 +43,15 @@ interface QueryListeners {
 }
 
 interface QueryFetchConfig {
-  modelName: keyof ModelRegistry;
+  modelName: string;
   referenceKeyName: string;
-  recordArray: DS.AdapterPopulatedRecordArray<unknown>;
+  recordArray: Collection;
   queryRef: Query;
   queryId?: string;
 }
 
 interface HasManyFetchConfig {
-  modelName: keyof ModelRegistry;
+  modelName: string;
   id: string;
   field: string;
   referenceKeyName: string;
@@ -87,7 +88,7 @@ export default class FirestoreDataManager extends Service {
   }
 
   public async findRecordRealtime(
-    modelName: keyof ModelRegistry,
+    modelName: string,
     docRef: DocumentReference,
   ): Promise<DocumentSnapshot> {
     const { path: listenerKey } = docRef;
@@ -100,7 +101,7 @@ export default class FirestoreDataManager extends Service {
   }
 
   public async findAllRealtime(
-    modelName: keyof ModelRegistry,
+    modelName: string,
     colRef: CollectionReference,
   ): Promise<QuerySnapshot> {
     const { path: listenerKey } = colRef;
@@ -167,7 +168,7 @@ export default class FirestoreDataManager extends Service {
   }
 
   private setupDocRealtimeUpdates(
-    modelName: keyof ModelRegistry,
+    modelName: string,
     docRef: DocumentReference,
   ): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -202,7 +203,7 @@ export default class FirestoreDataManager extends Service {
   }
 
   private setupColRealtimeUpdates(
-    modelName: keyof ModelRegistry,
+    modelName: string,
     colRef: CollectionReference,
   ): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -316,7 +317,7 @@ export default class FirestoreDataManager extends Service {
 
   private handleSubsequentDocRealtimeUpdates(
     docSnapshot: DocumentSnapshot,
-    modelName: keyof ModelRegistry,
+    modelName: string,
     listenerKey: string,
   ): void {
     if (docSnapshot.exists()) {
@@ -328,7 +329,7 @@ export default class FirestoreDataManager extends Service {
   }
 
   private handleSubsequentColRealtimeUpdates(
-    modelName: keyof ModelRegistry,
+    modelName: string,
     listenerKey: string,
     querySnapshot: QuerySnapshot,
   ): void {
@@ -366,7 +367,7 @@ export default class FirestoreDataManager extends Service {
 
   private handleSubsequentQueryRealtimeUpdates(
     queryId: string,
-    recordArray: DS.AdapterPopulatedRecordArray<unknown>,
+    recordArray: Collection,
   ): void {
     // Schedule for next runloop to avoid race condition errors. This can happen when a listener
     // exists for a record that's part of the query array. When that happens, doing an update
@@ -415,16 +416,16 @@ export default class FirestoreDataManager extends Service {
     // to happen first.
     next(() => {
       const hasManyRef = this.store
-        .peekRecord(config.modelName, config.id)
-        .hasMany(config.field);
+        .peekRecord<Model>(config.modelName, config.id)
+        ?.hasMany(config.field);
 
-      hasManyRef.reload();
+      hasManyRef?.reload();
     });
   }
 
   public async getReferenceToDoc(
     docSnapshot: DocumentSnapshot,
-    modelName: keyof ModelRegistry,
+    modelName: string,
     referenceKeyName: string,
     isRealtime = false,
   ): Promise<DocumentSnapshot> {
@@ -439,12 +440,12 @@ export default class FirestoreDataManager extends Service {
     return docSnapshot;
   }
 
-  private pushRecord(
-    modelName: keyof ModelRegistry,
-    snapshot: DocumentSnapshot,
-  ): void {
+  private pushRecord(modelName: string, snapshot: DocumentSnapshot): void {
     const flatRecord = flattenDocSnapshot(snapshot);
-    const normalizedRecord = this.store.normalize(modelName, flatRecord);
+    const normalizedRecord = (this.store as CompatStore).normalize(
+      modelName,
+      flatRecord,
+    );
 
     // Race condition can happen because of the realtime nature. We handle that in a try-catch
     // to avoid unexpected side-effects. When this happens, we just ignore it.
@@ -455,11 +456,7 @@ export default class FirestoreDataManager extends Service {
     }
   }
 
-  private unloadRecord(
-    modelName: keyof ModelRegistry,
-    id: string,
-    path?: string,
-  ): void {
+  private unloadRecord(modelName: string, id: string, path?: string): void {
     const record = this.store.peekRecord(modelName, id);
 
     if (record !== null) {

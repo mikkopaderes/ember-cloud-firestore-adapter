@@ -3,8 +3,8 @@
   import/no-cycle: off,
 */
 
-import DS from 'ember-data';
-import Model, { attr, belongsTo } from '@ember-data/model';
+import Model, { attr, belongsTo, type AsyncBelongsTo } from '@ember-data/model';
+import { Type } from '@warp-drive/core-types/symbols';
 
 import { Firestore } from 'firebase/firestore';
 
@@ -21,10 +21,10 @@ export default class PostModel extends Model {
   public declare createdOn: TimestampTransform;
 
   @belongsTo('user', { async: true, inverse: 'posts' })
-  public declare author: DS.PromiseObject<UserModel>;
+  public declare author: AsyncBelongsTo<UserModel>;
 
   @belongsTo('group', { async: true, inverse: 'posts' })
-  public declare group: DS.PromiseObject<GroupModel>;
+  public declare group: AsyncBelongsTo<GroupModel>;
 
   @belongsTo('user', {
     async: true,
@@ -34,12 +34,7 @@ export default class PostModel extends Model {
       return collection(db, 'publishers');
     },
   })
-  public declare publisher: DS.PromiseObject<UserModel>;
-}
+  public declare publisher: AsyncBelongsTo<UserModel>;
 
-// DO NOT DELETE: this is how TypeScript knows how to look up your models.
-declare module 'ember-data/types/registries/model' {
-  export default interface ModelRegistry {
-    post: PostModel;
-  }
+  declare [Type]: 'post';
 }
