@@ -92,7 +92,7 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
 
     newResourceHash.links = links;
 
-      // @ts-expect-error ember data types incorrect
+    // @ts-expect-error ember data types incorrect
     return super.extractRelationships(modelClass, newResourceHash);
   }
 

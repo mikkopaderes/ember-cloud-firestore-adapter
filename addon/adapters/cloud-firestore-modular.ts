@@ -62,14 +62,14 @@ type BelongsToRelationshipMeta = LegacyBelongsToField & {
 
 type HasManyRelationshipMeta = LegacyHasManyField & {
   key: string;
-  // type: string;
+  type: string;
   options: {
     isRealtime?: boolean;
 
     buildReference?(db: Firestore, record: unknown): CollectionReference;
     filter?(db: CollectionReference | Query, record: unknown): Query;
   };
-}
+};
 
 export default class CloudFirestoreAdapter extends Adapter {
   @service('-firestore-data-manager')
