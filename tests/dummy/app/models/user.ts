@@ -4,7 +4,7 @@
 */
 
 import Model, { attr, hasMany, type AsyncHasMany } from '@ember-data/model';
-import { Type } from '@warp-drive/core-types/symbols';
+import type { Type } from '@warp-drive/core-types/symbols';
 
 import GroupModel from './group';
 import PostModel from './post';

@@ -115,10 +115,12 @@ export default class FeaturesController extends Controller {
   @action
   public async handleQuery1Click(): Promise<void> {
     const users = await this.store.query<UserModel>('user', {
+      // @ts-expect-error ember data types won't accept function
       buildReference(db: Firestore) {
         return collection(db, 'users');
       },
 
+      // @ts-expect-error ember data types won't accept function
       filter(reference: CollectionReference) {
         return query(reference, where('age', '>=', 15));
       },
@@ -130,6 +132,7 @@ export default class FeaturesController extends Controller {
   @action
   public async handleQuery2Click(): Promise<void> {
     const users = await this.store.query<UserModel>('user', {
+      // @ts-expect-error ember data types won't accept function
       buildReference(db: Firestore) {
         return collection(db, 'users/user_a/foobar');
       },

@@ -1,6 +1,7 @@
 import { next } from '@ember/runloop';
 import type { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
 import type { CompatStore } from '@ember-data/legacy-compat';
+import type Model from '@ember-data/model';
 import Service, { service } from '@ember/service';
 import StoreService from '@ember-data/store';
 
@@ -19,7 +20,6 @@ import {
   onSnapshot,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import flattenDocSnapshot from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
-import Model from '@ember-data/model';
 
 interface DocListeners {
   [key: string]: {

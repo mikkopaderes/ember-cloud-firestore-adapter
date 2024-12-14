@@ -20,6 +20,7 @@ export default class QueryRoute extends Route {
   public async model(): Promise<Collection<GroupModel>> {
     return this.store.query<GroupModel>('group', {
       isRealtime: true,
+      // @ts-expect-error ember data types won't accept function
       filter(reference: CollectionReference) {
         return query(reference, orderBy('name'), limit(1));
       },

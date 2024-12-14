@@ -4,7 +4,7 @@
 */
 
 import Model, { attr, belongsTo, type AsyncBelongsTo } from '@ember-data/model';
-import { Type } from '@warp-drive/core-types/symbols';
+import type { Type } from '@warp-drive/core-types/symbols';
 
 import { Firestore } from 'firebase/firestore';
 
@@ -26,6 +26,7 @@ export default class PostModel extends Model {
   @belongsTo('group', { async: true, inverse: 'posts' })
   public declare group: AsyncBelongsTo<GroupModel>;
 
+  // @ts-expect-error ember data types won't accept function
   @belongsTo('user', {
     async: true,
     inverse: null,

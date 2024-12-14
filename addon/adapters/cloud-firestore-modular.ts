@@ -3,9 +3,14 @@ import { service } from '@ember/service';
 import Adapter from '@ember-data/adapter';
 import type { ModelSchema } from '@ember-data/store/types';
 import type { AdapterPayload } from '@ember-data/legacy-compat';
-import type { Snapshot as _Snapshot } from '@ember-data/legacy-compat/legacy-network-handler/snapshot';
-import type { SnapshotRecordArray as _SnapshotRecordArray } from '@ember-data/legacy-compat/-private';
-import type { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
+import { Snapshot as _Snapshot } from '@ember-data/legacy-compat/legacy-network-handler/snapshot';
+import { SnapshotRecordArray as _SnapshotRecordArray } from '@ember-data/legacy-compat/-private';
+import { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
+import type {
+  LegacyBelongsToField,
+  LegacyHasManyField,
+} from '@warp-drive/core-types/schema/fields';
+import Model from 'ember-data/model';
 import RSVP from 'rsvp';
 import Store from '@ember-data/store';
 
@@ -31,11 +36,6 @@ import AdapterRecordNotFoundError from 'ember-cloud-firestore-adapter/utils/cust
 import FirestoreDataManager from 'ember-cloud-firestore-adapter/services/-firestore-data-manager';
 import buildCollectionName from 'ember-cloud-firestore-adapter/-private/build-collection-name';
 import flattenDocSnapshot from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
-import type {
-  LegacyBelongsToField,
-  LegacyHasManyField,
-} from '@warp-drive/core-types/schema/fields';
-import type Model from 'ember-data/model';
 
 export interface AdapterOption {
   isRealtime?: boolean;
@@ -93,7 +93,7 @@ export default class CloudFirestoreAdapter extends Adapter {
   public createRecord(
     store: Store,
     type: ModelSchema,
-    snapshot: Snapshot,
+    snapshot: _Snapshot,
   ): Promise<AdapterPayload> {
     return this.updateRecord(store, type, snapshot);
   }
@@ -101,7 +101,7 @@ export default class CloudFirestoreAdapter extends Adapter {
   public updateRecord(
     _store: Store,
     type: ModelSchema,
-    snapshot: Snapshot,
+    snapshot: _Snapshot,
   ): Promise<AdapterPayload> {
     return new RSVP.Promise((resolve, reject) => {
       const collectionRef = this.buildCollectionRef(
@@ -135,7 +135,7 @@ export default class CloudFirestoreAdapter extends Adapter {
   public deleteRecord(
     _store: Store,
     type: ModelSchema,
-    snapshot: Snapshot,
+    snapshot: _Snapshot,
   ): Promise<AdapterPayload> {
     return new RSVP.Promise((resolve, reject) => {
       const db = getFirestore();
@@ -164,7 +164,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     _store: Store,
     type: ModelSchema,
     id: string,
-    snapshot: Snapshot,
+    snapshot: _Snapshot,
   ): Promise<AdapterPayload> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {

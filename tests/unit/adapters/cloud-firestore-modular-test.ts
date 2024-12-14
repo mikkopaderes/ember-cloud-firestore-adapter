@@ -276,7 +276,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      store.push = sinon.stub() as any;
       const modelClass = { modelName: 'user' } as ModelSchema;
       const adapter = this.owner.lookup(
         'adapter:cloud-firestore-modular',
@@ -314,7 +314,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      store.push = sinon.stub() as any;
       const modelClass = { modelName: 'user' } as ModelSchema;
       const modelId = 'user_a';
       const snapshot = {};
@@ -343,7 +343,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      store.push = sinon.stub() as any;
       const modelClass = { modelName: 'user' } as ModelSchema;
       const modelId = 'user_a';
       const snapshot = {
@@ -375,7 +375,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
 
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      store.push = sinon.stub() as any;
       const modelClass = { modelName: 'user' } as ModelSchema;
       const modelId = 'user_100';
       const snapshot = {};
@@ -402,7 +402,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      store.push = sinon.stub() as any;
       const snapshot = {};
       const url = 'users/user_a';
       const relationship = { type: 'user', options: {} };
@@ -415,7 +415,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         store,
         snapshot as any,
         url,
-        relationship,
+        relationship as any,
       );
 
       // Assert
@@ -447,7 +447,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
 
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      store.push = sinon.stub() as any;
       const snapshot = {
         id: 'user_a',
         modelName: 'user',
@@ -472,7 +472,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         store,
         snapshot as any,
         url,
-        relationship,
+        relationship as any,
       )) as any;
 
       // Assert
@@ -500,7 +500,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
 
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      store.push = sinon.stub() as any;
       const snapshot = {
         modelName: 'user',
         record: EmberObject.create({
@@ -560,7 +560,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
 
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      store.push = sinon.stub() as any;
       const snapshot = {
         id: 'user_a',
         modelName: 'user',
@@ -587,7 +587,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         store,
         snapshot as any,
         url,
-        relationship,
+        relationship as any,
       )) as any;
 
       // Assert
@@ -603,7 +603,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      store.push = sinon.stub() as any;
       const snapshot = {
         record: EmberObject.create({ id: 'user_a' }),
       };
@@ -630,7 +630,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         store,
         snapshot as any,
         url as any,
-        relationship,
+        relationship as any,
       )) as any;
 
       // Assert

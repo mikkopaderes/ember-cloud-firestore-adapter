@@ -6,6 +6,7 @@ import RSVP from 'rsvp';
 
 import type { Firestore } from 'firebase/firestore';
 import sinon from 'sinon';
+import type { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
 
 import {
   collection,
@@ -16,7 +17,6 @@ import {
   updateDoc,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import resetFixtureData from '../../helpers/reset-fixture-data';
-import type { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
 
 module('Unit | Service | -firestore-data-manager', function (hooks) {
   let db: Firestore;
