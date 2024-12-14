@@ -60,7 +60,7 @@ type BelongsToRelationshipMeta = LegacyBelongsToField & {
   options: { isRealtime?: boolean };
 };
 
-interface HasManyRelationshipMeta extends LegacyHasManyField {
+type HasManyRelationshipMeta = LegacyHasManyField & {
   key: string;
   // type: string;
   options: {
@@ -93,7 +93,7 @@ export default class CloudFirestoreAdapter extends Adapter {
   public createRecord(
     store: Store,
     type: ModelSchema,
-    snapshot: _Snapshot,
+    snapshot: Snapshot,
   ): Promise<AdapterPayload> {
     return this.updateRecord(store, type, snapshot);
   }
@@ -101,7 +101,7 @@ export default class CloudFirestoreAdapter extends Adapter {
   public updateRecord(
     _store: Store,
     type: ModelSchema,
-    snapshot: _Snapshot,
+    snapshot: Snapshot,
   ): Promise<AdapterPayload> {
     return new RSVP.Promise((resolve, reject) => {
       const collectionRef = this.buildCollectionRef(
@@ -135,7 +135,7 @@ export default class CloudFirestoreAdapter extends Adapter {
   public deleteRecord(
     _store: Store,
     type: ModelSchema,
-    snapshot: _Snapshot,
+    snapshot: Snapshot,
   ): Promise<AdapterPayload> {
     return new RSVP.Promise((resolve, reject) => {
       const db = getFirestore();
@@ -164,7 +164,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     _store: Store,
     type: ModelSchema,
     id: string,
-    snapshot: _Snapshot,
+    snapshot: Snapshot,
   ): Promise<AdapterPayload> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
@@ -228,6 +228,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     });
   }
 
+  // @ts-expect-error ember data types 3 arg
   public query(
     _store: Store,
     type: ModelSchema,

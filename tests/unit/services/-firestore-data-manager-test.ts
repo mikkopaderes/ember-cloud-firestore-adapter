@@ -308,6 +308,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
 
       sinon
         .stub(store, 'peekRecord')
+        // @ts-expect-error method overloads
         .withArgs('user', 'user_a')
         .returns({
           hasMany: sinon

@@ -65,7 +65,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
 
       const updateRecordStub = sinon
         .stub(adapter, 'updateRecord')
-        .returns('foo' as any);
+        .returns(Promise.resolve({ foo: 'foo' }));
 
       // Act
       const result = await adapter.createRecord(
@@ -75,7 +75,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       );
 
       // Assert
-      assert.strictEqual(result, 'foo');
+      assert.deepEqual(result, { foo: 'foo' });
       assert.ok(
         updateRecordStub.calledWithExactly(store, modelClass, snapshot as any),
       );
@@ -283,7 +283,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       ) as CloudFirestoreModularAdapter;
 
       // Act
-      const result = await adapter.findAll(store, modelClass, null, {});
+      const result = await adapter.findAll(store, modelClass, null, {} as any);
 
       // Assert
       assert.deepEqual(result, [
@@ -440,7 +440,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
             return {
               determineRelationshipType: determineRelationshipTypeStub,
               inverseFor: inverseForStub,
-            };
+            } as unknown as ModelSchema;
           }
         },
       );
@@ -493,7 +493,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
           modelFor() {
             return {
               determineRelationshipType: determineRelationshipTypeStub,
-            };
+            } as unknown as ModelSchema;
           }
         },
       );
@@ -505,7 +505,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         modelName: 'user',
         record: EmberObject.create({
           referenceTo: doc(db, 'users/user_a'),
-        }),
+        } as any),
       };
       const url = 'users/user_a/friends';
       const relationship = {
@@ -553,7 +553,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
             return {
               determineRelationshipType: determineRelationshipTypeStub,
               inverseFor: inverseForStub,
-            };
+            } as unknown as ModelSchema;
           }
         },
       );
@@ -566,7 +566,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         modelName: 'user',
         record: EmberObject.create({
           id: 'user_a',
-        }),
+        } as any),
       };
       const url = 'posts';
       const relationship = {
@@ -605,7 +605,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       store.normalize = sinon.stub();
       store.push = sinon.stub() as any;
       const snapshot = {
-        record: EmberObject.create({ id: 'user_a' }),
+        record: EmberObject.create({ id: 'user_a' } as any),
       };
       const url = null;
       const relationship = {

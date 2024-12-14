@@ -44,6 +44,7 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
     relationshipHash: DocumentReference,
   ): { id: string; type: string } | Record<string, unknown> {
     if (isNone(relationshipHash)) {
+      // @ts-expect-error ember data types incorrect
       return super.extractRelationship(relationshipModelName, relationshipHash);
     }
 
@@ -91,6 +92,7 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
 
     newResourceHash.links = links;
 
+      // @ts-expect-error ember data types incorrect
     return super.extractRelationships(modelClass, newResourceHash);
   }
 
@@ -99,6 +101,7 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
     json: { [key: string]: string | null | DocumentReference },
     relationship: RelationshipDefinition,
   ): void {
+    // @ts-expect-error ember data types incorrect
     super.serializeBelongsTo(snapshot, json, relationship);
 
     if (json[relationship.key]) {
@@ -124,6 +127,7 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
     options: Record<string, unknown>,
   ): Record<string, unknown> {
     const json: { [key: string]: unknown } = {
+      // @ts-expect-error ember data types incorrect
       ...super.serialize(snapshot, options),
     };
 

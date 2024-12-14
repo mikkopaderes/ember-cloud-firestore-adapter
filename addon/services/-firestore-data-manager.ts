@@ -1,7 +1,8 @@
 import { next } from '@ember/runloop';
+import type Model from '@ember-data/model';
 import type { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
 import type { CompatStore } from '@ember-data/legacy-compat';
-import type Model from '@ember-data/model';
+import type { ObjectValue } from '@warp-drive/core-types/json/raw';
 import Service, { service } from '@ember/service';
 import StoreService from '@ember-data/store';
 
@@ -415,9 +416,8 @@ export default class FirestoreDataManager extends Service {
     // To avoid the issue, we run .reload() in the next runloop so that we allow the unload
     // to happen first.
     next(() => {
-      const hasManyRef = this.store
-        .peekRecord<Model>(config.modelName, config.id)
-        ?.hasMany(config.field);
+      const record = this.store.peekRecord(config.modelName, config.id);
+      const hasManyRef = (record as Model).hasMany(config.field);
 
       hasManyRef?.reload();
     });
@@ -444,13 +444,13 @@ export default class FirestoreDataManager extends Service {
     const flatRecord = flattenDocSnapshot(snapshot);
     const normalizedRecord = (this.store as CompatStore).normalize(
       modelName,
-      flatRecord,
+      flatRecord as ObjectValue,
     );
 
     // Race condition can happen because of the realtime nature. We handle that in a try-catch
     // to avoid unexpected side-effects. When this happens, we just ignore it.
     try {
-      this.store.push(normalizedRecord);
+      this.store.push(normalizedRecord as never);
     } catch {
       // Do nothing
     }
