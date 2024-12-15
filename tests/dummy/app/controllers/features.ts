@@ -2,17 +2,17 @@ import { action } from '@ember/object';
 import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import Controller from '@ember/controller';
-import EmberArray from '@ember/array';
-import Store from '@ember-data/store';
+import type EmberArray from '@ember/array';
+import type Store from '@ember-data/store';
 
-import { CollectionReference, Firestore } from 'firebase/firestore';
+import type { CollectionReference, Firestore } from 'firebase/firestore';
 
 import {
   collection,
   query,
   where,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
-import UserModel from '../models/user';
+import type UserModel from '../models/user';
 
 export default class FeaturesController extends Controller {
   @service

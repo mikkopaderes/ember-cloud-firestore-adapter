@@ -1,8 +1,8 @@
 import { service } from '@ember/service';
 import Route from '@ember/routing/route';
-import Store from '@ember-data/store';
+import type Store from '@ember-data/store';
 
-import PostModel from '../models/post';
+import type PostModel from '../models/post';
 
 export default class UpdateRecordRoute extends Route {
   @service

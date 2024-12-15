@@ -6,12 +6,12 @@
 import DS from 'ember-data';
 import Model, { attr, belongsTo } from '@ember-data/model';
 
-import { Firestore } from 'firebase/firestore';
+import type { Firestore } from 'firebase/firestore';
 
 import { collection } from 'ember-cloud-firestore-adapter/firebase/firestore';
-import TimestampTransform from 'ember-cloud-firestore-adapter/transforms/timestamp';
-import GroupModel from './group';
-import UserModel from './user';
+import type TimestampTransform from 'ember-cloud-firestore-adapter/transforms/timestamp';
+import type GroupModel from './group';
+import type UserModel from './user';
 
 export default class PostModel extends Model {
   @attr('string')

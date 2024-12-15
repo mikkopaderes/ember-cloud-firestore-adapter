@@ -1,6 +1,6 @@
 import { service } from '@ember/service';
 import Route from '@ember/routing/route';
-import Store from '@ember-data/store';
+import type Store from '@ember-data/store';
 
 export default class DeleteRecordRoute extends Route {
   @service
