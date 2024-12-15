@@ -3,9 +3,9 @@ import { service } from '@ember/service';
 import Adapter from '@ember-data/adapter';
 import type { ModelSchema } from '@ember-data/store/types';
 import type { AdapterPayload } from '@ember-data/legacy-compat';
-import { Snapshot as _Snapshot } from '@ember-data/legacy-compat/legacy-network-handler/snapshot';
-import { SnapshotRecordArray as _SnapshotRecordArray } from '@ember-data/legacy-compat/-private';
-import { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
+import type { Snapshot as _Snapshot } from '@ember-data/legacy-compat/legacy-network-handler/snapshot';
+import type { SnapshotRecordArray as _SnapshotRecordArray } from '@ember-data/legacy-compat/-private';
+import type { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
 import type {
   LegacyBelongsToField,
   LegacyHasManyField,

@@ -1,5 +1,5 @@
 import { service } from '@ember/service';
-import { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
+import type { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
 import Route from '@ember/routing/route';
 import Store from '@ember-data/store';
 
