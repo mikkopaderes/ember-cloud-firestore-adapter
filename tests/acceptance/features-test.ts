@@ -69,7 +69,7 @@ module('Acceptance | features', function (hooks) {
     await waitFor('[data-test-id]', { timeout: 5000 });
     assert.dom('[data-test-id="user_a"]').hasText('user_a');
     assert.dom('[data-test-name="user_a"]').hasText('user_a');
-    assert.dom('[data-test-age="user_a"]').hasNoText();
+    assert.dom('[data-test-age="user_a"]').hasText('15');
   });
 
   test('should be able to create record with belongs to build reference', async function (assert) {
@@ -87,7 +87,7 @@ module('Acceptance | features', function (hooks) {
     await waitFor('[data-test-id]', { timeout: 5000 });
     assert.dom('[data-test-id="user_a"]').hasText('user_a');
     assert.dom('[data-test-name="user_a"]').hasText('user_a');
-    assert.dom('[data-test-age="user_a"]').hasNoText();
+    assert.dom('[data-test-age="user_a"]').hasText('15');
 
     const createdRecord = await getDoc(doc(db, 'posts/new_post'));
 
