@@ -15,7 +15,7 @@ import type GroupModel from '../models/group';
 
 export default class QueryRoute extends Route {
   @service
-  public declare store: Store;
+  declare public store: Store;
 
   public async model(): Promise<ArrayProxy<GroupModel>> {
     return this.store.query('group', {

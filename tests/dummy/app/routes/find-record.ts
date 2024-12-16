@@ -6,7 +6,7 @@ import type GroupModel from '../models/group';
 
 export default class FindRecordRoute extends Route {
   @service
-  public declare store: Store;
+  declare public store: Store;
 
   public async model(): Promise<GroupModel> {
     return this.store.findRecord('group', 'group_a', {

@@ -12,7 +12,7 @@ import {
 
 export default class ApplicationController extends Controller {
   @service
-  public declare session: SessionService;
+  declare public session: SessionService;
 
   public updateRecordParam: string = Math.random()
     .toString(32)

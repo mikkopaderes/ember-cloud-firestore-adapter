@@ -14,10 +14,10 @@ import type UserModel from './user';
 
 export default class GroupModel extends Model {
   @attr('string')
-  public declare name: string;
+  declare public name: string;
 
   @hasMany('user', { async: true, inverse: 'groups' })
-  public declare members: DS.PromiseManyArray<UserModel>;
+  declare public members: DS.PromiseManyArray<UserModel>;
 
   @hasMany('post', {
     async: true,
@@ -28,7 +28,7 @@ export default class GroupModel extends Model {
       return query(reference, limit(1));
     },
   })
-  public declare posts: DS.PromiseManyArray<PostModel>;
+  declare public posts: DS.PromiseManyArray<PostModel>;
 }
 
 // DO NOT DELETE: this is how TypeScript knows how to look up your models.

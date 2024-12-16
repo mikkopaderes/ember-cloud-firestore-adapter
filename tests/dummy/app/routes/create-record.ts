@@ -6,7 +6,7 @@ import type PostModel from '../models/post';
 
 export default class CreateRecordRoute extends Route {
   @service
-  public declare store: Store;
+  declare public store: Store;
 
   public async model(): Promise<PostModel> {
     const group = await this.store.findRecord('group', 'group_a');

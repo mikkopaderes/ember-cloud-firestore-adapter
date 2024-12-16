@@ -59,7 +59,7 @@ interface HasManyFetchConfig {
 
 export default class FirestoreDataManager extends Service {
   @service
-  private declare store: StoreService;
+  declare private store: StoreService;
 
   private docListeners: DocListeners = {};
 
