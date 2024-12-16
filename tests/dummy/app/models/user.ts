@@ -6,8 +6,8 @@
 import DS from 'ember-data';
 import Model, { attr, hasMany } from '@ember-data/model';
 
-import GroupModel from './group';
-import PostModel from './post';
+import type GroupModel from './group';
+import type PostModel from './post';
 
 export default class UserModel extends Model {
   @attr('string')
