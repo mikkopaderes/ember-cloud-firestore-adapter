@@ -1,9 +1,9 @@
 import { service } from '@ember/service';
 import type { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
 import Route from '@ember/routing/route';
-import Store from '@ember-data/store';
+import type Store from '@ember-data/store';
 
-import { CollectionReference } from 'firebase/firestore';
+import type { CollectionReference } from 'firebase/firestore';
 
 import {
   limit,
@@ -11,7 +11,7 @@ import {
   orderBy,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
 
-import GroupModel from '../models/group';
+import type GroupModel from '../models/group';
 
 export default class QueryRoute extends Route {
   @service

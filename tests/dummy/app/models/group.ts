@@ -9,8 +9,8 @@ import type { Type } from '@warp-drive/core-types/symbols';
 import { Query } from 'firebase/firestore';
 
 import { limit, query } from 'ember-cloud-firestore-adapter/firebase/firestore';
-import PostModel from './post';
-import UserModel from './user';
+import type PostModel from './post';
+import type UserModel from './user';
 
 export default class GroupModel extends Model {
   @attr('string')

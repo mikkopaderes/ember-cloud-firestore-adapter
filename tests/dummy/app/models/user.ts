@@ -6,8 +6,8 @@
 import Model, { attr, hasMany, type AsyncHasMany } from '@ember-data/model';
 import type { Type } from '@warp-drive/core-types/symbols';
 
-import GroupModel from './group';
-import PostModel from './post';
+import type GroupModel from './group';
+import type PostModel from './post';
 
 export default class UserModel extends Model {
   @attr('string')
