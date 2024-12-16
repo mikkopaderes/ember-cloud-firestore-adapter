@@ -20,10 +20,10 @@ In order to continue development with Ember and Cloud Firestore, I had to build 
 
 ## Compatibility
 
-* Ember.js v4.8 or above
-* Ember CLI v4.8 or above
-* Node.js v18 or above
-* Firebase v9.14.x
+- Ember.js v4.12 or above
+- Ember CLI v4.12 or above
+- Node.js v18 or above
+- Firebase v9.14.x
 
 
 ## Installation
@@ -40,15 +40,13 @@ Once you've installed it, you can now install the addon itself:
 ember install ember-cloud-firestore-adapter
 ```
 
-Getting Started
-------------------------------------------------------------------------------
+## Usage
 
-Checkout the docs [here](docs/getting-started.md).
+[Longer description of how to use the addon in apps.]
 
 ## Contributing
 
 See the [Contributing](CONTRIBUTING.md) guide for details.
-
 
 ## License
 
