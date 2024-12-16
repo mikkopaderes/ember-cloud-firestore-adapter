@@ -42,7 +42,7 @@ ember install ember-cloud-firestore-adapter
 
 ## Usage
 
-[Longer description of how to use the addon in apps.]
+Checkout the docs [here](docs/getting-started.md).
 
 ## Contributing
 

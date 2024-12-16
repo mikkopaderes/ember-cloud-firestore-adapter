@@ -15,16 +15,16 @@ import type UserModel from './user';
 
 export default class PostModel extends Model {
   @attr('string')
-  public declare title: string;
+  declare public title: string;
 
   @attr('timestamp')
-  public declare createdOn: TimestampTransform;
+  declare public createdOn: TimestampTransform;
 
   @belongsTo('user', { async: true, inverse: 'posts' })
-  public declare author: DS.PromiseObject<UserModel>;
+  declare public author: DS.PromiseObject<UserModel>;
 
   @belongsTo('group', { async: true, inverse: 'posts' })
-  public declare group: DS.PromiseObject<GroupModel>;
+  declare public group: DS.PromiseObject<GroupModel>;
 
   @belongsTo('user', {
     async: true,
@@ -34,7 +34,7 @@ export default class PostModel extends Model {
       return collection(db, 'publishers');
     },
   })
-  public declare publisher: DS.PromiseObject<UserModel>;
+  declare public publisher: DS.PromiseObject<UserModel>;
 }
 
 // DO NOT DELETE: this is how TypeScript knows how to look up your models.

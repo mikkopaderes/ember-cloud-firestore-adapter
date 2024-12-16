@@ -16,7 +16,7 @@ import type UserModel from '../models/user';
 
 export default class FeaturesController extends Controller {
   @service
-  public declare store: Store;
+  declare public store: Store;
 
   @tracked
   public users: UserModel[] | EmberArray<UserModel> = [];
