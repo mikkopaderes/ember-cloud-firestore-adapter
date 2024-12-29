@@ -1,7 +1,7 @@
 import { action } from '@ember/object';
 import Controller from '@ember/controller';
 
-import { CollectionReference } from 'firebase/firestore';
+import type { CollectionReference } from 'firebase/firestore';
 
 import {
   query,

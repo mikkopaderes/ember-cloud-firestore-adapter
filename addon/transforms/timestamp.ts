@@ -1,7 +1,8 @@
 import { typeOf } from '@ember/utils';
 import Transform from '@ember-data/serializer/transform';
 
-import { FieldValue, Timestamp } from 'firebase/firestore';
+import type { FieldValue } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore';
 
 import { serverTimestamp } from 'ember-cloud-firestore-adapter/firebase/firestore';
 
