@@ -1,12 +1,13 @@
 import { getOwner } from '@ember/application';
 import { service } from '@ember/service';
 import Adapter from '@ember-data/adapter';
-import DS, { type ModelSchema } from 'ember-data';
+import type DS from 'ember-data';
+import { type ModelSchema } from 'ember-data';
 import type ModelRegistry from 'ember-data/types/registries/model';
 import RSVP from 'rsvp';
-import Store from '@ember-data/store';
+import type Store from '@ember-data/store';
 
-import {
+import type {
   CollectionReference,
   DocumentReference,
   Firestore,
@@ -25,7 +26,7 @@ import {
   writeBatch,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import AdapterRecordNotFoundError from 'ember-cloud-firestore-adapter/utils/custom-errors';
-import FirestoreDataManager from 'ember-cloud-firestore-adapter/services/-firestore-data-manager';
+import type FirestoreDataManager from 'ember-cloud-firestore-adapter/services/-firestore-data-manager';
 import buildCollectionName from 'ember-cloud-firestore-adapter/-private/build-collection-name';
 import flattenDocSnapshot from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
 

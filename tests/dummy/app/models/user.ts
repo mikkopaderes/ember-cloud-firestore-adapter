@@ -3,7 +3,7 @@
   import/no-cycle: off,
 */
 
-import DS from 'ember-data';
+import type DS from 'ember-data';
 import Model, { attr, hasMany } from '@ember-data/model';
 
 import type GroupModel from './group';

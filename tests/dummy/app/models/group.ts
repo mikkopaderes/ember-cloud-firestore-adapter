@@ -3,10 +3,10 @@
   import/no-cycle: off,
 */
 
-import DS from 'ember-data';
+import type DS from 'ember-data';
 import Model, { attr, hasMany } from '@ember-data/model';
 
-import { Query } from 'firebase/firestore';
+import type { Query } from 'firebase/firestore';
 
 import { limit, query } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import type PostModel from './post';

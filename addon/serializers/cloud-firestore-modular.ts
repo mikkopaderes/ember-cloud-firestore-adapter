@@ -4,11 +4,12 @@
 */
 
 import { isNone } from '@ember/utils';
-import DS, { type ModelSchema } from 'ember-data';
+import type DS from 'ember-data';
+import { type ModelSchema } from 'ember-data';
 import JSONSerializer from '@ember-data/serializer/json';
-import Store from '@ember-data/store';
+import type Store from '@ember-data/store';
 
-import {
+import type {
   CollectionReference,
   DocumentReference,
   Firestore,

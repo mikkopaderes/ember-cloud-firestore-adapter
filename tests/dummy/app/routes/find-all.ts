@@ -1,5 +1,5 @@
 import { service } from '@ember/service';
-import ArrayProxy from '@ember/array/proxy';
+import type ArrayProxy from '@ember/array/proxy';
 import Route from '@ember/routing/route';
 import type Store from '@ember-data/store';
 

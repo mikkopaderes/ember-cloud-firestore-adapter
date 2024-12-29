@@ -57,7 +57,14 @@ module.exports = {
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
       ],
-      rules: {},
+      rules: {
+        '@typescript-eslint/consistent-type-imports': [
+          'warn',
+          {
+            disallowTypeAnnotations: false,
+          },
+        ],
+      },
     },
     // node files
     {
