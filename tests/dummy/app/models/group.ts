@@ -4,9 +4,9 @@
 */
 
 import Model, { attr, hasMany, type AsyncHasMany } from '@ember-data/model';
-import type { Type } from '@warp-drive/core-types/symbols';
+import { Type } from '@warp-drive/core-types/symbols';
 
-import { Query } from 'firebase/firestore';
+import type { Query } from 'firebase/firestore';
 
 import { limit, query } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import type PostModel from './post';

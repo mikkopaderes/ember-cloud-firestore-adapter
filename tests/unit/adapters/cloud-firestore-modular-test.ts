@@ -10,7 +10,11 @@ import EmberObject from '@ember/object';
 
 import Store from '@ember-data/store';
 import type { ModelSchema } from '@ember-data/store/types';
-import { CollectionReference, Firestore, WriteBatch } from 'firebase/firestore';
+import type {
+  CollectionReference,
+  Firestore,
+  WriteBatch,
+} from 'firebase/firestore';
 import sinon from 'sinon';
 
 import {

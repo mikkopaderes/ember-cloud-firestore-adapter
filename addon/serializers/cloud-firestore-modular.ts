@@ -8,7 +8,7 @@ import type Model from '@ember-data/model';
 import type { Snapshot } from '@ember-data/legacy-compat/legacy-network-handler/snapshot';
 import JSONSerializer from '@ember-data/serializer/json';
 
-import {
+import type {
   CollectionReference,
   DocumentReference,
   Firestore,

@@ -4,7 +4,7 @@ import type { Collection } from '@ember-data/store/-private/record-arrays/identi
 import type { CompatStore } from '@ember-data/legacy-compat';
 import type { ObjectValue } from '@warp-drive/core-types/json/raw';
 import Service, { service } from '@ember/service';
-import StoreService from '@ember-data/store';
+import type StoreService from '@ember-data/store';
 
 import type {
   CollectionReference,

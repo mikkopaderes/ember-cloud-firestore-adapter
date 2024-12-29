@@ -10,11 +10,11 @@ import type {
   LegacyBelongsToField,
   LegacyHasManyField,
 } from '@warp-drive/core-types/schema/fields';
-import Model from 'ember-data/model';
+import type Model from 'ember-data/model';
 import RSVP from 'rsvp';
-import Store from '@ember-data/store';
+import type Store from '@ember-data/store';
 
-import {
+import type {
   CollectionReference,
   DocumentReference,
   Firestore,
@@ -33,7 +33,7 @@ import {
   writeBatch,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import AdapterRecordNotFoundError from 'ember-cloud-firestore-adapter/utils/custom-errors';
-import FirestoreDataManager from 'ember-cloud-firestore-adapter/services/-firestore-data-manager';
+import type FirestoreDataManager from 'ember-cloud-firestore-adapter/services/-firestore-data-manager';
 import buildCollectionName from 'ember-cloud-firestore-adapter/-private/build-collection-name';
 import flattenDocSnapshot from 'ember-cloud-firestore-adapter/-private/flatten-doc-snapshot';
 
