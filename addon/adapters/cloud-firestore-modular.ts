@@ -62,7 +62,6 @@ type BelongsToRelationshipMeta = LegacyBelongsToField & {
 
 type HasManyRelationshipMeta = LegacyHasManyField & {
   key: string;
-  type: string;
   options: {
     isRealtime?: boolean;
 
