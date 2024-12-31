@@ -3,15 +3,15 @@
   import/no-cycle: off,
 */
 
-import DS from 'ember-data';
-import Model, { attr, belongsTo } from '@ember-data/model';
+import Model, { attr, belongsTo, type AsyncBelongsTo } from '@ember-data/model';
+import type { Type } from '@warp-drive/core-types/symbols';
 
-import { Firestore } from 'firebase/firestore';
+import type { Firestore } from 'firebase/firestore';
 
 import { collection } from 'ember-cloud-firestore-adapter/firebase/firestore';
-import TimestampTransform from 'ember-cloud-firestore-adapter/transforms/timestamp';
-import GroupModel from './group';
-import UserModel from './user';
+import type TimestampTransform from 'ember-cloud-firestore-adapter/transforms/timestamp';
+import type GroupModel from './group';
+import type UserModel from './user';
 
 export default class PostModel extends Model {
   @attr('string')
@@ -21,11 +21,12 @@ export default class PostModel extends Model {
   public declare createdOn: TimestampTransform;
 
   @belongsTo('user', { async: true, inverse: 'posts' })
-  public declare author: DS.PromiseObject<UserModel>;
+  public declare author: AsyncBelongsTo<UserModel>;
 
   @belongsTo('group', { async: true, inverse: 'posts' })
-  public declare group: DS.PromiseObject<GroupModel>;
+  public declare group: AsyncBelongsTo<GroupModel>;
 
+  // @ts-expect-error ember data types won't accept function
   @belongsTo('user', {
     async: true,
     inverse: null,
@@ -34,12 +35,7 @@ export default class PostModel extends Model {
       return collection(db, 'publishers');
     },
   })
-  public declare publisher: DS.PromiseObject<UserModel>;
-}
+  public declare publisher: AsyncBelongsTo<UserModel>;
 
-// DO NOT DELETE: this is how TypeScript knows how to look up your models.
-declare module 'ember-data/types/registries/model' {
-  export default interface ModelRegistry {
-    post: PostModel;
-  }
+  declare [Type]: 'post';
 }

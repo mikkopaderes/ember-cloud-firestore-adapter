@@ -99,7 +99,7 @@ this.store.query('post', {
   },
 
   filter(reference) {
-    return query(reference, where('likes' '>=' 100), limit(5));
+    return query(reference, where('likes', '>=', 100), limit(5));
   }
 });
 ```

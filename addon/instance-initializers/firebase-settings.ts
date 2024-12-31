@@ -1,4 +1,4 @@
-import ApplicationInstance from '@ember/application/instance';
+import type ApplicationInstance from '@ember/application/instance';
 
 import type { FirebaseApp, FirebaseError, FirebaseOptions } from 'firebase/app';
 import type { Firestore, EmulatorMockTokenOptions } from 'firebase/firestore';

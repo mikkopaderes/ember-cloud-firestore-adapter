@@ -9,8 +9,13 @@ import { setupTest } from 'ember-qunit';
 import EmberObject from '@ember/object';
 
 import Store from '@ember-data/store';
-import type { ModelSchema } from 'ember-data';
-import { CollectionReference, Firestore, WriteBatch } from 'firebase/firestore';
+import type { ModelSchema } from '@ember-data/store/types';
+import type { EmptyResourceDocument } from '@warp-drive/core-types/spec/json-api-raw';
+import type {
+  CollectionReference,
+  Firestore,
+  WriteBatch,
+} from 'firebase/firestore';
 import sinon from 'sinon';
 
 import {
@@ -65,7 +70,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
 
       const updateRecordStub = sinon
         .stub(adapter, 'updateRecord')
-        .returns('foo' as any);
+        .returns(Promise.resolve({ foo: 'foo' }));
 
       // Act
       const result = await adapter.createRecord(
@@ -75,7 +80,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       );
 
       // Assert
-      assert.strictEqual(result, 'foo');
+      assert.deepEqual(result, { foo: 'foo' });
       assert.ok(
         updateRecordStub.calledWithExactly(store, modelClass, snapshot as any),
       );
@@ -276,14 +281,14 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const modelClass = { modelName: 'user' } as ModelSchema;
       const adapter = this.owner.lookup(
         'adapter:cloud-firestore-modular',
       ) as CloudFirestoreModularAdapter;
 
       // Act
-      const result = await adapter.findAll(store, modelClass, undefined as any);
+      const result = await adapter.findAll(store, modelClass, null, {} as any);
 
       // Assert
       assert.deepEqual(result, [
@@ -314,7 +319,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const modelClass = { modelName: 'user' } as ModelSchema;
       const modelId = 'user_a';
       const snapshot = {};
@@ -343,7 +348,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const modelClass = { modelName: 'user' } as ModelSchema;
       const modelId = 'user_a';
       const snapshot = {
@@ -375,7 +380,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
 
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const modelClass = { modelName: 'user' } as ModelSchema;
       const modelId = 'user_100';
       const snapshot = {};
@@ -402,7 +407,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const snapshot = {};
       const url = 'users/user_a';
       const relationship = { type: 'user', options: {} };
@@ -415,7 +420,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         store,
         snapshot as any,
         url,
-        relationship,
+        relationship as any,
       );
 
       // Assert
@@ -440,14 +445,14 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
             return {
               determineRelationshipType: determineRelationshipTypeStub,
               inverseFor: inverseForStub,
-            };
+            } as unknown as ModelSchema;
           }
         },
       );
 
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const snapshot = {
         id: 'user_a',
         modelName: 'user',
@@ -472,7 +477,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         store,
         snapshot as any,
         url,
-        relationship,
+        relationship as any,
       )) as any;
 
       // Assert
@@ -493,19 +498,19 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
           modelFor() {
             return {
               determineRelationshipType: determineRelationshipTypeStub,
-            };
+            } as unknown as ModelSchema;
           }
         },
       );
 
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const snapshot = {
         modelName: 'user',
         record: EmberObject.create({
           referenceTo: doc(db, 'users/user_a'),
-        }),
+        } as any),
       };
       const url = 'users/user_a/friends';
       const relationship = {
@@ -553,20 +558,20 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
             return {
               determineRelationshipType: determineRelationshipTypeStub,
               inverseFor: inverseForStub,
-            };
+            } as unknown as ModelSchema;
           }
         },
       );
 
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const snapshot = {
         id: 'user_a',
         modelName: 'user',
         record: EmberObject.create({
           id: 'user_a',
-        }),
+        } as any),
       };
       const url = 'posts';
       const relationship = {
@@ -587,7 +592,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         store,
         snapshot as any,
         url,
-        relationship,
+        relationship as any,
       )) as any;
 
       // Assert
@@ -603,9 +608,9 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub();
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const snapshot = {
-        record: EmberObject.create({ id: 'user_a' }),
+        record: EmberObject.create({ id: 'user_a' } as any),
       };
       const url = null;
       const relationship = {
@@ -630,7 +635,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         store,
         snapshot as any,
         url as any,
-        relationship,
+        relationship as any,
       )) as any;
 
       // Assert

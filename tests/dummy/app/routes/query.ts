@@ -1,9 +1,9 @@
-import { inject as service } from '@ember/service';
-import ArrayProxy from '@ember/array/proxy';
+import { service } from '@ember/service';
+import type { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
 import Route from '@ember/routing/route';
-import Store from '@ember-data/store';
+import type Store from '@ember-data/store';
 
-import { CollectionReference } from 'firebase/firestore';
+import type { CollectionReference } from 'firebase/firestore';
 
 import {
   limit,
@@ -11,15 +11,16 @@ import {
   orderBy,
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
 
-import GroupModel from '../models/group';
+import type GroupModel from '../models/group';
 
 export default class QueryRoute extends Route {
   @service
   public declare store: Store;
 
-  public async model(): Promise<ArrayProxy<GroupModel>> {
-    return this.store.query('group', {
+  public async model(): Promise<Collection<GroupModel>> {
+    return this.store.query<GroupModel>('group', {
       isRealtime: true,
+      // @ts-expect-error ember data types won't accept function
       filter(reference: CollectionReference) {
         return query(reference, orderBy('name'), limit(1));
       },

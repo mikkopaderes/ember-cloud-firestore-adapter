@@ -4,11 +4,11 @@
 */
 
 import { isNone } from '@ember/utils';
-import DS, { type ModelSchema } from 'ember-data';
+import type Model from '@ember-data/model';
+import type { Snapshot } from '@ember-data/legacy-compat/legacy-network-handler/snapshot';
 import JSONSerializer from '@ember-data/serializer/json';
-import Store from '@ember-data/store';
 
-import {
+import type {
   CollectionReference,
   DocumentReference,
   Firestore,
@@ -38,19 +38,13 @@ interface RelationshipDefinition {
   };
 }
 
-type ModelClass = ModelSchema & {
-  determineRelationshipType(
-    descriptor: { kind: string; type: string },
-    store: Store,
-  ): string;
-};
-
 export default class CloudFirestoreSerializer extends JSONSerializer {
   public extractRelationship(
     relationshipModelName: string,
     relationshipHash: DocumentReference,
   ): { id: string; type: string } | Record<string, unknown> {
     if (isNone(relationshipHash)) {
+      // @ts-expect-error ember data types aren't exporting serializer types correctly
       return super.extractRelationship(relationshipModelName, relationshipHash);
     }
 
@@ -61,7 +55,7 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
   }
 
   public extractRelationships(
-    modelClass: ModelClass,
+    modelClass: typeof Model,
     resourceHash: ResourceHash,
   ): Record<string, unknown> {
     const newResourceHash = { ...resourceHash };
@@ -98,14 +92,16 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
 
     newResourceHash.links = links;
 
+    // @ts-expect-error ember data types aren't exporting serializer types correctly
     return super.extractRelationships(modelClass, newResourceHash);
   }
 
   public serializeBelongsTo(
-    snapshot: DS.Snapshot,
+    snapshot: Snapshot,
     json: { [key: string]: string | null | DocumentReference },
     relationship: RelationshipDefinition,
   ): void {
+    // @ts-expect-error ember data types aren't exporting serializer types correctly
     super.serializeBelongsTo(snapshot, json, relationship);
 
     if (json[relationship.key]) {
@@ -127,10 +123,11 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
   }
 
   public serialize(
-    snapshot: DS.Snapshot,
+    snapshot: Snapshot,
     options: Record<string, unknown>,
   ): Record<string, unknown> {
     const json: { [key: string]: unknown } = {
+      // @ts-expect-error ember data types aren't exporting serializer types correctly
       ...super.serialize(snapshot, options),
     };
 
@@ -141,11 +138,5 @@ export default class CloudFirestoreSerializer extends JSONSerializer {
     });
 
     return json;
-  }
-}
-
-declare module 'ember-data/types/registries/serializer' {
-  export default interface SerializerRegistry {
-    'cloud-firestore-modular': CloudFirestoreSerializer;
   }
 }

@@ -1,4 +1,4 @@
-import { DocumentSnapshot } from 'firebase/firestore';
+import type { DocumentSnapshot } from 'firebase/firestore';
 
 export default function flattenDocSnapshot(docSnapshot: DocumentSnapshot): {
   id: string;

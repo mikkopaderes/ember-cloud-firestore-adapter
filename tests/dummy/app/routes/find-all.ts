@@ -1,15 +1,14 @@
-import { inject as service } from '@ember/service';
-import ArrayProxy from '@ember/array/proxy';
+import { service } from '@ember/service';
 import Route from '@ember/routing/route';
-import Store from '@ember-data/store';
+import type Store from '@ember-data/store';
 
-import GroupModel from '../models/group';
+import type GroupModel from '../models/group';
 
 export default class FindAllRoute extends Route {
   @service
   public declare store: Store;
 
-  public async model(): Promise<ArrayProxy<GroupModel>> {
-    return this.store.findAll('group');
+  public async model(): Promise<GroupModel[]> {
+    return this.store.findAll<GroupModel>('group');
   }
 }
