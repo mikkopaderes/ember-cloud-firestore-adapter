@@ -10,6 +10,7 @@ import EmberObject from '@ember/object';
 
 import Store from '@ember-data/store';
 import type { ModelSchema } from '@ember-data/store/types';
+import type { EmptyResourceDocument } from '@warp-drive/core-types/spec/json-api-raw';
 import type {
   CollectionReference,
   Firestore,
@@ -280,7 +281,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub() as any;
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const modelClass = { modelName: 'user' } as ModelSchema;
       const adapter = this.owner.lookup(
         'adapter:cloud-firestore-modular',
@@ -318,7 +319,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub() as any;
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const modelClass = { modelName: 'user' } as ModelSchema;
       const modelId = 'user_a';
       const snapshot = {};
@@ -347,7 +348,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub() as any;
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const modelClass = { modelName: 'user' } as ModelSchema;
       const modelId = 'user_a';
       const snapshot = {
@@ -379,7 +380,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
 
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub() as any;
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const modelClass = { modelName: 'user' } as ModelSchema;
       const modelId = 'user_100';
       const snapshot = {};
@@ -406,7 +407,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub() as any;
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const snapshot = {};
       const url = 'users/user_a';
       const relationship = { type: 'user', options: {} };
@@ -451,7 +452,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
 
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub() as any;
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const snapshot = {
         id: 'user_a',
         modelName: 'user',
@@ -504,7 +505,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
 
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub() as any;
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const snapshot = {
         modelName: 'user',
         record: EmberObject.create({
@@ -564,7 +565,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
 
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub() as any;
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const snapshot = {
         id: 'user_a',
         modelName: 'user',
@@ -607,7 +608,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
-      store.push = sinon.stub() as any;
+      (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const snapshot = {
         record: EmberObject.create({ id: 'user_a' } as any),
       };
