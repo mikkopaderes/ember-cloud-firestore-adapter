@@ -11,6 +11,21 @@
   "repository": "https://github.com/mikkopaderes/ember-cloud-firestore-adapter",
   "license": "MIT",
   "author": "Mikko Paderes",
+  "typesVersions": {
+    "*": {
+      "test-support": [
+        "declarations/addon-test-support/index.d.ts"
+      ],
+      "test-support/*": [
+        "declarations/addon-test-support/*",
+        "declarations/addon-test-support/*/index.d.ts"
+      ],
+      "*": [
+        "declarations/addon/*",
+        "declarations/addon/*/index.d.ts"
+      ]
+    }
+  },
   "directories": {
     "doc": "doc",
     "test": "tests"
@@ -26,19 +41,18 @@
     "lint:hbs:fix": "ember-template-lint . --fix",
     "lint:js": "eslint . --cache",
     "lint:js:fix": "eslint . --fix",
+    "prepack": "npm run build:wrappers && tsc --project tsconfig.declarations.json",
+    "postpack": "rimraf declarations",
     "start": "npm run build:wrappers && firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project --ui \"ember serve\"",
     "test": "concurrently \"npm:lint\" \"npm:test:*\" --names \"lint,test:\"",
     "test:ember": "npm run build:wrappers && firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember test\"",
-    "test:ember-compatibility": "npm run build:wrappers && firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember try:each\"",
-    "prepack": "npm run build:wrappers && ember ts:precompile",
-    "postpack": "ember ts:clean"
+    "test:ember-compatibility": "npm run build:wrappers && firebase emulators:exec --import=./emulator-data --project ember-cloud-firestore-adapter-test-project \"ember try:each\""
   },
   "dependencies": {
     "@babel/core": "^7.23.2",
     "ember-auto-import": "2.6.3",
     "ember-cli-babel": "^8.2.0",
-    "ember-cli-htmlbars": "^6.3.0",
-    "ember-cli-typescript": "^4.2.1"
+    "ember-cli-htmlbars": "^6.3.0"
   },
   "devDependencies": {
     "@ember-data-types/adapter": "^5.3.9",
@@ -74,7 +88,6 @@
     "ember-cli-inject-live-reload": "^2.1.0",
     "ember-cli-sri": "^2.1.1",
     "ember-cli-terser": "^4.0.2",
-    "ember-cli-typescript-blueprints": "^3.0.0",
     "ember-data": "~4.11.2",
     "ember-data-types": "^5.3.9",
     "ember-fetch": "^8.1.2",
