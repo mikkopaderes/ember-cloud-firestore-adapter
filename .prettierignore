@@ -11,3 +11,6 @@
 
 # ember-try
 /.node_modules.ember-try/
+
+# addon auto generated files
+/addon/firebase/
