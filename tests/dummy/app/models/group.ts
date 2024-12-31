@@ -3,8 +3,8 @@
   import/no-cycle: off,
 */
 
-import type DS from 'ember-data';
-import Model, { attr, hasMany } from '@ember-data/model';
+import Model, { attr, hasMany, type AsyncHasMany } from '@ember-data/model';
+import type { Type } from '@warp-drive/core-types/symbols';
 
 import type { Query } from 'firebase/firestore';
 
@@ -17,8 +17,9 @@ export default class GroupModel extends Model {
   public declare name: string;
 
   @hasMany('user', { async: true, inverse: 'groups' })
-  public declare members: DS.PromiseManyArray<UserModel>;
+  public declare members: AsyncHasMany<UserModel>;
 
+  // @ts-expect-error ember data types won't accept function
   @hasMany('post', {
     async: true,
     inverse: 'group',
@@ -28,12 +29,7 @@ export default class GroupModel extends Model {
       return query(reference, limit(1));
     },
   })
-  public declare posts: DS.PromiseManyArray<PostModel>;
-}
+  public declare posts: AsyncHasMany<PostModel>;
 
-// DO NOT DELETE: this is how TypeScript knows how to look up your models.
-declare module 'ember-data/types/registries/model' {
-  export default interface ModelRegistry {
-    group: GroupModel;
-  }
+  declare [Type]: 'group';
 }

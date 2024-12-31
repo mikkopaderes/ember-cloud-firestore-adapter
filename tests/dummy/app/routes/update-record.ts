@@ -9,7 +9,7 @@ export default class UpdateRecordRoute extends Route {
   public declare store: Store;
 
   public async model(params: { title: string }): Promise<PostModel> {
-    const post = await this.store.findRecord('post', 'post_a');
+    const post = await this.store.findRecord<PostModel>('post', 'post_a');
 
     post.set('title', params.title);
     await post.save();

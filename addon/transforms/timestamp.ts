@@ -19,9 +19,3 @@ export default class TimestampTransform extends Transform {
     return typeOf(value) === 'date' ? (value as Date) : serverTimestamp();
   }
 }
-
-declare module 'ember-data/types/registries/transform' {
-  export default interface TransformRegistry {
-    timestamp: TimestampTransform;
-  }
-}

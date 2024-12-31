@@ -1,9 +1,16 @@
-import { getOwner } from '@ember/application';
+import { getOwner } from '@ember/owner';
 import { service } from '@ember/service';
 import Adapter from '@ember-data/adapter';
-import type DS from 'ember-data';
-import { type ModelSchema } from 'ember-data';
-import type ModelRegistry from 'ember-data/types/registries/model';
+import type { ModelSchema } from '@ember-data/store/types';
+import type { AdapterPayload } from '@ember-data/legacy-compat';
+import type { Snapshot as _Snapshot } from '@ember-data/legacy-compat/legacy-network-handler/snapshot';
+import type { SnapshotRecordArray as _SnapshotRecordArray } from '@ember-data/legacy-compat/-private';
+import type { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
+import type {
+  LegacyBelongsToField,
+  LegacyHasManyField,
+} from '@warp-drive/core-types/schema/fields';
+import type Model from 'ember-data/model';
 import RSVP from 'rsvp';
 import type Store from '@ember-data/store';
 
@@ -41,30 +48,27 @@ export interface AdapterOption {
   [key: string]: unknown;
 }
 
-interface Snapshot extends DS.Snapshot {
+interface Snapshot extends _Snapshot {
   adapterOptions: AdapterOption;
 }
 
-interface SnapshotRecordArray
-  extends DS.SnapshotRecordArray<keyof ModelRegistry> {
+interface SnapshotRecordArray extends _SnapshotRecordArray {
   adapterOptions: AdapterOption;
 }
 
-interface BelongsToRelationshipMeta {
-  type: keyof ModelRegistry;
+type BelongsToRelationshipMeta = LegacyBelongsToField & {
   options: { isRealtime?: boolean };
-}
+};
 
-interface HasManyRelationshipMeta {
+type HasManyRelationshipMeta = LegacyHasManyField & {
   key: string;
-  type: string;
   options: {
     isRealtime?: boolean;
 
     buildReference?(db: Firestore, record: unknown): CollectionReference;
     filter?(db: CollectionReference | Query, record: unknown): Query;
   };
-}
+};
 
 export default class CloudFirestoreAdapter extends Adapter {
   @service('-firestore-data-manager')
@@ -73,9 +77,9 @@ export default class CloudFirestoreAdapter extends Adapter {
   protected referenceKeyName = 'referenceTo';
 
   protected get isFastBoot(): boolean {
-    const fastboot = getOwner(this).lookup('service:fastboot');
+    const fastboot = getOwner(this)?.lookup('service:fastboot');
 
-    return fastboot && fastboot.isFastBoot;
+    return !!fastboot && fastboot.isFastBoot;
   }
 
   public generateIdForRecord(_store: Store, type: unknown): string {
@@ -89,7 +93,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     store: Store,
     type: ModelSchema,
     snapshot: Snapshot,
-  ): RSVP.Promise<unknown> {
+  ): Promise<AdapterPayload> {
     return this.updateRecord(store, type, snapshot);
   }
 
@@ -97,13 +101,13 @@ export default class CloudFirestoreAdapter extends Adapter {
     _store: Store,
     type: ModelSchema,
     snapshot: Snapshot,
-  ): RSVP.Promise<unknown> {
+  ): Promise<AdapterPayload> {
     return new RSVP.Promise((resolve, reject) => {
       const collectionRef = this.buildCollectionRef(
         type.modelName,
         snapshot.adapterOptions,
       );
-      const docRef = doc(collectionRef, snapshot.id);
+      const docRef = doc(collectionRef, snapshot.id!);
       const batch = this.buildWriteBatch(docRef, snapshot);
 
       batch
@@ -131,14 +135,14 @@ export default class CloudFirestoreAdapter extends Adapter {
     _store: Store,
     type: ModelSchema,
     snapshot: Snapshot,
-  ): RSVP.Promise<unknown> {
+  ): Promise<AdapterPayload> {
     return new RSVP.Promise((resolve, reject) => {
       const db = getFirestore();
       const collectionRef = this.buildCollectionRef(
         type.modelName,
         snapshot.adapterOptions,
       );
-      const docRef = doc(collectionRef, snapshot.id);
+      const docRef = doc(collectionRef, snapshot.id!);
       const batch = writeBatch(db);
 
       batch.delete(docRef);
@@ -160,7 +164,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     type: ModelSchema,
     id: string,
     snapshot: Snapshot,
-  ): RSVP.Promise<unknown> {
+  ): Promise<AdapterPayload> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
         const colRef = this.buildCollectionRef(
@@ -194,9 +198,9 @@ export default class CloudFirestoreAdapter extends Adapter {
   public findAll(
     _store: Store,
     type: ModelSchema,
-    _sinceToken: string,
-    snapshotRecordArray?: SnapshotRecordArray,
-  ): RSVP.Promise<unknown> {
+    _sinceToken: null,
+    snapshotRecordArray: SnapshotRecordArray,
+  ): Promise<AdapterPayload> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
         const db = getFirestore();
@@ -223,12 +227,13 @@ export default class CloudFirestoreAdapter extends Adapter {
     });
   }
 
+  // @ts-expect-error ember data types 3 arg
   public query(
     _store: Store,
     type: ModelSchema,
     queryOption: AdapterOption,
-    recordArray: DS.AdapterPopulatedRecordArray<unknown>,
-  ): RSVP.Promise<unknown> {
+    recordArray: Collection,
+  ): Promise<AdapterPayload> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
         const colRef = this.buildCollectionRef(type.modelName, queryOption);
@@ -264,7 +269,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     _snapshot: Snapshot,
     url: string,
     relationship: BelongsToRelationshipMeta,
-  ): RSVP.Promise<unknown> {
+  ): Promise<AdapterPayload> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
         const urlNodes = url.split('/');
@@ -303,7 +308,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     snapshot: Snapshot,
     url: string,
     relationship: HasManyRelationshipMeta,
-  ): RSVP.Promise<unknown> {
+  ): Promise<AdapterPayload> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
         const queryRef = this.buildHasManyCollectionRef(
@@ -315,7 +320,7 @@ export default class CloudFirestoreAdapter extends Adapter {
         const config = {
           queryRef,
           modelName: snapshot.modelName,
-          id: snapshot.id,
+          id: snapshot.id!,
           field: relationship.key,
           referenceKeyName: this.referenceKeyName,
         };
@@ -339,7 +344,7 @@ export default class CloudFirestoreAdapter extends Adapter {
   }
 
   protected buildCollectionRef(
-    modelName: keyof ModelRegistry,
+    modelName: string,
     adapterOptions?: AdapterOption,
   ): CollectionReference {
     const db = getFirestore();
@@ -402,7 +407,7 @@ export default class CloudFirestoreAdapter extends Adapter {
       );
     }
 
-    const modelClass = store.modelFor(snapshot.modelName);
+    const modelClass = store.modelFor(snapshot.modelName) as typeof Model;
     const cardinality = modelClass.determineRelationshipType(
       relationship,
       store,
@@ -420,7 +425,7 @@ export default class CloudFirestoreAdapter extends Adapter {
       const collectionRef = collection(db, url);
       const queryRef = query(
         collectionRef,
-        where(inverse.name, '==', snapshotDocRef),
+        where(inverse?.name as string, '==', snapshotDocRef),
       );
 
       return (
@@ -434,11 +439,5 @@ export default class CloudFirestoreAdapter extends Adapter {
       relationship.options.filter?.(collectionRef, snapshot.record) ||
       collectionRef
     );
-  }
-}
-
-declare module 'ember-data/types/registries/adapter' {
-  export default interface AdapterRegistry {
-    'cloud-firestore-modular': CloudFirestoreAdapter;
   }
 }

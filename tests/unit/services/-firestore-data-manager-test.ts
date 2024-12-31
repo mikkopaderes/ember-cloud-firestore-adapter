@@ -6,6 +6,7 @@ import RSVP from 'rsvp';
 
 import type { Firestore } from 'firebase/firestore';
 import sinon from 'sinon';
+import type { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
 
 import {
   collection,
@@ -171,7 +172,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
         recordArray: {
           update: () =>
             DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
-        } as unknown as DS.AdapterPopulatedRecordArray<unknown>,
+        } as Collection,
       };
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
@@ -201,7 +202,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
         recordArray: {
           update: () =>
             DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
-        } as unknown as DS.AdapterPopulatedRecordArray<unknown>,
+        } as Collection,
       };
       const firestoreDataManager = this.owner.lookup(
         'service:-firestore-data-manager',
@@ -229,7 +230,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
         recordArray: {
           update: () =>
             DS.PromiseArray.create({ promise: RSVP.Promise.resolve([]) }),
-        } as unknown as DS.AdapterPopulatedRecordArray<unknown>,
+        } as Collection,
       };
       const updateSpy = sinon.spy(config.recordArray, 'update');
       const firestoreDataManager = this.owner.lookup(
@@ -307,6 +308,7 @@ module('Unit | Service | -firestore-data-manager', function (hooks) {
 
       sinon
         .stub(store, 'peekRecord')
+        // @ts-expect-error method overloads
         .withArgs('user', 'user_a')
         .returns({
           hasMany: sinon

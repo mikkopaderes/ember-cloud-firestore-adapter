@@ -1,5 +1,5 @@
 import { service } from '@ember/service';
-import type ArrayProxy from '@ember/array/proxy';
+import type { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
 import Route from '@ember/routing/route';
 import type Store from '@ember-data/store';
 
@@ -17,9 +17,10 @@ export default class QueryRoute extends Route {
   @service
   public declare store: Store;
 
-  public async model(): Promise<ArrayProxy<GroupModel>> {
-    return this.store.query('group', {
+  public async model(): Promise<Collection<GroupModel>> {
+    return this.store.query<GroupModel>('group', {
       isRealtime: true,
+      // @ts-expect-error ember data types won't accept function
       filter(reference: CollectionReference) {
         return query(reference, orderBy('name'), limit(1));
       },
