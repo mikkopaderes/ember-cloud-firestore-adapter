@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.23.2",
-    "ember-auto-import": "2.6.3",
+    "ember-auto-import": "^2.10.0",
     "ember-cli-babel": "^8.2.0",
     "ember-cli-htmlbars": "^6.3.0",
     "ember-cli-typescript": "^4.2.1"
@@ -75,7 +75,7 @@
     "ember-cli-sri": "^2.1.1",
     "ember-cli-terser": "^4.0.2",
     "ember-cli-typescript-blueprints": "^3.0.0",
-    "ember-data": "~4.11.2",
+    "ember-data": "~5.3.9",
     "ember-data-types": "^5.3.9",
     "ember-fetch": "^8.1.2",
     "ember-load-initializers": "^2.1.2",
@@ -114,6 +114,7 @@
   },
   "peerDependencies": {
     "ember-auto-import": "2.x",
+    "ember-inflector": "5.x",
     "ember-simple-auth": "4.x || 5.x || 6.x || 7.x",
     "ember-source": ">= 4.0.0",
     "firebase": "9.14.x || 10.x"
