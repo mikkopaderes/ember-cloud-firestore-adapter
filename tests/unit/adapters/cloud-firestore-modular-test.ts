@@ -62,7 +62,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should proxy a call to updateRecord and return with the created doc', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'user' } as ModelSchema;
+      const modelClass = store.modelFor('user');
       const snapshot = { id: 'user_100', age: 30, username: 'user_100' };
       const adapter = this.owner.lookup(
         'adapter:cloud-firestore-modular',
@@ -91,7 +91,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should update record and resolve with the updated doc', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'user' } as ModelSchema;
+      const modelClass = store.modelFor('user');
       const snapshot = {
         id: 'user_a',
         age: 50,
@@ -124,7 +124,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should update record in a custom collection and resolve with the updated resource', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'user' } as ModelSchema;
+      const modelClass = store.modelFor('user');
       const snapshot = {
         id: 'user_a',
         age: 50,
@@ -158,7 +158,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should update record and process additional batched writes', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'user' } as ModelSchema;
+      const modelClass = store.modelFor('user');
       const snapshot = {
         id: 'user_a',
         age: 50,
@@ -203,7 +203,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should delete record', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'user' } as ModelSchema;
+      const modelClass = store.modelFor('user');
       const snapshot = { id: 'user_a' };
       const adapter = this.owner.lookup(
         'adapter:cloud-firestore-modular',
@@ -221,7 +221,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should delete record in a custom collection', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'post' } as ModelSchema;
+      const modelClass = store.modelFor('post');
       const snapshot = {
         id: 'post_b',
 
@@ -247,7 +247,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should delete record and process additional batched writes', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'user' } as ModelSchema;
+      const modelClass = store.modelFor('user');
       const snapshot = {
         id: 'user_a',
         adapterOptions: {
@@ -282,7 +282,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
       (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
-      const modelClass = { modelName: 'user' } as ModelSchema;
+      const modelClass = store.modelFor('user');
       const adapter = this.owner.lookup(
         'adapter:cloud-firestore-modular',
       ) as CloudFirestoreModularAdapter;
@@ -320,7 +320,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
       (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
-      const modelClass = { modelName: 'user' } as ModelSchema;
+      const modelClass = store.modelFor('user');
       const modelId = 'user_a';
       const snapshot = {};
       const adapter = this.owner.lookup(
@@ -349,7 +349,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
       (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
-      const modelClass = { modelName: 'user' } as ModelSchema;
+      const modelClass = store.modelFor('user');
       const modelId = 'user_a';
       const snapshot = {
         adapterOptions: {
@@ -381,7 +381,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
       (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
-      const modelClass = { modelName: 'user' } as ModelSchema;
+      const modelClass = store.modelFor('user');
       const modelId = 'user_100';
       const snapshot = {};
       const adapter = this.owner.lookup(
@@ -648,7 +648,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should query for records', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'user' } as ModelSchema;
+      const modelClass = store.modelFor('user');
       const queryRef = {
         filter(reference: CollectionReference) {
           return query(reference, where('age', '>=', 15), limit(1));
@@ -680,7 +680,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
     test('should query for records in a custom collection', async function (assert) {
       // Arrange
       const store = this.owner.lookup('service:store');
-      const modelClass = { modelName: 'user' } as ModelSchema;
+      const modelClass = store.modelFor('user');
       const queryRef = {
         buildReference(firestore: Firestore) {
           return collection(firestore, 'admins');

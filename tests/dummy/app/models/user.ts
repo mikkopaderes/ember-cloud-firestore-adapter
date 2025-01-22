@@ -16,6 +16,9 @@ export default class UserModel extends Model {
   @attr('number')
   public declare age: number;
 
+  @attr('string')
+  public declare username: string;
+
   @hasMany('group', { async: true, inverse: 'members' })
   public declare groups: AsyncHasMany<GroupModel>;
 
