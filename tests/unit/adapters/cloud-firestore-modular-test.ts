@@ -29,6 +29,8 @@ import {
 } from 'ember-cloud-firestore-adapter/firebase/firestore';
 import type CloudFirestoreModularAdapter from 'ember-cloud-firestore-adapter/adapters/cloud-firestore-modular';
 import AdapterRecordNotFoundError from 'ember-cloud-firestore-adapter/utils/custom-errors';
+import type { Snapshot } from 'ember-cloud-firestore-adapter/adapters/cloud-firestore-modular';
+import type UserModel from 'dummy/tests/dummy/app/models/user';
 import resetFixtureData from '../../helpers/reset-fixture-data';
 
 module('Unit | Adapter | cloud firestore modular', function (hooks) {
@@ -63,7 +65,13 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       const modelClass = store.modelFor('user');
-      const snapshot = { id: 'user_100', age: 30, username: 'user_100' };
+      const snapshot = store
+        .createRecord<UserModel>('user', {
+          id: 'user_100',
+          age: 30,
+          username: 'user_100',
+        })
+        ._createSnapshot() as Snapshot;
       const adapter = this.owner.lookup(
         'adapter:cloud-firestore-modular',
       ) as CloudFirestoreModularAdapter;
@@ -73,16 +81,12 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         .returns(Promise.resolve({ foo: 'foo' }));
 
       // Act
-      const result = await adapter.createRecord(
-        store,
-        modelClass,
-        snapshot as any,
-      );
+      const result = await adapter.createRecord(store, modelClass, snapshot);
 
       // Assert
       assert.deepEqual(result, { foo: 'foo' });
       assert.ok(
-        updateRecordStub.calledWithExactly(store, modelClass, snapshot as any),
+        updateRecordStub.calledWithExactly(store, modelClass, snapshot),
       );
     });
   });
@@ -92,10 +96,12 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       const modelClass = store.modelFor('user');
-      const snapshot = {
-        id: 'user_a',
-        age: 50,
-      };
+      const snapshot = store
+        .createRecord<UserModel>('user', {
+          id: 'user_a',
+          age: 50,
+        })
+        ._createSnapshot() as Snapshot;
       const adapter = this.owner.lookup(
         'adapter:cloud-firestore-modular',
       ) as CloudFirestoreModularAdapter;
@@ -106,11 +112,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       });
 
       // Act
-      const result = await adapter.updateRecord(
-        store,
-        modelClass,
-        snapshot as any,
-      );
+      const result = await adapter.updateRecord(store, modelClass, snapshot);
 
       // Assert
       assert.deepEqual(result, { age: 50, username: 'user_a' });
@@ -204,13 +206,15 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Arrange
       const store = this.owner.lookup('service:store');
       const modelClass = store.modelFor('user');
-      const snapshot = { id: 'user_a' };
+      const snapshot = store
+        .createRecord<UserModel>('user', { id: 'user_a' })
+        ._createSnapshot() as Snapshot;
       const adapter = this.owner.lookup(
         'adapter:cloud-firestore-modular',
       ) as CloudFirestoreModularAdapter;
 
       // Act
-      await adapter.deleteRecord(store, modelClass, snapshot as any);
+      await adapter.deleteRecord(store, modelClass, snapshot);
 
       // Assert
       const userA = await getDoc(doc(db, 'users/user_a'));
@@ -322,7 +326,9 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const modelClass = store.modelFor('user');
       const modelId = 'user_a';
-      const snapshot = {};
+      const snapshot = store
+        .createRecord<UserModel>('user', {})
+        ._createSnapshot() as Snapshot;
       const adapter = this.owner.lookup(
         'adapter:cloud-firestore-modular',
       ) as CloudFirestoreModularAdapter;
@@ -332,7 +338,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
         store,
         modelClass,
         modelId,
-        snapshot as any,
+        snapshot,
       );
 
       // Assert
@@ -383,14 +389,16 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
       const modelClass = store.modelFor('user');
       const modelId = 'user_100';
-      const snapshot = {};
+      const snapshot = store
+        .createRecord<UserModel>('user', {})
+        ._createSnapshot() as Snapshot;
       const adapter = this.owner.lookup(
         'adapter:cloud-firestore-modular',
       ) as CloudFirestoreModularAdapter;
 
       try {
         // Act
-        await adapter.findRecord(store, modelClass, modelId, snapshot as any);
+        await adapter.findRecord(store, modelClass, modelId, snapshot);
       } catch (error) {
         // Assert
         assert.ok(error instanceof AdapterRecordNotFoundError);
@@ -408,7 +416,9 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       const store = this.owner.lookup('service:store');
       store.normalize = sinon.stub();
       (store.push as (data: EmptyResourceDocument) => null) = sinon.stub();
-      const snapshot = {};
+      const snapshot = store
+        .createRecord<UserModel>('user', {})
+        ._createSnapshot() as Snapshot;
       const url = 'users/user_a';
       const relationship = { type: 'user', options: {} };
       const adapter = this.owner.lookup(
@@ -418,7 +428,7 @@ module('Unit | Adapter | cloud firestore modular', function (hooks) {
       // Act
       const result = await adapter.findBelongsTo(
         store,
-        snapshot as any,
+        snapshot,
         url,
         relationship as any,
       );
