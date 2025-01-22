@@ -56,13 +56,13 @@ export interface SnapshotRecordArray extends _SnapshotRecordArray {
   adapterOptions: AdapterOption;
 }
 
-type LegacyBelongsToField = _LegacyBelongsToField & {
+export type LegacyBelongsToField = _LegacyBelongsToField & {
   options: {
     isRealtime?: boolean;
   };
 };
 
-type LegacyHasManyField = _LegacyHasManyField & {
+export type LegacyHasManyField = _LegacyHasManyField & {
   key: string;
   options: {
     isRealtime?: boolean;
