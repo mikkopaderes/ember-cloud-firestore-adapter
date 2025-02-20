@@ -15,16 +15,16 @@ import type UserModel from './user';
 
 export default class PostModel extends Model {
   @attr('string')
-  public declare title: string;
+  declare public title: string;
 
   @attr('timestamp')
-  public declare createdOn: TimestampTransform;
+  declare public createdOn: TimestampTransform;
 
   @belongsTo('user', { async: true, inverse: 'posts' })
-  public declare author: AsyncBelongsTo<UserModel>;
+  declare public author: AsyncBelongsTo<UserModel>;
 
   @belongsTo('group', { async: true, inverse: 'posts' })
-  public declare group: AsyncBelongsTo<GroupModel>;
+  declare public group: AsyncBelongsTo<GroupModel>;
 
   // @ts-expect-error ember data types won't accept function
   @belongsTo('user', {
@@ -35,7 +35,7 @@ export default class PostModel extends Model {
       return collection(db, 'publishers');
     },
   })
-  public declare publisher: AsyncBelongsTo<UserModel>;
+  declare public publisher: AsyncBelongsTo<UserModel>;
 
   declare [Type]: 'post';
 }

@@ -61,7 +61,7 @@ interface HasManyFetchConfig {
 
 export default class FirestoreDataManager extends Service {
   @service
-  private declare store: StoreService;
+  declare private store: StoreService;
 
   private docListeners: DocListeners = {};
 
@@ -375,6 +375,7 @@ export default class FirestoreDataManager extends Service {
     // in the query array while the record is being unloaded from store can cause an error.
     // To avoid the issue, we run .update() in the next runloop so that we allow the unload
     // to happen first.
+    // eslint-disable-next-line ember/no-runloop
     next(() => {
       // In case multiple docs within the query were updated, this block can potentially happen
       // multiple times. Race condition can happen where queryId no longer exists inside
@@ -415,6 +416,7 @@ export default class FirestoreDataManager extends Service {
     // in the hasMany array while the record is being unloaded from store can cause an error.
     // To avoid the issue, we run .reload() in the next runloop so that we allow the unload
     // to happen first.
+    // eslint-disable-next-line ember/no-runloop
     next(() => {
       const record = this.store.peekRecord(config.modelName, config.id);
       const hasManyRef = (record as Model).hasMany(config.field);

@@ -74,7 +74,7 @@ export type LegacyHasManyField = _LegacyHasManyField & {
 
 export default class CloudFirestoreAdapter extends Adapter {
   @service('-firestore-data-manager')
-  protected declare firestoreDataManager: FirestoreDataManager;
+  declare protected firestoreDataManager: FirestoreDataManager;
 
   protected referenceKeyName = 'referenceTo';
 
