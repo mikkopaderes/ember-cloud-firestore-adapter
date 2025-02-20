@@ -179,6 +179,7 @@ module('Acceptance | features', function (hooks) {
     // Assert
     try {
       await waitFor('[data-test-id]', { timeout: 5000 });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       // Do nothing
     }

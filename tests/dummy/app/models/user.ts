@@ -11,19 +11,19 @@ import type PostModel from './post';
 
 export default class UserModel extends Model {
   @attr('string')
-  public declare name: string;
+  declare public name: string;
 
   @attr('number')
-  public declare age: number;
+  declare public age: number;
 
   @attr('string')
-  public declare username: string;
+  declare public username: string;
 
   @hasMany('group', { async: true, inverse: 'members' })
-  public declare groups: AsyncHasMany<GroupModel>;
+  declare public groups: AsyncHasMany<GroupModel>;
 
   @hasMany('post', { async: true, inverse: 'author' })
-  public declare posts: AsyncHasMany<PostModel>;
+  declare public posts: AsyncHasMany<PostModel>;
 
   declare [Type]: 'user';
 }

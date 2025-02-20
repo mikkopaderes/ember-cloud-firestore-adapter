@@ -6,7 +6,7 @@ import type PostModel from '../models/post';
 
 export default class UpdateRecordRoute extends Route {
   @service
-  public declare store: Store;
+  declare public store: Store;
 
   public async model(params: { title: string }): Promise<PostModel> {
     const post = await this.store.findRecord<PostModel>('post', 'post_a');

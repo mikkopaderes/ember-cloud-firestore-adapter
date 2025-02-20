@@ -1,4 +1,4 @@
-import { getOwner } from '@ember/owner';
+import { getOwner } from '@ember/application';
 import { service } from '@ember/service';
 import Adapter from '@ember-data/adapter';
 import type { ModelSchema } from '@ember-data/store/types';
@@ -74,7 +74,7 @@ export type LegacyHasManyField = _LegacyHasManyField & {
 
 export default class CloudFirestoreAdapter extends Adapter {
   @service('-firestore-data-manager')
-  protected declare firestoreDataManager: FirestoreDataManager;
+  declare protected firestoreDataManager: FirestoreDataManager;
 
   protected referenceKeyName = 'referenceTo';
 

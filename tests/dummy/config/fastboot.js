@@ -4,6 +4,7 @@ module.exports = function () {
   return {
     buildSandboxGlobals(defaultGlobals) {
       return Object.assign({}, defaultGlobals, {
+        // eslint-disable-next-line n/no-unsupported-features/node-builtins
         fetch,
       });
     },

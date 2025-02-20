@@ -14,10 +14,10 @@ import type UserModel from './user';
 
 export default class GroupModel extends Model {
   @attr('string')
-  public declare name: string;
+  declare public name: string;
 
   @hasMany('user', { async: true, inverse: 'groups' })
-  public declare members: AsyncHasMany<UserModel>;
+  declare public members: AsyncHasMany<UserModel>;
 
   // @ts-expect-error ember data types won't accept function
   @hasMany('post', {
@@ -29,7 +29,7 @@ export default class GroupModel extends Model {
       return query(reference, limit(1));
     },
   })
-  public declare posts: AsyncHasMany<PostModel>;
+  declare public posts: AsyncHasMany<PostModel>;
 
   declare [Type]: 'group';
 }
