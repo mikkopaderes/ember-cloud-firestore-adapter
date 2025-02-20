@@ -9,6 +9,12 @@ module.exports = function (defaults) {
       includePolyfill: true,
     },
 
+    emberData: {
+      deprecations: {
+        DEPRECATE_STORE_EXTENDS_EMBER_OBJECT: false,
+      },
+    },
+
     // Add options here
   });
 
