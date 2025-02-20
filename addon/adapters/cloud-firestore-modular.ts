@@ -7,8 +7,8 @@ import type { Snapshot as _Snapshot } from '@ember-data/legacy-compat/legacy-net
 import type { SnapshotRecordArray as _SnapshotRecordArray } from '@ember-data/legacy-compat/-private';
 import type { Collection } from '@ember-data/store/-private/record-arrays/identifier-array';
 import type {
-  LegacyBelongsToField,
-  LegacyHasManyField,
+  LegacyBelongsToField as _LegacyBelongsToField,
+  LegacyHasManyField as _LegacyHasManyField,
 } from '@warp-drive/core-types/schema/fields';
 import type Model from 'ember-data/model';
 import RSVP from 'rsvp';
@@ -48,19 +48,21 @@ export interface AdapterOption {
   [key: string]: unknown;
 }
 
-interface Snapshot extends _Snapshot {
+export interface Snapshot extends _Snapshot {
   adapterOptions: AdapterOption;
 }
 
-interface SnapshotRecordArray extends _SnapshotRecordArray {
+export interface SnapshotRecordArray extends _SnapshotRecordArray {
   adapterOptions: AdapterOption;
 }
 
-type BelongsToRelationshipMeta = LegacyBelongsToField & {
-  options: { isRealtime?: boolean };
+export type LegacyBelongsToField = _LegacyBelongsToField & {
+  options: {
+    isRealtime?: boolean;
+  };
 };
 
-type HasManyRelationshipMeta = LegacyHasManyField & {
+export type LegacyHasManyField = _LegacyHasManyField & {
   key: string;
   options: {
     isRealtime?: boolean;
@@ -82,9 +84,9 @@ export default class CloudFirestoreAdapter extends Adapter {
     return !!fastboot && fastboot.isFastBoot;
   }
 
-  public generateIdForRecord(_store: Store, type: unknown): string {
+  public generateIdForRecord(_store: Store, type: string): string {
     const db = getFirestore();
-    const collectionName = buildCollectionName(type as string); // TODO: EmberData types incorrect
+    const collectionName = buildCollectionName(type);
 
     return doc(collection(db, collectionName)).id;
   }
@@ -268,7 +270,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     _store: Store,
     _snapshot: Snapshot,
     url: string,
-    relationship: BelongsToRelationshipMeta,
+    relationship: LegacyBelongsToField,
   ): Promise<AdapterPayload> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
@@ -307,7 +309,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     store: Store,
     snapshot: Snapshot,
     url: string,
-    relationship: HasManyRelationshipMeta,
+    relationship: LegacyHasManyField,
   ): Promise<AdapterPayload> {
     return new RSVP.Promise(async (resolve, reject) => {
       try {
@@ -391,7 +393,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     store: Store,
     snapshot: Snapshot,
     url: string,
-    relationship: HasManyRelationshipMeta,
+    relationship: LegacyHasManyField,
   ): CollectionReference | Query {
     const db = getFirestore();
 
