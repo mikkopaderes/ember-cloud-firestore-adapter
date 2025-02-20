@@ -1,4 +1,4 @@
-import { getOwner } from '@ember/owner';
+import { getOwner } from '@ember/application';
 import { service } from '@ember/service';
 import Adapter from '@ember-data/adapter';
 import type { ModelSchema } from '@ember-data/store/types';
