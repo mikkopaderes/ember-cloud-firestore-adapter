@@ -357,7 +357,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     );
   }
 
-  private addDocRefToWriteBatch(
+  protected addDocRefToWriteBatch(
     batch: WriteBatch,
     docRef: DocumentReference,
     snapshot: Snapshot,
@@ -367,7 +367,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     batch.set(docRef, data, { merge: true });
   }
 
-  private addIncludeToWriteBatch(
+  protected addIncludeToWriteBatch(
     batch: WriteBatch,
     adapterOptions?: AdapterOption,
   ): void {
@@ -376,7 +376,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     adapterOptions?.include?.(batch, db);
   }
 
-  private buildWriteBatch(
+  protected buildWriteBatch(
     docRef: DocumentReference,
     snapshot: Snapshot,
   ): WriteBatch {
@@ -389,7 +389,7 @@ export default class CloudFirestoreAdapter extends Adapter {
     return batch;
   }
 
-  private buildHasManyCollectionRef(
+  protected buildHasManyCollectionRef(
     store: Store,
     snapshot: Snapshot,
     url: string,
